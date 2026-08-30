@@ -10,6 +10,11 @@ services:
       POSTGRES_PASSWORD: "O1Opx6kttUupFbbZbWJ6UqZsMeO2OtD6"
     volumes:
       - campusmate_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d campusmate"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:6.2.6
@@ -18,6 +23,29 @@ services:
     command: redis-server --requirepass "WGMgyi1B78sV_Qp6SddCVjONGApRYo1f"
     environment:
       - REDIS_REPLICATION_MODE=master
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a 'WGMgyi1B78sV_Qp6SddCVjONGApRYo1f' ping | grep PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # S3-compatible object storage for ebook files (§60).
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: campusmate-dev
+      MINIO_ROOT_PASSWORD: "campusmate-dev-secret"
+    volumes:
+      - campusmate_minio_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "mc ready local || curl -sf http://localhost:9000/minio/health/live"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
 
   # Test services
   postgres_test:
@@ -30,6 +58,11 @@ services:
       POSTGRES_PASSWORD: "ZXuvSjrINvipFrom1pwQZj8NqQUI0oAJ"
     volumes:
       - campusmate_test_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d campusmate_test"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis_test:
     image: redis:6.2.6
@@ -38,7 +71,13 @@ services:
     command: redis-server --requirepass "sPqAErD0g04c3d1oGPQtWDsuZomNrrhQ"
     environment:
       - REDIS_REPLICATION_MODE=master
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a 'sPqAErD0g04c3d1oGPQtWDsuZomNrrhQ' ping | grep PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   campusmate_data:
   campusmate_test_data:
+  campusmate_minio_data:
