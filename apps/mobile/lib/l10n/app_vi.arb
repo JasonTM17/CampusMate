@@ -1,0 +1,15 @@
+{
+  "@@locale": "vi",
+  "appTitle": "CampusMate",
+  "navHome": "Trang chủ",
+  "navAcademic": "Học tập",
+  "navLibrary": "Thư viện",
+  "navAi": "AI",
+  "navProfile": "Cá nhân",
+  "homeTagline": "Học tập. Đọc sách. Phát triển.",
+  "comingSoonTitle": "Sắp ra mắt",
+  "comingSoonMessage": "Phần này sẽ được triển khai trong giai đoạn kế tiếp của lộ trình.",
+  "retry": "Thử lại",
+  "errorGeneric": "Đã xảy ra lỗi. Vui lòng thử lại.",
+  "emptyGeneric": "Chưa có dữ liệu."
+}

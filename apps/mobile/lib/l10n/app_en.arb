@@ -1,0 +1,15 @@
+{
+  "@@locale": "en",
+  "appTitle": "CampusMate",
+  "navHome": "Home",
+  "navAcademic": "Academic",
+  "navLibrary": "Library",
+  "navAi": "AI",
+  "navProfile": "Profile",
+  "homeTagline": "Study. Read. Grow.",
+  "comingSoonTitle": "Coming soon",
+  "comingSoonMessage": "This section is delivered in an upcoming phase of the roadmap.",
+  "retry": "Retry",
+  "errorGeneric": "Something went wrong. Please try again.",
+  "emptyGeneric": "Nothing here yet."
+}
