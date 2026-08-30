@@ -1,0 +1,4 @@
+class: VectorCapabilityProbe
+table: vector_capability_probe
+fields:
+  embedding: Vector(1536)

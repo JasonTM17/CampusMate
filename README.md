@@ -49,6 +49,9 @@ dart pub get
 cd server
 dart run bin/main.dart --apply-migrations   # giữ terminal này chạy
 
+# Redis hiện đang tắt trong config (redis.enabled: false) — container vẫn chạy
+# sẵn để bật cache ở phase sau mà không cần đổi hạ tầng.
+
 # 3. Mobile app
 cd ../apps/mobile
 flutter pub get

@@ -23,6 +23,9 @@ Do **not** drift onto `4.0.0-rc.*` without a new ADR.
 - Migration `20260830095733184` applied on boot (`--apply-migrations`).
 - Generated client called `greeting.hello` end-to-end (Flutter test green).
 - `CREATE EXTENSION vector` + cosine query verified in the compose Postgres.
+- `Vector(1536)` model field (`vector_capability_probe.spy.yaml`) → codegen →
+  migration `20260830104952147` applied → column type `vector(1536)` verified
+  in `\d` (full model→migration path proven, not just raw SQL).
 
 ## Licensing ruling
 

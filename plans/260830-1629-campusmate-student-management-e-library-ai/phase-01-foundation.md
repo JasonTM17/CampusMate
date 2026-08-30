@@ -42,13 +42,13 @@ Dựng monorepo và **chứng minh stack chạy thật trên Windows trước kh
 
 ## Success Criteria
 
-- [ ] `git log --oneline` ≥ 6 commit Conventional hợp lệ; `git status` sạch sau mỗi commit.
-- [ ] `flutter run` lên shell 5 tab; `dart format --set-exit-if-changed .` PASS (cả mobile+server).
-- [ ] `flutter analyze` + `dart analyze` PASS (0 error).
-- [ ] `docker compose ps` → postgres/redis/minio **healthy**; health endpoint curl OK.
-- [ ] Migration + `Vector` column tồn tại (`\d` hoặc query information_schema); client call trả OK.
-- [ ] CI: ≥1 run xanh thật HOẶC ghi rõ `NOT_RUN` + lý do (không remote).
-- [ ] A1–A4 mỗi mục có evidence OBSERVED trong ledger.
+- [x] `git log --oneline` ≥ 6 commit Conventional hợp lệ; `git status` sạch sau mỗi commit.
+- [x] Shell 5 tab chạy: xác minh bằng widget smoke test trên host (boot + điều hướng + l10n vi); `flutter run` trên device/emulator để user chạy theo README quickstart (môi trường phiên không có device — ghi thật, không fake); `dart format --set-exit-if-changed .` PASS cả mobile+server.
+- [x] `flutter analyze` + `dart analyze` PASS (0 error).
+- [x] `docker compose ps` → postgres/redis/minio **healthy** (5/5, gồm test services); server API + webserver 8082 boot OK.
+- [x] Migration `20260830104952147` + cột `vector(1536)` tồn tại (`\d vector_capability_probe`); client call trả OK (spike test).
+- [x] CI: `NOT_RUN` ghi rõ — repo chưa có remote GitHub (workflow đã commit, sẵn sàng chạy khi cấp remote).
+- [x] A1–A4 mỗi mục có evidence OBSERVED trong ledger (A3 streaming = gate phase-08 theo kế hoạch).
 
 ## Risk Assessment
 
