@@ -1,0 +1,69 @@
+name: server
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  dart:
+    runs-on: ubuntu-latest
+    services:
+      postgres_test:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: campusmate_test
+          POSTGRES_PASSWORD: ZXuvSjrINvipFrom1pwQZj8NqQUI0oAJ
+        ports:
+          - 9090:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d campusmate_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis_test:
+        image: redis:6.2.6
+        ports:
+          - 9091:6379
+        options: >-
+          --health-cmd "redis-cli -a sPqAErD0g04c3d1oGPQtWDsuZomNrrhQ ping | grep PONG"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 3.12.0
+
+      - name: Pub get (workspace)
+        run: dart pub get
+
+      # config/passwords.yaml is machine-local by design (gitignored), so CI
+      # regenerates it with the same test-only credentials as the services
+      # above. Never place production secrets here.
+      - name: Generate test passwords file
+        run: |
+          cat > server/config/passwords.yaml <<'EOF'
+          test:
+            database: 'ZXuvSjrINvipFrom1pwQZj8NqQUI0oAJ'
+            redis: 'sPqAErD0g04c3d1oGPQtWDsuZomNrrhQ'
+            emailSecretHashPepper: 'WCN8aGaTkcTIUKmuifr1gg8TjoI6kN2b'
+            jwtHmacSha512PrivateKey: '7tpv8D79fL4U2vCjeIlcP0m79M-5ay7r'
+            jwtRefreshTokenHashPepper: 'N1FlfKd5DKPns4__0zM15wAX5jsxd8iz'
+          EOF
+
+      - name: Format check
+        run: dart format --set-exit-if-changed server packages
+
+      - name: Analyze
+        run: |
+          dart analyze server
+          dart analyze packages/campusmate_client
+
+      - name: Test
+        working-directory: server
+        run: dart test
