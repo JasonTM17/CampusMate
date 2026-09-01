@@ -1,3 +1,5 @@
+aiSpike:
+  - mockStream:
 emailIdp:
   - login:
   - startRegistration:
