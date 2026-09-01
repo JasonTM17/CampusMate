@@ -21,21 +21,43 @@ abstract class AppLogger {
   void info(String message, {Map<String, Object?> context = const {}}) =>
       log(LogLevel.info, message, context: context);
 
-  void warning(String message, {Object? error, StackTrace? stackTrace}) =>
-      log(LogLevel.warning, message, error: error, stackTrace: stackTrace);
+  void warning(
+    String message, {
+    Map<String, Object?> context = const {},
+    Object? error,
+    StackTrace? stackTrace,
+  }) => log(
+    LogLevel.warning,
+    message,
+    context: context,
+    error: error,
+    stackTrace: stackTrace,
+  );
 
-  void error(String message, {Object? error, StackTrace? stackTrace}) =>
-      log(LogLevel.error, message, error: error, stackTrace: stackTrace);
+  void error(
+    String message, {
+    Map<String, Object?> context = const {},
+    Object? error,
+    StackTrace? stackTrace,
+  }) => log(
+    LogLevel.error,
+    message,
+    context: context,
+    error: error,
+    stackTrace: stackTrace,
+  );
 }
 
 class ConsoleAppLogger extends AppLogger {
+  /// Matched against lower-cased context keys, so `Password`, `accessToken`
+  /// and `API_KEY` are all caught.
   static const _sensitiveKeys = {
     'password',
     'token',
-    'accessToken',
-    'refreshToken',
-    'apiKey',
-    'signedUrl',
+    'accesstoken',
+    'refreshtoken',
+    'apikey',
+    'signedurl',
     'authorization',
   };
 
@@ -49,13 +71,17 @@ class ConsoleAppLogger extends AppLogger {
   }) {
     if (!kDebugMode && level == LogLevel.debug) return;
     final scrubbed = context.map(
-      (k, v) => MapEntry(k, _sensitiveKeys.contains(k) ? '«redacted»' : v),
+      (k, v) => MapEntry(
+        k,
+        _sensitiveKeys.contains(k.toLowerCase()) ? '«redacted»' : v,
+      ),
     );
     // ignore: avoid_print
     print(
       '[${level.name.toUpperCase()}] $message'
       '${scrubbed.isEmpty ? '' : ' $scrubbed'}'
-      '${error == null ? '' : ' error=$error'}',
+      '${error == null ? '' : ' error=$error'}'
+      '${stackTrace == null ? '' : '\n$stackTrace'}',
     );
   }
 }
