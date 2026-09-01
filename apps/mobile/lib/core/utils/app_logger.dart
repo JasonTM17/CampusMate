@@ -49,15 +49,20 @@ abstract class AppLogger {
 }
 
 class ConsoleAppLogger extends AppLogger {
-  /// Matched against lower-cased context keys, so `Password`, `accessToken`
-  /// and `API_KEY` are all caught.
+  /// Matched against lower-cased context keys, so `Password`, `accessToken`,
+  /// `API_KEY` and snake_case variants are all caught.
   static const _sensitiveKeys = {
     'password',
     'token',
     'accesstoken',
+    'access_token',
     'refreshtoken',
+    'refresh_token',
     'apikey',
+    'api_key',
+    'secret',
     'signedurl',
+    'signed_url',
     'authorization',
   };
 

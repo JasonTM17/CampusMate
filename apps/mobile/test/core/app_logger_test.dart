@@ -66,11 +66,23 @@ void main() {
 
     test('scrubbing is case-insensitive on key names', () {
       final lines = capturePrint(
-        () => logger.warning('flagged', context: {'PASSWORD': 'nope'}),
+        () => logger.warning(
+          'flagged',
+          context: {
+            'PASSWORD': 'nope',
+            'api_key': 'sk-456',
+            'access_token': 'at-456',
+            'refresh_token': 'rt-456',
+          },
+        ),
       );
 
-      expect(lines.single, isNot(contains('nope')));
-      expect(lines.single, contains('«redacted»'));
+      final line = lines.single;
+      expect(line, isNot(contains('nope')));
+      expect(line, isNot(contains('sk-456')));
+      expect(line, isNot(contains('at-456')));
+      expect(line, isNot(contains('rt-456')));
+      expect(line, contains('«redacted»'));
     });
 
     test('appends the error when provided', () {
