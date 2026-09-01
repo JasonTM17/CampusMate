@@ -26,7 +26,9 @@ void main() {
       final client = Client(serverUrl);
 
       final chunks = <String>[];
-      await for (final chunk in client.aiSpike.mockStream('giải thích phase 8')) {
+      await for (final chunk in client.aiSpike.mockStream(
+        'giải thích phase 8',
+      )) {
         chunks.add(chunk);
       }
 
