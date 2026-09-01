@@ -17,6 +17,9 @@ server/.run/
 *.iml
 .vscode/
 
+# Agent runtime session state (zcode)
+.zcode/
+
 # Secrets & local environment (never commit)
 .env
 .env.*
