@@ -17,8 +17,8 @@ class CampusMateApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'CampusMate',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.light(),
-      darkTheme: AppTheme.dark(),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
       locale: const Locale('vi'),
       supportedLocales: AppLocalizations.supportedLocales,

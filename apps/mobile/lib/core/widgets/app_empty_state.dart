@@ -26,7 +26,7 @@ class AppEmptyState extends StatelessWidget {
     final theme = Theme.of(context);
     return Center(
       child: Padding(
-        padding: AppSpacing.screenPadding,
+        padding: AppSpacing.mPadding,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -47,7 +47,7 @@ class AppEmptyState extends StatelessWidget {
                 onPressed: onAction,
                 style: FilledButton.styleFrom(
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppRadius.medium),
+                    borderRadius: BorderRadius.circular(AppRadius.m),
                   ),
                 ),
                 child: Text(actionLabel!),
