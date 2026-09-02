@@ -367,6 +367,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cannot reach the server. Check your connection and try again.'**
   String get errorNetwork;
+
+  /// No description provided for @chatSuggestions.
+  ///
+  /// In en, this message translates to:
+  /// **'What would you like to ask?'**
+  String get chatSuggestions;
+
+  /// No description provided for @chatInputHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Type your message...'**
+  String get chatInputHint;
+
+  /// No description provided for @chatSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get chatSend;
+
+  /// No description provided for @chatTyping.
+  ///
+  /// In en, this message translates to:
+  /// **'Assistant is typing'**
+  String get chatTyping;
+
+  /// No description provided for @chatConversationList.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversations'**
+  String get chatConversationList;
 }
 
 class _AppLocalizationsDelegate

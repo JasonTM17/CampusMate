@@ -151,4 +151,19 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorNetwork =>
       'Cannot reach the server. Check your connection and try again.';
+
+  @override
+  String get chatSuggestions => 'What would you like to ask?';
+
+  @override
+  String get chatInputHint => 'Type your message...';
+
+  @override
+  String get chatSend => 'Send';
+
+  @override
+  String get chatTyping => 'Assistant is typing';
+
+  @override
+  String get chatConversationList => 'Conversations';
 }

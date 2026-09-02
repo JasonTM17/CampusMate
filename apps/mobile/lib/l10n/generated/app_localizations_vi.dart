@@ -149,4 +149,19 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get errorNetwork =>
       'Không thể kết nối máy chủ. Kiểm tra mạng và thử lại.';
+
+  @override
+  String get chatSuggestions => 'Bạn muốn hỏi gì?';
+
+  @override
+  String get chatInputHint => 'Nhập tin nhắn...';
+
+  @override
+  String get chatSend => 'Gửi';
+
+  @override
+  String get chatTyping => 'Trợ lý đang nhập';
+
+  @override
+  String get chatConversationList => 'Hội thoại';
 }

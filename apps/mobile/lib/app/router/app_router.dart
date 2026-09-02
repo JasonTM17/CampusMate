@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/registration_screen.dart';
+import '../../features/chat/presentation/chat_screen.dart';
 import '../../l10n/generated/app_localizations.dart';
 import 'app_shell.dart';
 
@@ -58,10 +59,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/ai',
-                builder: (context, state) => BranchPlaceholderScreen(
-                  icon: Icons.smart_toy_outlined,
-                  title: AppLocalizations.of(context)!.navAi,
-                ),
+                builder: (context, state) => const ChatScreen(),
               ),
             ],
           ),

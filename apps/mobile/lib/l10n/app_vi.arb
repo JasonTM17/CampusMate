@@ -44,5 +44,10 @@
   "errorTooManyAttempts": "Bạn đã thử quá nhiều lần. Vui lòng thử lại sau.",
   "errorPasswordPolicy": "Mật khẩu chưa đạt yêu cầu (tối thiểu 8 ký tự).",
   "errorCodeInvalid": "Mã xác minh không đúng hoặc đã hết hạn.",
-  "errorNetwork": "Không thể kết nối máy chủ. Kiểm tra mạng và thử lại."
+  "errorNetwork": "Không thể kết nối máy chủ. Kiểm tra mạng và thử lại.",
+  "chatSuggestions": "Bạn muốn hỏi gì?",
+  "chatInputHint": "Nhập tin nhắn...",
+  "chatSend": "Gửi",
+  "chatTyping": "Trợ lý đang nhập",
+  "chatConversationList": "Hội thoại"
 }

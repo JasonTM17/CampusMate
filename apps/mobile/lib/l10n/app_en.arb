@@ -44,5 +44,10 @@
   "errorTooManyAttempts": "Too many attempts. Please try again later.",
   "errorPasswordPolicy": "Password does not meet the requirements (min 8 characters).",
   "errorCodeInvalid": "The verification code is wrong or has expired.",
-  "errorNetwork": "Cannot reach the server. Check your connection and try again."
+  "errorNetwork": "Cannot reach the server. Check your connection and try again.",
+  "chatSuggestions": "What would you like to ask?",
+  "chatInputHint": "Type your message...",
+  "chatSend": "Send",
+  "chatTyping": "Assistant is typing",
+  "chatConversationList": "Conversations"
 }
