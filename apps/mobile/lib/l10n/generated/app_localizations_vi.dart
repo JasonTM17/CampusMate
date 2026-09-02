@@ -44,4 +44,109 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get emptyGeneric => 'Chưa có dữ liệu.';
+
+  @override
+  String get authSignIn => 'Đăng nhập';
+
+  @override
+  String get authSigningIn => 'Đang đăng nhập…';
+
+  @override
+  String get authSubmitting => 'Đang gửi…';
+
+  @override
+  String get authLoginTitle => 'Chào mừng trở lại';
+
+  @override
+  String get authLoginSubtitle => 'Đăng nhập để sử dụng trợ lý AI CampusMate.';
+
+  @override
+  String get authEmailLabel => 'Email';
+
+  @override
+  String get authEmailInvalid => 'Vui lòng nhập email hợp lệ.';
+
+  @override
+  String get authPasswordLabel => 'Mật khẩu';
+
+  @override
+  String get authPasswordEmpty => 'Vui lòng nhập mật khẩu.';
+
+  @override
+  String get authNewPasswordLabel => 'Mật khẩu mới';
+
+  @override
+  String get authConfirmPasswordLabel => 'Xác nhận mật khẩu';
+
+  @override
+  String get authTogglePasswordVisibility => 'Hiện hoặc ẩn mật khẩu';
+
+  @override
+  String get authSignInButton => 'Đăng nhập';
+
+  @override
+  String get authCreateAccount => 'Tạo tài khoản';
+
+  @override
+  String get authNoAccountYet => 'Chưa có tài khoản? Tạo ngay';
+
+  @override
+  String get authAlreadyHaveAccount => 'Đã có tài khoản? Đăng nhập';
+
+  @override
+  String get authRegisterEmailStep => 'Bước 1 · Email';
+
+  @override
+  String get authRegisterCodeStep => 'Bước 2 · Mã xác minh';
+
+  @override
+  String get authRegisterPasswordStep => 'Bước 3 · Đặt mật khẩu';
+
+  @override
+  String get authRegisterEmailHelp =>
+      'Chúng tôi sẽ gửi mã xác minh đến địa chỉ email này.';
+
+  @override
+  String get authRegisterCodeHelp =>
+      'Nhập mã xác minh đã được gửi đến email của bạn.';
+
+  @override
+  String get authRegisterCodeHint => 'Mã xác minh';
+
+  @override
+  String get authSendCode => 'Gửi mã';
+
+  @override
+  String get authVerifyCode => 'Xác minh mã';
+
+  @override
+  String get authFinishRegistration => 'Tạo tài khoản và đăng nhập';
+
+  @override
+  String get authPasswordTooShort => 'Mật khẩu cần ít nhất 8 ký tự.';
+
+  @override
+  String get authPasswordWhitespace =>
+      'Mật khẩu không được bắt đầu hoặc kết thúc bằng khoảng trắng.';
+
+  @override
+  String get authPasswordMismatch => 'Mật khẩu xác nhận không khớp.';
+
+  @override
+  String get errorInvalidCredentials => 'Email hoặc mật khẩu không đúng.';
+
+  @override
+  String get errorTooManyAttempts =>
+      'Bạn đã thử quá nhiều lần. Vui lòng thử lại sau.';
+
+  @override
+  String get errorPasswordPolicy =>
+      'Mật khẩu chưa đạt yêu cầu (tối thiểu 8 ký tự).';
+
+  @override
+  String get errorCodeInvalid => 'Mã xác minh không đúng hoặc đã hết hạn.';
+
+  @override
+  String get errorNetwork =>
+      'Không thể kết nối máy chủ. Kiểm tra mạng và thử lại.';
 }
