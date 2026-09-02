@@ -1,0 +1,16 @@
+name: campusmate_shared
+description: "Shared, dependency-free models for CampusMate AI (server + client)."
+publish_to: none
+
+environment:
+  sdk: ^3.8.0
+
+resolution: workspace
+
+# Deliberately dependency-free: this package is imported by the Dart server,
+# the Serverpod generated protocol, and tooling. Adding deps here would pull
+# them into every consumer.
+dependencies: {}
+
+dev_dependencies:
+  test: ^1.25.0

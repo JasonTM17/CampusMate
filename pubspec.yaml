@@ -7,3 +7,4 @@ environment:
 workspace:
   - server
   - packages/campusmate_client
+  - packages/campusmate_shared
