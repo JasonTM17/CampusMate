@@ -15,11 +15,12 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../ai/ai_spike_endpoint.dart' as _i2;
 import '../auth/email_idp_endpoint.dart' as _i3;
 import '../auth/jwt_refresh_endpoint.dart' as _i4;
-import '../greetings/greeting_endpoint.dart' as _i5;
+import '../endpoints/ai_endpoint.dart' as _i5;
+import '../greetings/greeting_endpoint.dart' as _i6;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i6;
-import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i7;
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
+    as _i8;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -43,7 +44,13 @@ class Endpoints extends _i1.EndpointDispatch {
           'jwtRefresh',
           null,
         ),
-      'greeting': _i5.GreetingEndpoint()
+      'ai': _i5.AiEndpoint()
+        ..initialize(
+          server,
+          'ai',
+          null,
+        ),
+      'greeting': _i6.GreetingEndpoint()
         ..initialize(
           server,
           'greeting',
@@ -281,6 +288,104 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['ai'] = _i1.EndpointConnector(
+      name: 'ai',
+      endpoint: endpoints['ai']!,
+      methodConnectors: {
+        'listConversations': _i1.MethodConnector(
+          name: 'listConversations',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['ai'] as _i5.AiEndpoint).listConversations(
+                session,
+              ),
+        ),
+        'createConversation': _i1.MethodConnector(
+          name: 'createConversation',
+          params: {
+            'title': _i1.ParameterDescription(
+              name: 'title',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['ai'] as _i5.AiEndpoint).createConversation(
+                session,
+                title: params['title'],
+              ),
+        ),
+        'deleteConversation': _i1.MethodConnector(
+          name: 'deleteConversation',
+          params: {
+            'conversationId': _i1.ParameterDescription(
+              name: 'conversationId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['ai'] as _i5.AiEndpoint).deleteConversation(
+                session,
+                conversationId: params['conversationId'],
+              ),
+        ),
+        'getMessages': _i1.MethodConnector(
+          name: 'getMessages',
+          params: {
+            'conversationId': _i1.ParameterDescription(
+              name: 'conversationId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['ai'] as _i5.AiEndpoint).getMessages(
+                session,
+                conversationId: params['conversationId'],
+              ),
+        ),
+        'sendMessage': _i1.MethodStreamConnector(
+          name: 'sendMessage',
+          params: {
+            'conversationId': _i1.ParameterDescription(
+              name: 'conversationId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'userMessage': _i1.ParameterDescription(
+              name: 'userMessage',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          streamParams: {},
+          returnType: _i1.MethodStreamReturnType.streamType,
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+                Map<String, Stream> streamParams,
+              ) => (endpoints['ai'] as _i5.AiEndpoint).sendMessage(
+                session,
+                conversationId: params['conversationId'],
+                userMessage: params['userMessage'],
+              ),
+        ),
+      },
+    );
     connectors['greeting'] = _i1.EndpointConnector(
       name: 'greeting',
       endpoint: endpoints['greeting']!,
@@ -298,16 +403,16 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['greeting'] as _i5.GreetingEndpoint).hello(
+              ) async => (endpoints['greeting'] as _i6.GreetingEndpoint).hello(
                 session,
                 params['name'],
               ),
         ),
       },
     );
-    modules['serverpod_auth_idp'] = _i6.Endpoints()
+    modules['serverpod_auth_idp'] = _i7.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_core'] = _i7.Endpoints()
+    modules['serverpod_auth_core'] = _i8.Endpoints()
       ..initializeEndpoints(server);
   }
 }

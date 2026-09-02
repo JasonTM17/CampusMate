@@ -17,8 +17,16 @@ import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _i3;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     as _i4;
-import 'greetings/greeting.dart' as _i5;
-import 'vector_capability_probe.dart' as _i6;
+import 'ai_conversations.dart' as _i5;
+import 'ai_messages.dart' as _i6;
+import 'ai_usage.dart' as _i7;
+import 'greetings/greeting.dart' as _i8;
+import 'vector_capability_probe.dart' as _i9;
+import 'package:campusmate_server/src/generated/ai_conversations.dart' as _i10;
+import 'package:campusmate_server/src/generated/ai_messages.dart' as _i11;
+export 'ai_conversations.dart';
+export 'ai_messages.dart';
+export 'ai_usage.dart';
 export 'greetings/greeting.dart';
 export 'vector_capability_probe.dart';
 
@@ -30,6 +38,241 @@ class Protocol extends _i1.SerializationManagerServer {
   static final Protocol _instance = Protocol._();
 
   static final List<_i2.TableDefinition> targetTableDefinitions = [
+    _i2.TableDefinition(
+      name: 'ai_conversations',
+      dartName: 'AiConversation',
+      schema: 'public',
+      module: 'campusmate',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'ai_conversations_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'title',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userId',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'updatedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'ai_conversations_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'user_id_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'userId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'ai_messages',
+      dartName: 'AiMessage',
+      schema: 'public',
+      module: 'campusmate',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'ai_messages_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'conversationId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'role',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'content',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'citations',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'feedback',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'ai_messages_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'conversation_id_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'conversationId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'ai_usage',
+      dartName: 'AiUsage',
+      schema: 'public',
+      module: 'campusmate',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'ai_usage_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userId',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'day',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'requestCount',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'inputTokens',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'outputTokens',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _i2.ColumnDefinition(
+          name: 'estimatedCost',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'ai_usage_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'user_day_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'userId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'day',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
     _i2.TableDefinition(
       name: 'vector_capability_probe',
       dartName: 'VectorCapabilityProbe',
@@ -102,17 +345,45 @@ class Protocol extends _i1.SerializationManagerServer {
       }
     }
 
-    if (t == _i5.Greeting) {
-      return _i5.Greeting.fromJson(data) as T;
+    if (t == _i5.AiConversation) {
+      return _i5.AiConversation.fromJson(data) as T;
     }
-    if (t == _i6.VectorCapabilityProbe) {
-      return _i6.VectorCapabilityProbe.fromJson(data) as T;
+    if (t == _i6.AiMessage) {
+      return _i6.AiMessage.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i5.Greeting?>()) {
-      return (data != null ? _i5.Greeting.fromJson(data) : null) as T;
+    if (t == _i7.AiUsage) {
+      return _i7.AiUsage.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i6.VectorCapabilityProbe?>()) {
-      return (data != null ? _i6.VectorCapabilityProbe.fromJson(data) : null)
+    if (t == _i8.Greeting) {
+      return _i8.Greeting.fromJson(data) as T;
+    }
+    if (t == _i9.VectorCapabilityProbe) {
+      return _i9.VectorCapabilityProbe.fromJson(data) as T;
+    }
+    if (t == _i1.getType<_i5.AiConversation?>()) {
+      return (data != null ? _i5.AiConversation.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i6.AiMessage?>()) {
+      return (data != null ? _i6.AiMessage.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i7.AiUsage?>()) {
+      return (data != null ? _i7.AiUsage.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i8.Greeting?>()) {
+      return (data != null ? _i8.Greeting.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i9.VectorCapabilityProbe?>()) {
+      return (data != null ? _i9.VectorCapabilityProbe.fromJson(data) : null)
+          as T;
+    }
+    if (t == List<_i10.AiConversation>) {
+      return (data as List)
+              .map((e) => deserialize<_i10.AiConversation>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i11.AiMessage>) {
+      return (data as List).map((e) => deserialize<_i11.AiMessage>(e)).toList()
           as T;
     }
     try {
@@ -129,8 +400,11 @@ class Protocol extends _i1.SerializationManagerServer {
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _i5.Greeting => 'Greeting',
-      _i6.VectorCapabilityProbe => 'VectorCapabilityProbe',
+      _i5.AiConversation => 'AiConversation',
+      _i6.AiMessage => 'AiMessage',
+      _i7.AiUsage => 'AiUsage',
+      _i8.Greeting => 'Greeting',
+      _i9.VectorCapabilityProbe => 'VectorCapabilityProbe',
       _ => null,
     };
   }
@@ -145,9 +419,15 @@ class Protocol extends _i1.SerializationManagerServer {
     }
 
     switch (data) {
-      case _i5.Greeting():
+      case _i5.AiConversation():
+        return 'AiConversation';
+      case _i6.AiMessage():
+        return 'AiMessage';
+      case _i7.AiUsage():
+        return 'AiUsage';
+      case _i8.Greeting():
         return 'Greeting';
-      case _i6.VectorCapabilityProbe():
+      case _i9.VectorCapabilityProbe():
         return 'VectorCapabilityProbe';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -171,11 +451,20 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
+    if (dataClassName == 'AiConversation') {
+      return deserialize<_i5.AiConversation>(data['data']);
+    }
+    if (dataClassName == 'AiMessage') {
+      return deserialize<_i6.AiMessage>(data['data']);
+    }
+    if (dataClassName == 'AiUsage') {
+      return deserialize<_i7.AiUsage>(data['data']);
+    }
     if (dataClassName == 'Greeting') {
-      return deserialize<_i5.Greeting>(data['data']);
+      return deserialize<_i8.Greeting>(data['data']);
     }
     if (dataClassName == 'VectorCapabilityProbe') {
-      return deserialize<_i6.VectorCapabilityProbe>(data['data']);
+      return deserialize<_i9.VectorCapabilityProbe>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -213,8 +502,14 @@ class Protocol extends _i1.SerializationManagerServer {
       }
     }
     switch (t) {
-      case _i6.VectorCapabilityProbe:
-        return _i6.VectorCapabilityProbe.t;
+      case _i5.AiConversation:
+        return _i5.AiConversation.t;
+      case _i6.AiMessage:
+        return _i6.AiMessage.t;
+      case _i7.AiUsage:
+        return _i7.AiUsage.t;
+      case _i9.VectorCapabilityProbe:
+        return _i9.VectorCapabilityProbe.t;
     }
     return null;
   }

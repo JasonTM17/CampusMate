@@ -1,0 +1,13 @@
+class: AiConversation
+table: ai_conversations
+fields:
+  # Server-assigned id; not a user id.
+  title: String
+  # Authenticated user this conversation belongs to (§31 isolation key).
+  # Stored from session.authenticated.userIdentifier; every query filters by it.
+  userId: String
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  user_id_idx:
+    fields: userId

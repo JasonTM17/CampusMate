@@ -1,0 +1,17 @@
+class: AiUsage
+table: ai_usage
+fields:
+  # Authenticated user this usage row counts against (isolation key).
+  userId: String
+  # Calendar day the count applies to (server-local date, stored at 00:00).
+  day: DateTime
+  requestCount: int
+  inputTokens: int
+  outputTokens: int
+  # Estimated cost in the smallest currency unit (e.g. cents); 0 for fake.
+  estimatedCost: int
+indexes:
+  # One counter row per user per day; the quota check upserts into this.
+  user_day_idx:
+    fields: userId,day
+    unique: true

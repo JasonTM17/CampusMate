@@ -11,5 +11,11 @@ emailIdp:
   - hasAccount:
 jwtRefresh:
   - refreshAccessToken:
+ai:
+  - listConversations:
+  - createConversation:
+  - deleteConversation:
+  - getMessages:
+  - sendMessage:
 greeting:
   - hello:

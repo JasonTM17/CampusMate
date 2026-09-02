@@ -1,0 +1,18 @@
+class: AiMessage
+table: ai_messages
+fields:
+  # Parent conversation (cascades on delete).
+  conversationId: int
+  # "user" or "assistant".
+  role: String
+  content: String
+  # Verifiable source references for assistant turns, JSON-encoded list of
+  # {documentId, bookId, title, chapter, page} (Kongming C6). Nullable; the
+  # column shape is fixed from day one so RAG never needs a migration here.
+  citations: String?
+  # Optional user feedback on an assistant turn: "up" / "down" / null.
+  feedback: String?
+  createdAt: DateTime
+indexes:
+  conversation_id_idx:
+    fields: conversationId
