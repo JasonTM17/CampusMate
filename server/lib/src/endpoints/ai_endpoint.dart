@@ -97,13 +97,9 @@ class AiEndpoint extends Endpoint {
   /// (with any citations) once the stream completes. Each emitted String is
   /// one streaming chunk the client appends to the live bubble. The method
   /// return type is `Stream<String>` (not `Future<Stream>`) so Serverpod keeps
-  /// Streams an assistant reply to [userMessage] within [conversationId].
-  ///
-  /// The user message is persisted first; the assistant reply is persisted
-  /// (with any citations) once the stream completes. Each emitted String is
-  /// one streaming chunk the client appends to the live bubble. Implemented as
-  /// an `async*` generator so the method body can `await` persistence while
-  /// still returning a `Stream<String>` that keeps the streaming session open.
+  /// the streaming session open. Implemented as an `async*` generator so the
+  /// method body can `await` persistence while still returning a
+  /// `Stream<String>`.
   Stream<String> sendMessage(
     Session session, {
     required int conversationId,
@@ -151,13 +147,19 @@ class AiEndpoint extends Endpoint {
       if (chunk.isDone) {
         final citations = chunk.citations.isEmpty
             ? null
-            : jsonEncode(chunk.citations.map((c) => {
-              'title': c.title,
-              'documentId': c.documentId,
-              'bookId': c.bookId,
-              'chapter': c.chapter,
-              'page': c.page,
-            }).toList());
+            : jsonEncode(
+                chunk.citations
+                    .map(
+                      (c) => {
+                        'title': c.title,
+                        'documentId': c.documentId,
+                        'bookId': c.bookId,
+                        'chapter': c.chapter,
+                        'page': c.page,
+                      },
+                    )
+                    .toList(),
+              );
         // Persist the completed assistant turn + bump conversation timestamp.
         await AiMessage.db.insertRow(
           session,
@@ -169,8 +171,10 @@ class AiEndpoint extends Endpoint {
             createdAt: DateTime.now(),
           ),
         );
-        final existing =
-            await AiConversation.db.findById(session, conversationId);
+        final existing = await AiConversation.db.findById(
+          session,
+          conversationId,
+        );
         if (existing != null) {
           existing.updatedAt = DateTime.now();
           await AiConversation.db.update(session, [existing]);
@@ -180,5 +184,3 @@ class AiEndpoint extends Endpoint {
     }
   }
 }
-
-/// Unused helper kept private to satisfy the linter when not referenced.

@@ -12,12 +12,20 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'greetings/greeting.dart' as _i2;
-import 'vector_capability_probe.dart' as _i3;
+import 'ai_conversations.dart' as _i2;
+import 'ai_messages.dart' as _i3;
+import 'ai_usage.dart' as _i4;
+import 'greetings/greeting.dart' as _i5;
+import 'vector_capability_probe.dart' as _i6;
+import 'package:campusmate_client/src/protocol/ai_conversations.dart' as _i7;
+import 'package:campusmate_client/src/protocol/ai_messages.dart' as _i8;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _i4;
+    as _i9;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i5;
+    as _i10;
+export 'ai_conversations.dart';
+export 'ai_messages.dart';
+export 'ai_usage.dart';
 export 'greetings/greeting.dart';
 export 'vector_capability_probe.dart';
 export 'client.dart';
@@ -56,32 +64,63 @@ class Protocol extends _i1.SerializationManager {
       }
     }
 
-    if (t == _i2.Greeting) {
-      return _i2.Greeting.fromJson(data) as T;
+    if (t == _i2.AiConversation) {
+      return _i2.AiConversation.fromJson(data) as T;
     }
-    if (t == _i3.VectorCapabilityProbe) {
-      return _i3.VectorCapabilityProbe.fromJson(data) as T;
+    if (t == _i3.AiMessage) {
+      return _i3.AiMessage.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i2.Greeting?>()) {
-      return (data != null ? _i2.Greeting.fromJson(data) : null) as T;
+    if (t == _i4.AiUsage) {
+      return _i4.AiUsage.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i3.VectorCapabilityProbe?>()) {
-      return (data != null ? _i3.VectorCapabilityProbe.fromJson(data) : null)
+    if (t == _i5.Greeting) {
+      return _i5.Greeting.fromJson(data) as T;
+    }
+    if (t == _i6.VectorCapabilityProbe) {
+      return _i6.VectorCapabilityProbe.fromJson(data) as T;
+    }
+    if (t == _i1.getType<_i2.AiConversation?>()) {
+      return (data != null ? _i2.AiConversation.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i3.AiMessage?>()) {
+      return (data != null ? _i3.AiMessage.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i4.AiUsage?>()) {
+      return (data != null ? _i4.AiUsage.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i5.Greeting?>()) {
+      return (data != null ? _i5.Greeting.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i6.VectorCapabilityProbe?>()) {
+      return (data != null ? _i6.VectorCapabilityProbe.fromJson(data) : null)
+          as T;
+    }
+    if (t == List<_i7.AiConversation>) {
+      return (data as List)
+              .map((e) => deserialize<_i7.AiConversation>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i8.AiMessage>) {
+      return (data as List).map((e) => deserialize<_i8.AiMessage>(e)).toList()
           as T;
     }
     try {
-      return _i4.Protocol().deserialize<T>(data, t);
+      return _i9.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i5.Protocol().deserialize<T>(data, t);
+      return _i10.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _i2.Greeting => 'Greeting',
-      _i3.VectorCapabilityProbe => 'VectorCapabilityProbe',
+      _i2.AiConversation => 'AiConversation',
+      _i3.AiMessage => 'AiMessage',
+      _i4.AiUsage => 'AiUsage',
+      _i5.Greeting => 'Greeting',
+      _i6.VectorCapabilityProbe => 'VectorCapabilityProbe',
       _ => null,
     };
   }
@@ -96,16 +135,22 @@ class Protocol extends _i1.SerializationManager {
     }
 
     switch (data) {
-      case _i2.Greeting():
+      case _i2.AiConversation():
+        return 'AiConversation';
+      case _i3.AiMessage():
+        return 'AiMessage';
+      case _i4.AiUsage():
+        return 'AiUsage';
+      case _i5.Greeting():
         return 'Greeting';
-      case _i3.VectorCapabilityProbe():
+      case _i6.VectorCapabilityProbe():
         return 'VectorCapabilityProbe';
     }
-    className = _i4.Protocol().getClassNameForObject(data);
+    className = _i9.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_idp.$className';
     }
-    className = _i5.Protocol().getClassNameForObject(data);
+    className = _i10.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_core.$className';
     }
@@ -118,19 +163,28 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
+    if (dataClassName == 'AiConversation') {
+      return deserialize<_i2.AiConversation>(data['data']);
+    }
+    if (dataClassName == 'AiMessage') {
+      return deserialize<_i3.AiMessage>(data['data']);
+    }
+    if (dataClassName == 'AiUsage') {
+      return deserialize<_i4.AiUsage>(data['data']);
+    }
     if (dataClassName == 'Greeting') {
-      return deserialize<_i2.Greeting>(data['data']);
+      return deserialize<_i5.Greeting>(data['data']);
     }
     if (dataClassName == 'VectorCapabilityProbe') {
-      return deserialize<_i3.VectorCapabilityProbe>(data['data']);
+      return deserialize<_i6.VectorCapabilityProbe>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth_idp.')) {
       data['className'] = dataClassName.substring(19);
-      return _i4.Protocol().deserializeByClassName(data);
+      return _i9.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i5.Protocol().deserializeByClassName(data);
+      return _i10.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
@@ -145,10 +199,10 @@ class Protocol extends _i1.SerializationManager {
       return null;
     }
     try {
-      return _i4.Protocol().mapRecordToJson(record);
+      return _i9.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i5.Protocol().mapRecordToJson(record);
+      return _i10.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

@@ -17,8 +17,10 @@ import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     as _i3;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i4;
-import 'package:campusmate_client/src/protocol/greetings/greeting.dart' as _i5;
-import 'protocol.dart' as _i6;
+import 'package:campusmate_client/src/protocol/ai_conversations.dart' as _i5;
+import 'package:campusmate_client/src/protocol/ai_messages.dart' as _i6;
+import 'package:campusmate_client/src/protocol/greetings/greeting.dart' as _i7;
+import 'protocol.dart' as _i8;
 
 /// Temporary streaming spike endpoint (phase-08 step 1).
 ///
@@ -266,6 +268,75 @@ class EndpointJwtRefresh extends _i4.EndpointRefreshJwtTokens {
   );
 }
 
+/// AI assistant endpoints (phase-08): conversation lifecycle, message history,
+/// and token-by-token streaming chat backed by [AiProvider].
+///
+/// Authorization rule (§31): every read/write is scoped to the authenticated
+/// user via `session.authenticated.userIdentifier`. A request can never read
+/// or write another user's conversation — the `userId` predicate is in every
+/// query, so tenant isolation holds even if a client forges an id.
+/// {@category Endpoint}
+class EndpointAi extends _i1.EndpointRef {
+  EndpointAi(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'ai';
+
+  /// Loads the user's conversations, newest first.
+  _i2.Future<List<_i5.AiConversation>> listConversations() =>
+      caller.callServerEndpoint<List<_i5.AiConversation>>(
+        'ai',
+        'listConversations',
+        {},
+      );
+
+  /// Creates a new empty conversation owned by the caller.
+  _i2.Future<_i5.AiConversation> createConversation({required String title}) =>
+      caller.callServerEndpoint<_i5.AiConversation>(
+        'ai',
+        'createConversation',
+        {'title': title},
+      );
+
+  /// Deletes one of the caller's conversations (messages cascade).
+  _i2.Future<void> deleteConversation({required int conversationId}) =>
+      caller.callServerEndpoint<void>(
+        'ai',
+        'deleteConversation',
+        {'conversationId': conversationId},
+      );
+
+  /// Returns the caller's messages for a conversation, oldest first.
+  _i2.Future<List<_i6.AiMessage>> getMessages({required int conversationId}) =>
+      caller.callServerEndpoint<List<_i6.AiMessage>>(
+        'ai',
+        'getMessages',
+        {'conversationId': conversationId},
+      );
+
+  /// Streams an assistant reply to [userMessage] within [conversationId].
+  ///
+  /// The user message is persisted first; the assistant reply is persisted
+  /// (with any citations) once the stream completes. Each emitted String is
+  /// one streaming chunk the client appends to the live bubble. The method
+  /// return type is `Stream<String>` (not `Future<Stream>`) so Serverpod keeps
+  /// the streaming session open. Implemented as an `async*` generator so the
+  /// method body can `await` persistence while still returning a
+  /// `Stream<String>`.
+  _i2.Stream<String> sendMessage({
+    required int conversationId,
+    required String userMessage,
+  }) => caller.callStreamingServerEndpoint<_i2.Stream<String>, String>(
+    'ai',
+    'sendMessage',
+    {
+      'conversationId': conversationId,
+      'userMessage': userMessage,
+    },
+    {},
+  );
+}
+
 /// This is an example endpoint that returns a greeting message through
 /// its [hello] method.
 /// {@category Endpoint}
@@ -276,8 +347,8 @@ class EndpointGreeting extends _i1.EndpointRef {
   String get name => 'greeting';
 
   /// Returns a personalized greeting message: "Hello {name}".
-  _i2.Future<_i5.Greeting> hello(String name) =>
-      caller.callServerEndpoint<_i5.Greeting>(
+  _i2.Future<_i7.Greeting> hello(String name) =>
+      caller.callServerEndpoint<_i7.Greeting>(
         'greeting',
         'hello',
         {'name': name},
@@ -315,7 +386,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i6.Protocol(),
+         _i8.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -327,6 +398,7 @@ class Client extends _i1.ServerpodClientShared {
     aiSpike = EndpointAiSpike(this);
     emailIdp = EndpointEmailIdp(this);
     jwtRefresh = EndpointJwtRefresh(this);
+    ai = EndpointAi(this);
     greeting = EndpointGreeting(this);
     modules = Modules(this);
   }
@@ -337,6 +409,8 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointJwtRefresh jwtRefresh;
 
+  late final EndpointAi ai;
+
   late final EndpointGreeting greeting;
 
   late final Modules modules;
@@ -346,6 +420,7 @@ class Client extends _i1.ServerpodClientShared {
     'aiSpike': aiSpike,
     'emailIdp': emailIdp,
     'jwtRefresh': jwtRefresh,
+    'ai': ai,
     'greeting': greeting,
   };
 
