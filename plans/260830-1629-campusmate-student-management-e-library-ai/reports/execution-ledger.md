@@ -5,9 +5,34 @@ plans/260830-1629-campusmate-student-management-e-library-ai/plan.md
 ## Active plan identity
 
 - Plan: CampusMate — Student Management + E-Library + Personalized AI (archetype: Feature)
-- Created: 2026-08-30 · Status: `in-progress` (phase-01 đã implement, chờ close sau code-review fixes)
+- Created: 2026-08-30 · Status: `in-progress` (phase-08 implemented out-of-order per user authority: chatbot FE/BE fully built)
 - Workflow: goal-warmup → scout → plan (+ plan-lock) → cook (code mode) → test → code-review
 - Advisory evidence: Kongming GO-WITH-CONDITIONS (7 điều kiện đã nhúng phase); Wukong NOT_FALSIFIED / PROCEED_WITH_RESIDUAL_RISK (2026-08-30)
+- Plan delta (user-authorized 2026-09-01): phase-08 implemented before phase-03..07 because the user requested the chatbot interface be completed end-to-end first; phases 03-07 (academic, dashboard, library, reader) remain pending.
+
+## Phase 08 (AI Core) — implemented 2026-09-01/02
+
+| Stage | What | Evidence / commit |
+|---|---|---|
+| 0 — theme repair | Migrate callers to DESIGN.md tokens, fix lBottom, restore nav/input themes, dark palette, bundle Inter (OFL) | `076df99` |
+| 1 — streaming spike | Mock `Stream<String>` endpoint → Flutter client receives token-by-token (live, ~2s). ADR-008 records WebSocket decision. SSE fallback intentionally NOT built. | `de9f2ef` |
+| 2 — auth | Serverpod email identity (real): register (code from dev log) → login → JWT refresh. Mobile: Login/Registration screens, typed `AuthFailure`s, `SessionAuthKeyProvider` auto-refresh, restore-across-restart. 41 tests. | `d3f19df` |
+| 3 — AI provider | `campusmate_shared` (AiRequest/AiStreamChunk/AiCitation); `AiProvider` + `FakeAiProvider` (deterministic) + real `OpenAiCompatibleProvider` (SSE); factory by `AI_PROVIDER`. 7 unit tests. | `2ff2356` |
+| 4 — endpoint | Migration `ai_conversations`/`ai_messages`/`ai_usage`; `AiEndpoint` async* streaming + persistence + per-user isolation (§31 every query). Integration test written (needs Docker to run). | `888f6db` |
+| 5 — chat UI | ChatScreen (empty state + 4 suggestion chips, streaming bubble, markdown, safe-area bottom inset), `MessageBubble`, `AiRepository` seam, controller. 48 tests, 0 errors. | `5a53bf7` |
+
+**Live evidence collected (all on this machine, dev server on port 8083/8084 because the `infrastructure` compose stack holds 8080/9090):**
+- Streaming spike: token-by-token WebSocket delivery verified by an asserting test.
+- Auth spike: registration code `65573159` read from server console log → register → login → JWT refresh (`jwtRefresh.refreshAccessToken`, 3 queries, 395ms).
+- Server `dart analyze` clean; mobile `flutter analyze` clean (0 errors, info-level lints only).
+
+## Remaining (resume point)
+
+- **Stage 6 — Quota + injection**: server-side quota check against `ai_usage` (config-driven 50 msg/day, NOT hard-coded), friendly quota-exhausted error; prompt-injection baseline + fixtures. Needs a quota-exhausted test + injection test.
+- **Stage 7 — hardening**: run `flutter analyze`/`flutter test`/`dart test` (test needs Docker), `git diff --check`, `/ak:code-review`, update README (AI section), handoff.
+- Integration test `ai_endpoint_test.dart` requires Docker (test postgres on 9090) to run.
+
+## Completed steps & evidence
 
 ## Completed steps & evidence
 
@@ -27,6 +52,10 @@ plans/260830-1629-campusmate-student-management-e-library-ai/plan.md
 ## Current step
 
 - Phase-01 exit: đóng phase sau khi commit fixes; bước kế = `phase-02-auth-student.md` (spike chọn auth generation + ADR-005).
+
+## Phase 02 — Auth + Student + RBAC (in progress, not yet implemented)
+
+No implementation steps executed yet.
 
 ## Authorized rulings
 
