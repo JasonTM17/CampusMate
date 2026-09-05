@@ -44,8 +44,8 @@ Revisit only if CampusMate is ever sold as a hosted platform.
 ## Consequences
 
 - Auth module generation choice is deferred to ADR-005 (phase 02); the 3.4
-  template already scaffolds `serverpod_auth_idp_server` (email identity +
-  JWT refresh), which is the preferred generation.
+  template already scaffolds `serverpod_auth_core` (email identity +
+  JWT refresh + scopes), which is the preferred generation.
 - Streaming endpoint pattern (WebSocket) must be spike-verified before
   phase 08 commits the chat architecture; SSE/polling is the designed
   fallback.
