@@ -37,7 +37,11 @@ class AiMessage {
 /// emitted so far — shaped once up front (Kongming C6) so the citation
 /// column never needs a migration later.
 class AiStreamChunk {
-  const AiStreamChunk({required this.text, this.isDone = false, this.citations = const []});
+  const AiStreamChunk({
+    required this.text,
+    this.isDone = false,
+    this.citations = const [],
+  });
 
   final String text;
   final bool isDone;

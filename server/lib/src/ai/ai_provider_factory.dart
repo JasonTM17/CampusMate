@@ -10,7 +10,11 @@ import 'openai_compatible_provider.dart';
 ///
 /// Centralized here so endpoint code never branches on the provider choice.
 AiProvider createAiProvider({String? provider}) {
-  final choice = (provider ?? const String.fromEnvironment('AI_PROVIDER', defaultValue: 'fake')).trim().toLowerCase();
+  final choice =
+      (provider ??
+              const String.fromEnvironment('AI_PROVIDER', defaultValue: 'fake'))
+          .trim()
+          .toLowerCase();
   return switch (choice) {
     'openai_compatible' || 'openai' || 'glm' => OpenAiCompatibleProvider(),
     'fake' => FakeAiProvider(),

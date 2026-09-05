@@ -1,4 +1,3 @@
-import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:test/test.dart';
 
@@ -108,25 +107,33 @@ void main() {
         expect(bList, isEmpty);
       });
 
-      test('deleting a conversation removes it and is scoped to owner',
-          () async {
-        final conv = await endpoints.ai.createConversation(
-          userA,
-          title: 'Temp',
-        );
+      test(
+        'deleting a conversation removes it and is scoped to owner',
+        () async {
+          final conv = await endpoints.ai.createConversation(
+            userA,
+            title: 'Temp',
+          );
 
-        // Owner can delete.
-        await endpoints.ai.deleteConversation(userA, conversationId: conv.id!);
-        final aList = await endpoints.ai.listConversations(userA);
-        expect(aList, isEmpty);
+          // Owner can delete.
+          await endpoints.ai.deleteConversation(
+            userA,
+            conversationId: conv.id!,
+          );
+          final aList = await endpoints.ai.listConversations(userA);
+          expect(aList, isEmpty);
 
-        // Others cannot delete it (already gone -> 404 either way).
-        final other = await endpoints.ai.createConversation(userB, title: 'B1');
-        await expectLater(
-          endpoints.ai.deleteConversation(userA, conversationId: other.id!),
-          throwsA(isA<ServerpodClientNotFound>()),
-        );
-      });
+          // Others cannot delete it (already gone -> 404 either way).
+          final other = await endpoints.ai.createConversation(
+            userB,
+            title: 'B1',
+          );
+          await expectLater(
+            endpoints.ai.deleteConversation(userA, conversationId: other.id!),
+            throwsA(isA<ServerpodClientNotFound>()),
+          );
+        },
+      );
     },
   );
 }
