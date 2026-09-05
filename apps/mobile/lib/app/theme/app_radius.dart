@@ -26,6 +26,12 @@ abstract final class AppRadius {
     Radius.circular(full),
   );
 
+  // Custom radii cho card & button
+  static const BorderRadius cardRadius = BorderRadius.all(Radius.circular(16));
+  static const BorderRadius buttonRadius = BorderRadius.all(
+    Radius.circular(12),
+  );
+
   // Top corner pair (topLeft + topRight)
   static const BorderRadius xsTop = BorderRadius.vertical(
     top: Radius.circular(xs),

@@ -38,13 +38,16 @@ abstract final class AppTheme {
           backgroundColor: AppColors.primary,
           foregroundColor: AppColors.onPrimary,
           padding: AppSpacing.mAll,
-          shape: RoundedRectangleBorder(borderRadius: AppRadius.mRadius),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.buttonRadius),
+          elevation: 2,
+          textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           padding: AppSpacing.mAll,
           shape: RoundedRectangleBorder(borderRadius: AppRadius.mRadius),
+          side: BorderSide(color: AppColors.primary.withValues(alpha: 0.6)),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
@@ -54,9 +57,17 @@ abstract final class AppTheme {
         ),
       ),
       cardTheme: CardThemeData(
-        elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: AppRadius.lRadius),
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: AppRadius.cardRadius,
+          side: BorderSide(
+            color: isLight
+                ? AppColors.borderLight.withValues(alpha: 0.8)
+                : AppColors.borderDark.withValues(alpha: 0.8),
+          ),
+        ),
         color: isLight ? AppColors.surface : AppColors.surfaceDark,
+        shadowColor: Colors.black.withValues(alpha: isLight ? 0.08 : 0.3),
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: isLight ? AppColors.surface : AppColors.surfaceDark,
@@ -65,14 +76,41 @@ abstract final class AppTheme {
             : AppColors.textPrimaryDark,
         elevation: 0,
         centerTitle: true,
+        titleTextStyle: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          color: isLight ? AppColors.textPrimary : AppColors.textPrimaryDark,
+        ),
+        titleSpacing: 16,
       ),
       navigationBarTheme: NavigationBarThemeData(
         elevation: 0,
         backgroundColor: isLight ? AppColors.surface : AppColors.surfaceDark,
         indicatorColor: colorScheme.primaryContainer,
+        height: 70,
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       ),
       inputDecorationTheme: InputDecorationTheme(
-        border: OutlineInputBorder(borderRadius: AppRadius.mRadius),
+        border: OutlineInputBorder(
+          borderRadius: AppRadius.mRadius,
+          borderSide: BorderSide(
+            color: AppColors.primary.withValues(alpha: 0.5),
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: AppRadius.mRadius,
+          borderSide: BorderSide(color: AppColors.primary, width: 2),
+        ),
+        filled: true,
+        fillColor: isLight
+            ? AppColors.inputBackground.withValues(alpha: 0.6)
+            : AppColors.inputBackgroundDark.withValues(alpha: 0.6),
+        contentPadding: AppSpacing.mAll,
+        hintStyle: TextStyle(color: AppColors.textSecondary, fontSize: 16),
+      ),
+      iconTheme: IconThemeData(
+        color: isLight ? AppColors.textPrimary : AppColors.textPrimaryDark,
+        size: 24,
       ),
     );
   }

@@ -15,22 +15,27 @@ CampusMate là ứng dụng Flutter thuần, tập trung vào trải nghiệm h�
 ## Color System
 
 ### Primary Palette (Material 3)
-- **Primary** — #2563EB (blue 600)
-- **Primary Container** — #DBEAFE
+- **Primary** — #6366F1 (indigo 500)
+- **Primary Container** — #E0E7FF
 - **On Primary** — #FFFFFF
 - **On Primary Container** — #1E3A8A
 
 ### Secondary Palette
-- **Secondary** — #7C3AED (violet 600)
-- **Secondary Container** — #EDE9FE
+- **Secondary** — #8B5CF6 (violet 500)
+- **Secondary Container** — #F3EBFF
 - **On Secondary** — #FFFFFF
 - **On Secondary Container** — #4C1D95
 
 ### Tertiary Palette
-- **Tertiary** — #0891B2 (cyan 600)
-- **Tertiary Container** — #A5F3FC
-- **On Tertiary** — #0F172A
-- **On Tertiary Container** — #164E63
+- **Tertiary** — #EC4899 (pink 500)
+- **Tertiary Container** — #FFE1F0
+- **On Tertiary** — #FFFFFF
+- **On Tertiary Container** — #9F1239
+
+### Surface & Component Tokens
+- **Surface Elevated** — #F8FAFC (dark #1E293B)
+- **Input Background** — #F1F5F9 (dark #1E293B)
+- **Border** — #E2E8F0 (dark #334155)
 
 ### Neutral Palette
 - **Neutral 1** — #F8FAFC
@@ -84,6 +89,8 @@ CampusMate là ứng dụng Flutter thuần, tập trung vào trải nghiệm h�
 - **xxl** — 40
 - **xxxl** — 48
 
+Component tokens: **cardPadding** — 20, **sectionGap** — 24, **itemGap** — 12
+
 ## Radius
 
 - **none** — 0
@@ -93,6 +100,8 @@ CampusMate là ứng dụng Flutter thuần, tập trung vào trải nghiệm h�
 - **l** — 16
 - **xl** — 20
 - **full** — 9999
+
+Component aliases: **cardRadius** — 16 (= l), **buttonRadius** — 12 (= m)
 
 ## Iconography
 
@@ -106,7 +115,7 @@ CampusMate là ứng dụng Flutter thuần, tập trung vào trải nghiệm h�
 // apps/mobile/lib/app/theme/app_theme.dart
 final appTheme = ThemeData(
   colorScheme: ColorScheme.fromSeed(
-    seedColor: const Color(0xFF2563EB),
+    seedColor: const Color(0xFF6366F1),
     brightness: Brightness.light,
   ),
   useMaterial3: true,
@@ -156,5 +165,5 @@ final appTheme = ThemeData(
 
 ---
 
-**Last updated:** 2026-08-31  
-**Designer:** Grok (xAI)
+- **Designer:** Grok (xAI)
+- **Last updated:** 2026-09-05

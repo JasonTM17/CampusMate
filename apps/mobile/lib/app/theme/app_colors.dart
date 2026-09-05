@@ -7,25 +7,25 @@ import 'package:flutter/material.dart';
 /// widgets should pick the pair matching their `ThemeData.brightness` instead
 /// of hard-coding hex values.
 abstract final class AppColors {
-  // ── Primary (blue 600) ─────────────────────────────────────────────────
-  static const Color primary = Color(0xFF2563EB);
-  static const Color primaryContainer = Color(0xFFDBEAFE);
+  // ── Primary (vibrant indigo) ───────────────────────────────────────────
+  static const Color primary = Color(0xFF6366F1);
+  static const Color primaryContainer = Color(0xFFE0E7FF);
   static const Color onPrimary = Color(0xFFFFFFFF);
   static const Color onPrimaryContainer = Color(0xFF1E3A8A);
 
-  // ── Secondary (violet 600) ─────────────────────────────────────────────
-  static const Color secondary = Color(0xFF7C3AED);
-  static const Color secondaryContainer = Color(0xFFEDE9FE);
+  // ── Secondary (soft purple) ─────────────────────────────────────────────
+  static const Color secondary = Color(0xFF8B5CF6);
+  static const Color secondaryContainer = Color(0xFFF3EBFF);
   static const Color onSecondary = Color(0xFFFFFFFF);
   static const Color onSecondaryContainer = Color(0xFF4C1D95);
 
-  // ── Tertiary (cyan 600) ────────────────────────────────────────────────
-  static const Color tertiary = Color(0xFF0891B2);
-  static const Color tertiaryContainer = Color(0xFFA5F3FC);
-  static const Color onTertiary = Color(0xFF0F172A);
-  static const Color onTertiaryContainer = Color(0xFF164E63);
+  // ── Tertiary (soft pink) ────────────────────────────────────────────────
+  static const Color tertiary = Color(0xFFEC4899);
+  static const Color tertiaryContainer = Color(0xFFFFE1F0);
+  static const Color onTertiary = Color(0xFFFFFFFF);
+  static const Color onTertiaryContainer = Color(0xFF9F1239);
 
-  // ── Neutral scale (Tailwind slate ramp, DESIGN.md "Neutral Palette") ───
+  // ── Modern neutral palette ─────────────────────────────────────────────
   static const Color neutral1 = Color(0xFFF8FAFC);
   static const Color neutral2 = Color(0xFFE2E8F0);
   static const Color neutral3 = Color(0xFFCBD5E1);
@@ -46,6 +46,18 @@ abstract final class AppColors {
   static const Color background = neutral1;
   static const Color surface = neutral1;
   static const Color surfaceVariant = Color(0xFFF1F5F9);
+
+  // ── Surface elevations ────────────────────────────────────────────────
+  static const Color surfaceElevated = Color(0xFFF8FAFC);
+  static const Color surfaceElevatedDark = Color(0xFF1E293B);
+
+  // ── Borders (card outlines and dividers) ───────────────────────────────
+  static const Color borderLight = neutral2;
+  static const Color borderDark = neutral7;
+
+  // ── Input fields (slightly offset from the surface so fills read) ──────
+  static const Color inputBackground = surfaceVariant;
+  static const Color inputBackgroundDark = surfaceDark;
 
   // ── Light-theme text/icon aliases ──────────────────────────────────────
   static const Color textPrimary = neutral9;
