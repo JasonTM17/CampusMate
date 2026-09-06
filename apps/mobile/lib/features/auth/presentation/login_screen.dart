@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/utils/app_validators.dart';
+import '../../../core/widgets/app_error_banner.dart';
 import '../../../l10n/generated/app_localizations.dart';
-import '../../../app/theme/app_radius.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../application/auth_controller.dart';
 import '../domain/auth_failure.dart';
@@ -108,6 +109,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     SizedBox(height: AppSpacing.l),
                     TextFormField(
                       controller: _emailController,
+                      autofocus: true,
                       decoration: InputDecoration(
                         labelText: l10n.authEmailLabel,
                         prefixIcon: const Icon(Icons.alternate_email),
@@ -116,10 +118,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       autofillHints: const [AutofillHints.email],
                       textInputAction: TextInputAction.next,
                       enabled: !_submitting,
-                      validator: (value) =>
-                          (value == null || !value.contains('@'))
-                          ? l10n.authEmailInvalid
-                          : null,
+                      validator: (value) => AppValidators.email(
+                        value,
+                        () => l10n.authEmailInvalid,
+                      ),
                     ),
                     SizedBox(height: AppSpacing.s),
                     TextFormField(
@@ -149,22 +151,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           : null,
                     ),
                     SizedBox(height: AppSpacing.s),
-                    if (_failure != null)
-                      Text(
-                        _messageFor(context, _failure!),
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.error,
-                        ),
-                      ),
-                    SizedBox(height: AppSpacing.m),
+                    if (_failure != null) ...[
+                      AppErrorBanner(message: _messageFor(context, _failure!)),
+                      SizedBox(height: AppSpacing.m),
+                    ],
                     FilledButton(
                       onPressed: _submitting ? null : _submit,
-                      style: FilledButton.styleFrom(
-                        minimumSize: const Size.fromHeight(48),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: AppRadius.mRadius,
-                        ),
-                      ),
                       child: _submitting
                           ? SizedBox(
                               width: 20,
@@ -176,12 +168,33 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             )
                           : Text(l10n.authSignIn),
                     ),
-                    SizedBox(height: AppSpacing.s),
                     TextButton(
                       onPressed: _submitting
                           ? null
-                          : () => context.go('/register'),
-                      child: Text(l10n.authNoAccountYet),
+                          : () => context.go('/reset-password'),
+                      child: Text(l10n.authForgotPassword),
+                    ),
+                    SizedBox(height: AppSpacing.s),
+                    // Sentence + explicit action instead of two stacked
+                    // full-width text buttons competing for attention. The
+                    // leading text stays flexible so narrow screens wrap it
+                    // instead of overflowing.
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            l10n.authNoAccountYet,
+                            textAlign: TextAlign.end,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: _submitting
+                              ? null
+                              : () => context.go('/register'),
+                          child: Text(l10n.authCreateAccount),
+                        ),
+                      ],
                     ),
                   ],
                 ),

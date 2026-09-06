@@ -7,7 +7,7 @@ import 'package:campusmate/features/auth/application/auth_controller.dart';
 import 'package:campusmate/features/auth/domain/auth_repository.dart';
 import 'package:campusmate/features/auth/domain/auth_user.dart';
 
-class _AuthenticatedAuthRepository implements AuthRepository {
+class _UnauthenticatedRepository implements AuthRepository {
   @override
   Future<AuthUser> signIn({required String email, required String password}) =>
       throw UnimplementedError();
@@ -46,24 +46,21 @@ class _AuthenticatedAuthRepository implements AuthRepository {
   }) => throw UnimplementedError();
 
   @override
-  Future<AuthUser?> restore() async => const AuthUser(
-    authUserId: '00000000-0000-4000-8000-000000000001',
-    email: 'student001@campusmate.local',
-  );
+  Future<AuthUser?> restore() async => null;
 
   @override
   Future<void> signOut() async {}
 }
 
 void main() {
-  testWidgets('app boots into the 5-tab shell with Vietnamese default locale', (
+  testWidgets('redirects an unauthenticated initial route to login', (
     tester,
   ) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           authRepositoryProvider.overrideWithValue(
-            _AuthenticatedAuthRepository(),
+            _UnauthenticatedRepository(),
           ),
         ],
         child: const CampusMateApp(),
@@ -71,16 +68,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    // Vietnamese is the default locale (§46).
-    expect(find.text('Trang chủ'), findsWidgets);
-    expect(find.text('Học tập'), findsOneWidget);
-    expect(find.text('Thư viện'), findsOneWidget);
-    expect(find.text('AI'), findsOneWidget);
-    expect(find.text('Cá nhân'), findsOneWidget);
-
-    // Switching branches keeps an honest placeholder, not fake content.
-    await tester.tap(find.text('Thư viện'));
-    await tester.pumpAndSettle();
-    expect(find.text('Sắp ra mắt'), findsOneWidget);
+    expect(find.text('Chào mừng trở lại'), findsOneWidget);
+    expect(find.text('Trang chủ'), findsNothing);
   });
 }

@@ -200,6 +200,60 @@ abstract class AppLocalizations {
   /// **'Sign in to use your CampusMate AI assistant.'**
   String get authLoginSubtitle;
 
+  /// No description provided for @authForgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password?'**
+  String get authForgotPassword;
+
+  /// No description provided for @authResetPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset password'**
+  String get authResetPasswordTitle;
+
+  /// No description provided for @authResetPasswordHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email to receive a reset code.'**
+  String get authResetPasswordHelp;
+
+  /// No description provided for @authResetPasswordEmailStep.
+  ///
+  /// In en, this message translates to:
+  /// **'Step 1 · Email'**
+  String get authResetPasswordEmailStep;
+
+  /// No description provided for @authResetPasswordCodeStep.
+  ///
+  /// In en, this message translates to:
+  /// **'Step 2 · Verification code'**
+  String get authResetPasswordCodeStep;
+
+  /// No description provided for @authResetPasswordNewPasswordStep.
+  ///
+  /// In en, this message translates to:
+  /// **'Step 3 · New password'**
+  String get authResetPasswordNewPasswordStep;
+
+  /// No description provided for @authResetPasswordFinish.
+  ///
+  /// In en, this message translates to:
+  /// **'Change password'**
+  String get authResetPasswordFinish;
+
+  /// No description provided for @authResetPasswordDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Your password has been updated.'**
+  String get authResetPasswordDone;
+
+  /// No description provided for @authBackToLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to sign in'**
+  String get authBackToLogin;
+
   /// No description provided for @authEmailLabel.
   ///
   /// In en, this message translates to:
@@ -242,12 +296,6 @@ abstract class AppLocalizations {
   /// **'Show or hide password'**
   String get authTogglePasswordVisibility;
 
-  /// No description provided for @authSignInButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Sign in'**
-  String get authSignInButton;
-
   /// No description provided for @authCreateAccount.
   ///
   /// In en, this message translates to:
@@ -257,14 +305,26 @@ abstract class AppLocalizations {
   /// No description provided for @authNoAccountYet.
   ///
   /// In en, this message translates to:
-  /// **'No account yet? Create one'**
+  /// **'No account yet?'**
   String get authNoAccountYet;
+
+  /// No description provided for @authUseDifferentEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a different email'**
+  String get authUseDifferentEmail;
 
   /// No description provided for @authAlreadyHaveAccount.
   ///
   /// In en, this message translates to:
   /// **'Already have an account? Sign in'**
   String get authAlreadyHaveAccount;
+
+  /// No description provided for @authLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Restoring your session...'**
+  String get authLoading;
 
   /// No description provided for @authRegisterEmailStep.
   ///
@@ -397,6 +457,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Conversations'**
   String get chatConversationList;
+
+  /// No description provided for @profileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal profile'**
+  String get profileTitle;
+
+  /// No description provided for @profileFullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Full name'**
+  String get profileFullName;
+
+  /// No description provided for @profileClassName.
+  ///
+  /// In en, this message translates to:
+  /// **'Class'**
+  String get profileClassName;
+
+  /// No description provided for @profileStudentCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Student code'**
+  String get profileStudentCode;
+
+  /// No description provided for @profileFaculty.
+  ///
+  /// In en, this message translates to:
+  /// **'Faculty'**
+  String get profileFaculty;
+
+  /// No description provided for @profileMajor.
+  ///
+  /// In en, this message translates to:
+  /// **'Major'**
+  String get profileMajor;
+
+  /// No description provided for @profileGpa.
+  ///
+  /// In en, this message translates to:
+  /// **'GPA'**
+  String get profileGpa;
+
+  /// No description provided for @profileCredits.
+  ///
+  /// In en, this message translates to:
+  /// **'Credits'**
+  String get profileCredits;
+
+  /// No description provided for @profileConductScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Conduct score'**
+  String get profileConductScore;
+
+  /// No description provided for @profileRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Role'**
+  String get profileRole;
+
+  /// No description provided for @profileNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get profileNotSet;
+
+  /// No description provided for @profileSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get profileSave;
+
+  /// No description provided for @profileSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile saved.'**
+  String get profileSaved;
+
+  /// No description provided for @profileSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save profile.'**
+  String get profileSaveError;
+
+  /// No description provided for @profileFullNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your full name.'**
+  String get profileFullNameRequired;
+
+  /// No description provided for @profileClassNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your class.'**
+  String get profileClassNameRequired;
+
+  /// No description provided for @profileLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load profile.'**
+  String get profileLoadError;
+
+  /// No description provided for @profileSignOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get profileSignOut;
+
+  /// No description provided for @profilePrivilegedArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Administration'**
+  String get profilePrivilegedArea;
 }
 
 class _AppLocalizationsDelegate

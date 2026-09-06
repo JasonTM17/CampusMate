@@ -10,10 +10,11 @@ import 'package:campusmate/features/auth/domain/auth_user.dart';
 /// Configurable in-memory [AuthRepository] for controller/screen tests.
 /// Records received calls so tests can assert the flow reached the repo.
 class FakeAuthRepository implements AuthRepository {
-  FakeAuthRepository({this.restoreResult, this.signInError});
+  FakeAuthRepository({this.restoreResult, this.signInError, this.restoreError});
 
   AuthUser? restoreResult;
   AuthFailure? signInError;
+  Object? restoreError;
   int signInCalls = 0;
   int signOutCalls = 0;
 
@@ -46,7 +47,27 @@ class FakeAuthRepository implements AuthRepository {
   }) => throw UnimplementedError();
 
   @override
-  Future<AuthUser?> restore() async => restoreResult;
+  Future<UuidValue> startPasswordReset({required String email}) =>
+      throw UnimplementedError();
+
+  @override
+  Future<String> verifyPasswordResetCode({
+    required UuidValue passwordResetRequestId,
+    required String verificationCode,
+  }) => throw UnimplementedError();
+
+  @override
+  Future<void> finishPasswordReset({
+    required String finishPasswordResetToken,
+    required String newPassword,
+  }) => throw UnimplementedError();
+
+  @override
+  Future<AuthUser?> restore() async {
+    final error = restoreError;
+    if (error != null) throw error;
+    return restoreResult;
+  }
 
   @override
   Future<void> signOut() async {
@@ -109,6 +130,23 @@ void main() {
   );
 
   test(
+    'restore failures settle as unauthenticated instead of trapping the router',
+    () async {
+      final container = _containerWith(
+        FakeAuthRepository(restoreError: StateError('storage unavailable')),
+      );
+      addTearDown(container.dispose);
+
+      await _untilSettled(container);
+
+      expect(
+        container.read(authControllerProvider).status,
+        AuthStatus.unauthenticated,
+      );
+    },
+  );
+
+  test(
     'signIn success transitions to authenticated with the returned user',
     () async {
       final repo = FakeAuthRepository();
@@ -120,7 +158,7 @@ void main() {
           .read(authControllerProvider.notifier)
           .signIn(
             email: 'student001@campusmate.local',
-            password: 'CampusMate#2026',
+            password: 'local-test-password',
           );
 
       expect(repo.signInCalls, 1);

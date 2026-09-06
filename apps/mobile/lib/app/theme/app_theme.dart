@@ -43,6 +43,18 @@ abstract final class AppTheme {
           textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
         ),
       ),
+      // Shared primary CTA so every screen renders the same full-height,
+      // rounded filled button without per-screen overrides.
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: AppColors.primary,
+          foregroundColor: AppColors.onPrimary,
+          padding: AppSpacing.mAll,
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.buttonRadius),
+          minimumSize: const Size.fromHeight(48),
+          textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+        ),
+      ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           padding: AppSpacing.mAll,
@@ -91,11 +103,15 @@ abstract final class AppTheme {
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       ),
       inputDecorationTheme: InputDecorationTheme(
+        // Neutral resting border; primary stays reserved for the focused
+        // state so fields no longer read as pre-focused.
         border: OutlineInputBorder(
           borderRadius: AppRadius.mRadius,
-          borderSide: BorderSide(
-            color: AppColors.primary.withValues(alpha: 0.5),
-          ),
+          borderSide: BorderSide(color: colorScheme.outline),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: AppRadius.mRadius,
+          borderSide: BorderSide(color: colorScheme.outline),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: AppRadius.mRadius,
@@ -106,7 +122,16 @@ abstract final class AppTheme {
             ? AppColors.inputBackground.withValues(alpha: 0.6)
             : AppColors.inputBackgroundDark.withValues(alpha: 0.6),
         contentPadding: AppSpacing.mAll,
-        hintStyle: TextStyle(color: AppColors.textSecondary, fontSize: 16),
+        hintStyle: TextStyle(
+          // Brightness-aware tertiary keeps ≥3:1 on both input fills; the
+          // previous fixed light token dropped to ~1.4:1 in dark mode.
+          color: isLight ? AppColors.textTertiary : AppColors.textTertiaryDark,
+          fontSize: 16,
+        ),
+      ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.sRadius),
       ),
       iconTheme: IconThemeData(
         color: isLight ? AppColors.textPrimary : AppColors.textPrimaryDark,

@@ -55,7 +55,7 @@ void main() {
     );
     await tester.enterText(
       find.widgetWithText(TextFormField, 'Mật khẩu'),
-      'CampusMate#2026',
+      'local-test-password',
     );
     await tester.tap(find.widgetWithText(FilledButton, 'Đăng nhập'));
     await tester.pumpAndSettle();

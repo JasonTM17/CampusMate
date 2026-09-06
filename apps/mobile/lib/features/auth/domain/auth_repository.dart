@@ -34,6 +34,21 @@ abstract interface class AuthRepository {
     required String password,
   });
 
+  /// Starts a password reset request for [email].
+  Future<UuidValue> startPasswordReset({required String email});
+
+  /// Verifies a password reset code and returns the finish token.
+  Future<String> verifyPasswordResetCode({
+    required UuidValue passwordResetRequestId,
+    required String verificationCode,
+  });
+
+  /// Sets the new password for a verified reset request.
+  Future<void> finishPasswordReset({
+    required String finishPasswordResetToken,
+    required String newPassword,
+  });
+
   /// Restores a previously signed-in user from local token storage, or
   /// `null` when no session is stored.
   Future<AuthUser?> restore();

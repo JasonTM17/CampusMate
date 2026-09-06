@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/providers.dart';
@@ -48,13 +50,21 @@ class AuthController extends Notifier<AuthState> {
   AuthState build() {
     // Fire the async restore; the state starts `unknown` so the router does
     // not bounce the user to /login before storage has been read.
-    Future<void>(() async {
+    unawaited(_restore());
+    return const AuthState(status: AuthStatus.unknown);
+  }
+
+  Future<void> _restore() async {
+    try {
       final user = await ref.read(authRepositoryProvider).restore();
       state = user == null
           ? const AuthState(status: AuthStatus.unauthenticated)
           : AuthState(status: AuthStatus.authenticated, user: user);
-    });
-    return const AuthState(status: AuthStatus.unknown);
+    } on Object {
+      // A corrupt or unavailable local store must not leave the router stuck
+      // on a loading screen forever.
+      state = const AuthState(status: AuthStatus.unauthenticated);
+    }
   }
 
   /// Signs in with [email]/[password]; throws [AuthFailure] on error.
@@ -80,6 +90,17 @@ class AuthController extends Notifier<AuthState> {
         );
     state = AuthState(status: AuthStatus.authenticated, user: user);
   }
+
+  /// Finishes a password reset without changing the current session state.
+  Future<void> finishPasswordReset({
+    required String finishPasswordResetToken,
+    required String newPassword,
+  }) => ref
+      .read(authRepositoryProvider)
+      .finishPasswordReset(
+        finishPasswordResetToken: finishPasswordResetToken,
+        newPassword: newPassword,
+      );
 
   /// Clears the local session.
   Future<void> signOut() async {

@@ -91,10 +91,72 @@ class ServerpodAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<UuidValue> startPasswordReset({required String email}) async {
+    try {
+      return await _client.emailIdp.startPasswordReset(email: email);
+    } on EmailAccountPasswordResetException catch (e) {
+      throw switch (e.reason) {
+        EmailAccountPasswordResetExceptionReason.tooManyAttempts =>
+          const TooManyAttemptsFailure(),
+        _ => UnknownAuthFailure(e.reason.name),
+      };
+    } on ServerpodClientException {
+      throw const NetworkFailure();
+    }
+  }
+
+  @override
+  Future<String> verifyPasswordResetCode({
+    required UuidValue passwordResetRequestId,
+    required String verificationCode,
+  }) async {
+    try {
+      return await _client.emailIdp.verifyPasswordResetCode(
+        passwordResetRequestId: passwordResetRequestId,
+        verificationCode: verificationCode,
+      );
+    } on EmailAccountPasswordResetException catch (e) {
+      throw switch (e.reason) {
+        EmailAccountPasswordResetExceptionReason.tooManyAttempts =>
+          const TooManyAttemptsFailure(),
+        _ => const CodeInvalidOrExpiredFailure(),
+      };
+    } on ServerpodClientException {
+      throw const NetworkFailure();
+    }
+  }
+
+  @override
+  Future<void> finishPasswordReset({
+    required String finishPasswordResetToken,
+    required String newPassword,
+  }) async {
+    try {
+      await _client.emailIdp.finishPasswordReset(
+        finishPasswordResetToken: finishPasswordResetToken,
+        newPassword: newPassword,
+      );
+    } on EmailAccountPasswordResetException catch (e) {
+      throw switch (e.reason) {
+        EmailAccountPasswordResetExceptionReason.policyViolation =>
+          const PasswordPolicyFailure(),
+        _ => const CodeInvalidOrExpiredFailure(),
+      };
+    } on ServerpodClientException {
+      throw const NetworkFailure();
+    }
+  }
+
+  @override
   Future<AuthUser?> restore() async {
     final session = await _storage.read();
     if (session == null || session.authUserId.isEmpty) return null;
-    return AuthUser(authUserId: session.authUserId, email: session.email);
+    return AuthUser(
+      authUserId: session.authUserId,
+      email: session.email,
+      role: authRoleForScopes(session.scopeNames),
+      scopeNames: session.scopeNames,
+    );
   }
 
   @override
@@ -102,6 +164,7 @@ class ServerpodAuthRepository implements AuthRepository {
 
   /// Persists an `AuthSuccess` and returns the matching [AuthUser].
   Future<AuthUser> _persist(AuthSuccess success, String email) async {
+    final scopeNames = success.scopeNames;
     await _storage.save(
       StoredSession(
         accessToken: success.token,
@@ -109,8 +172,14 @@ class ServerpodAuthRepository implements AuthRepository {
         refreshToken: success.refreshToken,
         email: email,
         authUserId: success.authUserId.uuid,
+        scopeNames: scopeNames,
       ),
     );
-    return AuthUser(authUserId: success.authUserId.uuid, email: email);
+    return AuthUser(
+      authUserId: success.authUserId.uuid,
+      email: email,
+      role: authRoleForScopes(scopeNames),
+      scopeNames: scopeNames,
+    );
   }
 }

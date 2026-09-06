@@ -52,6 +52,9 @@ class SessionAuthKeyProvider implements RefresherClientAuthKeyProvider {
           refreshToken: success.refreshToken ?? refreshToken,
           email: session.email,
           authUserId: session.authUserId,
+          scopeNames: success.scopeNames.isEmpty
+              ? session.scopeNames
+              : success.scopeNames,
         ),
       );
       return RefreshAuthKeyResult.success;

@@ -62,6 +62,34 @@ class AppLocalizationsEn extends AppLocalizations {
       'Sign in to use your CampusMate AI assistant.';
 
   @override
+  String get authForgotPassword => 'Forgot password?';
+
+  @override
+  String get authResetPasswordTitle => 'Reset password';
+
+  @override
+  String get authResetPasswordHelp =>
+      'Enter your email to receive a reset code.';
+
+  @override
+  String get authResetPasswordEmailStep => 'Step 1 · Email';
+
+  @override
+  String get authResetPasswordCodeStep => 'Step 2 · Verification code';
+
+  @override
+  String get authResetPasswordNewPasswordStep => 'Step 3 · New password';
+
+  @override
+  String get authResetPasswordFinish => 'Change password';
+
+  @override
+  String get authResetPasswordDone => 'Your password has been updated.';
+
+  @override
+  String get authBackToLogin => 'Back to sign in';
+
+  @override
   String get authEmailLabel => 'Email';
 
   @override
@@ -83,16 +111,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authTogglePasswordVisibility => 'Show or hide password';
 
   @override
-  String get authSignInButton => 'Sign in';
-
-  @override
   String get authCreateAccount => 'Create account';
 
   @override
-  String get authNoAccountYet => 'No account yet? Create one';
+  String get authNoAccountYet => 'No account yet?';
+
+  @override
+  String get authUseDifferentEmail => 'Use a different email';
 
   @override
   String get authAlreadyHaveAccount => 'Already have an account? Sign in';
+
+  @override
+  String get authLoading => 'Restoring your session...';
 
   @override
   String get authRegisterEmailStep => 'Step 1 · Email';
@@ -166,4 +197,61 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chatConversationList => 'Conversations';
+
+  @override
+  String get profileTitle => 'Personal profile';
+
+  @override
+  String get profileFullName => 'Full name';
+
+  @override
+  String get profileClassName => 'Class';
+
+  @override
+  String get profileStudentCode => 'Student code';
+
+  @override
+  String get profileFaculty => 'Faculty';
+
+  @override
+  String get profileMajor => 'Major';
+
+  @override
+  String get profileGpa => 'GPA';
+
+  @override
+  String get profileCredits => 'Credits';
+
+  @override
+  String get profileConductScore => 'Conduct score';
+
+  @override
+  String get profileRole => 'Role';
+
+  @override
+  String get profileNotSet => 'Not set';
+
+  @override
+  String get profileSave => 'Save changes';
+
+  @override
+  String get profileSaved => 'Profile saved.';
+
+  @override
+  String get profileSaveError => 'Could not save profile.';
+
+  @override
+  String get profileFullNameRequired => 'Please enter your full name.';
+
+  @override
+  String get profileClassNameRequired => 'Please enter your class.';
+
+  @override
+  String get profileLoadError => 'Could not load profile.';
+
+  @override
+  String get profileSignOut => 'Sign out';
+
+  @override
+  String get profilePrivilegedArea => 'Administration';
 }

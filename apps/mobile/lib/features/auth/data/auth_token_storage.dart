@@ -1,25 +1,58 @@
-import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
-/// Persists the JWT session tokens and account email locally.
-///
-/// Backed by `SharedPreferences` for the current phase; migrating to
-/// encrypted/secure storage is deferred to the phase-12 hardening pass (the
-/// interface below keeps that swap local to this class).
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+/// Minimal storage contract so auth persistence can be tested without a
+/// platform plugin.
+abstract interface class SecretStore {
+  Future<String?> read(String key);
+
+  Future<void> write(String key, String value);
+
+  Future<void> delete(String key);
+}
+
+class FlutterSecureSecretStore implements SecretStore {
+  FlutterSecureSecretStore([FlutterSecureStorage? storage])
+    : _storage = storage ?? const FlutterSecureStorage();
+
+  final FlutterSecureStorage _storage;
+
+  @override
+  Future<String?> read(String key) => _storage.read(key: key);
+
+  @override
+  Future<void> write(String key, String value) =>
+      _storage.write(key: key, value: value);
+
+  @override
+  Future<void> delete(String key) => _storage.delete(key: key);
+}
+
+/// Persists the JWT session tokens and account metadata in platform-backed
+/// secure storage. Tokens never go through plain preferences.
 class AuthTokenStorage {
   static const _keyAccessToken = 'auth.accessToken';
   static const _keyAccessTokenExpiresAt = 'auth.accessTokenExpiresAt';
   static const _keyRefreshToken = 'auth.refreshToken';
   static const _keyEmail = 'auth.email';
   static const _keyAuthUserId = 'auth.authUserId';
+  static const _keyScopeNames = 'auth.scopeNames';
 
-  Future<SharedPreferences> get _prefs => SharedPreferences.getInstance();
+  AuthTokenStorage({SecretStore? store})
+    : _store = store ?? FlutterSecureSecretStore();
+
+  final SecretStore _store;
 
   /// Loads the full stored session, or `null` when nothing is stored.
   Future<StoredSession?> read() async {
-    final prefs = await _prefs;
-    final accessToken = prefs.getString(_keyAccessToken);
+    final accessToken = await _store.read(_keyAccessToken);
     if (accessToken == null) return null;
-    final expiresAtRaw = prefs.getString(_keyAccessTokenExpiresAt);
+    if (accessToken.isEmpty) {
+      await clear();
+      return null;
+    }
+    final expiresAtRaw = await _store.read(_keyAccessTokenExpiresAt);
     DateTime? accessTokenExpiresAt;
     if (expiresAtRaw != null) {
       try {
@@ -29,8 +62,8 @@ class AuthTokenStorage {
         return null;
       }
     }
-    final email = prefs.getString(_keyEmail);
-    final authUserId = prefs.getString(_keyAuthUserId);
+    final email = await _store.read(_keyEmail);
+    final authUserId = await _store.read(_keyAuthUserId);
     if (email == null ||
         email.isEmpty ||
         authUserId == null ||
@@ -38,46 +71,65 @@ class AuthTokenStorage {
       await clear();
       return null;
     }
+    final refreshToken = await _store.read(_keyRefreshToken);
+    final scopeNames = await _readScopeNames();
     return StoredSession(
       accessToken: accessToken,
       accessTokenExpiresAt: accessTokenExpiresAt,
-      refreshToken: prefs.getString(_keyRefreshToken),
+      refreshToken: refreshToken?.isNotEmpty == true ? refreshToken : null,
       email: email,
       authUserId: authUserId,
+      scopeNames: scopeNames,
     );
   }
 
   /// Stores the session obtained from login/registration/refresh.
   Future<void> save(StoredSession session) async {
-    final prefs = await _prefs;
-    await prefs.setString(_keyAccessToken, session.accessToken);
+    await _store.write(_keyAccessToken, session.accessToken);
     final expiresAt = session.accessTokenExpiresAt;
     if (expiresAt == null) {
-      await prefs.remove(_keyAccessTokenExpiresAt);
+      await _store.delete(_keyAccessTokenExpiresAt);
     } else {
-      await prefs.setString(
-        _keyAccessTokenExpiresAt,
-        expiresAt.toIso8601String(),
-      );
+      await _store.write(_keyAccessTokenExpiresAt, expiresAt.toIso8601String());
     }
     final refreshToken = session.refreshToken;
     if (refreshToken == null) {
-      await prefs.remove(_keyRefreshToken);
+      await _store.delete(_keyRefreshToken);
     } else {
-      await prefs.setString(_keyRefreshToken, refreshToken);
+      await _store.write(_keyRefreshToken, refreshToken);
     }
-    await prefs.setString(_keyEmail, session.email);
-    await prefs.setString(_keyAuthUserId, session.authUserId);
+    await _store.write(_keyEmail, session.email);
+    await _store.write(_keyAuthUserId, session.authUserId);
+    final scopeNames = session.scopeNames.toList()..sort();
+    await _store.write(_keyScopeNames, jsonEncode(scopeNames));
   }
 
   /// Removes every stored auth value (sign-out / invalidated session).
   Future<void> clear() async {
-    final prefs = await _prefs;
-    await prefs.remove(_keyAccessToken);
-    await prefs.remove(_keyAccessTokenExpiresAt);
-    await prefs.remove(_keyRefreshToken);
-    await prefs.remove(_keyEmail);
-    await prefs.remove(_keyAuthUserId);
+    for (final key in const [
+      _keyAccessToken,
+      _keyAccessTokenExpiresAt,
+      _keyRefreshToken,
+      _keyEmail,
+      _keyAuthUserId,
+      _keyScopeNames,
+    ]) {
+      await _store.delete(key);
+    }
+  }
+
+  Future<Set<String>> _readScopeNames() async {
+    final raw = await _store.read(_keyScopeNames);
+    if (raw == null || raw.isEmpty) return const {};
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is List) {
+        return decoded.whereType<String>().toSet();
+      }
+    } on FormatException {
+      // A stale optional metadata field must not destroy a valid session.
+    }
+    return const {};
   }
 }
 
@@ -89,6 +141,7 @@ class StoredSession {
     required this.email,
     required this.authUserId,
     this.accessTokenExpiresAt,
+    this.scopeNames = const {},
   });
 
   final String accessToken;
@@ -96,4 +149,5 @@ class StoredSession {
   final String? refreshToken;
   final String email;
   final String authUserId;
+  final Set<String> scopeNames;
 }

@@ -61,6 +61,33 @@ class AppLocalizationsVi extends AppLocalizations {
   String get authLoginSubtitle => 'Đăng nhập để sử dụng trợ lý AI CampusMate.';
 
   @override
+  String get authForgotPassword => 'Quên mật khẩu?';
+
+  @override
+  String get authResetPasswordTitle => 'Đặt lại mật khẩu';
+
+  @override
+  String get authResetPasswordHelp => 'Nhập email để nhận mã đặt lại mật khẩu.';
+
+  @override
+  String get authResetPasswordEmailStep => 'Bước 1 · Email';
+
+  @override
+  String get authResetPasswordCodeStep => 'Bước 2 · Mã xác minh';
+
+  @override
+  String get authResetPasswordNewPasswordStep => 'Bước 3 · Mật khẩu mới';
+
+  @override
+  String get authResetPasswordFinish => 'Đổi mật khẩu';
+
+  @override
+  String get authResetPasswordDone => 'Mật khẩu đã được cập nhật.';
+
+  @override
+  String get authBackToLogin => 'Quay lại đăng nhập';
+
+  @override
   String get authEmailLabel => 'Email';
 
   @override
@@ -82,16 +109,19 @@ class AppLocalizationsVi extends AppLocalizations {
   String get authTogglePasswordVisibility => 'Hiện hoặc ẩn mật khẩu';
 
   @override
-  String get authSignInButton => 'Đăng nhập';
-
-  @override
   String get authCreateAccount => 'Tạo tài khoản';
 
   @override
-  String get authNoAccountYet => 'Chưa có tài khoản? Tạo ngay';
+  String get authNoAccountYet => 'Chưa có tài khoản?';
+
+  @override
+  String get authUseDifferentEmail => 'Dùng email khác';
 
   @override
   String get authAlreadyHaveAccount => 'Đã có tài khoản? Đăng nhập';
+
+  @override
+  String get authLoading => 'Đang khôi phục phiên...';
 
   @override
   String get authRegisterEmailStep => 'Bước 1 · Email';
@@ -164,4 +194,61 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get chatConversationList => 'Hội thoại';
+
+  @override
+  String get profileTitle => 'Hồ sơ cá nhân';
+
+  @override
+  String get profileFullName => 'Họ và tên';
+
+  @override
+  String get profileClassName => 'Lớp';
+
+  @override
+  String get profileStudentCode => 'Mã sinh viên';
+
+  @override
+  String get profileFaculty => 'Khoa';
+
+  @override
+  String get profileMajor => 'Chuyên ngành';
+
+  @override
+  String get profileGpa => 'GPA';
+
+  @override
+  String get profileCredits => 'Tín chỉ';
+
+  @override
+  String get profileConductScore => 'Điểm rèn luyện';
+
+  @override
+  String get profileRole => 'Vai trò';
+
+  @override
+  String get profileNotSet => 'Chưa cập nhật';
+
+  @override
+  String get profileSave => 'Lưu thay đổi';
+
+  @override
+  String get profileSaved => 'Đã lưu hồ sơ.';
+
+  @override
+  String get profileSaveError => 'Không thể lưu hồ sơ.';
+
+  @override
+  String get profileFullNameRequired => 'Vui lòng nhập họ tên.';
+
+  @override
+  String get profileClassNameRequired => 'Vui lòng nhập lớp.';
+
+  @override
+  String get profileLoadError => 'Không thể tải hồ sơ.';
+
+  @override
+  String get profileSignOut => 'Đăng xuất';
+
+  @override
+  String get profilePrivilegedArea => 'Khu vực quản trị';
 }

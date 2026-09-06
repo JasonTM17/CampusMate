@@ -25,7 +25,13 @@ void main() {
         defaultValue: 'http://localhost:8080/',
       );
       const email = 'student001@campusmate.local';
-      const password = 'CampusMate#2026';
+      final password = Platform.environment['CAMPUSMATE_SEED_PASSWORD'];
+      if (password == null || password.length < 12) {
+        fail(
+          'CAMPUSMATE_SEED_PASSWORD must be set to the same local-only '
+          'password used by server/bin/seed.dart.',
+        );
+      }
 
       final client = Client(serverUrl);
 
