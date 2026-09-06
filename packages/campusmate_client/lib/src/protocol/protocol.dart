@@ -16,17 +16,19 @@ import 'ai_conversations.dart' as _i2;
 import 'ai_messages.dart' as _i3;
 import 'ai_usage.dart' as _i4;
 import 'greetings/greeting.dart' as _i5;
-import 'vector_capability_probe.dart' as _i6;
-import 'package:campusmate_client/src/protocol/ai_conversations.dart' as _i7;
-import 'package:campusmate_client/src/protocol/ai_messages.dart' as _i8;
+import 'student_profile.dart' as _i6;
+import 'vector_capability_probe.dart' as _i7;
+import 'package:campusmate_client/src/protocol/ai_conversations.dart' as _i8;
+import 'package:campusmate_client/src/protocol/ai_messages.dart' as _i9;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _i9;
-import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i10;
+import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
+    as _i11;
 export 'ai_conversations.dart';
 export 'ai_messages.dart';
 export 'ai_usage.dart';
 export 'greetings/greeting.dart';
+export 'student_profile.dart';
 export 'vector_capability_probe.dart';
 export 'client.dart';
 
@@ -76,8 +78,11 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i5.Greeting) {
       return _i5.Greeting.fromJson(data) as T;
     }
-    if (t == _i6.VectorCapabilityProbe) {
-      return _i6.VectorCapabilityProbe.fromJson(data) as T;
+    if (t == _i6.StudentProfile) {
+      return _i6.StudentProfile.fromJson(data) as T;
+    }
+    if (t == _i7.VectorCapabilityProbe) {
+      return _i7.VectorCapabilityProbe.fromJson(data) as T;
     }
     if (t == _i1.getType<_i2.AiConversation?>()) {
       return (data != null ? _i2.AiConversation.fromJson(data) : null) as T;
@@ -91,25 +96,28 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i5.Greeting?>()) {
       return (data != null ? _i5.Greeting.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i6.VectorCapabilityProbe?>()) {
-      return (data != null ? _i6.VectorCapabilityProbe.fromJson(data) : null)
+    if (t == _i1.getType<_i6.StudentProfile?>()) {
+      return (data != null ? _i6.StudentProfile.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i7.VectorCapabilityProbe?>()) {
+      return (data != null ? _i7.VectorCapabilityProbe.fromJson(data) : null)
           as T;
     }
-    if (t == List<_i7.AiConversation>) {
+    if (t == List<_i8.AiConversation>) {
       return (data as List)
-              .map((e) => deserialize<_i7.AiConversation>(e))
+              .map((e) => deserialize<_i8.AiConversation>(e))
               .toList()
           as T;
     }
-    if (t == List<_i8.AiMessage>) {
-      return (data as List).map((e) => deserialize<_i8.AiMessage>(e)).toList()
+    if (t == List<_i9.AiMessage>) {
+      return (data as List).map((e) => deserialize<_i9.AiMessage>(e)).toList()
           as T;
     }
     try {
-      return _i9.Protocol().deserialize<T>(data, t);
+      return _i10.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i10.Protocol().deserialize<T>(data, t);
+      return _i11.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -120,7 +128,8 @@ class Protocol extends _i1.SerializationManager {
       _i3.AiMessage => 'AiMessage',
       _i4.AiUsage => 'AiUsage',
       _i5.Greeting => 'Greeting',
-      _i6.VectorCapabilityProbe => 'VectorCapabilityProbe',
+      _i6.StudentProfile => 'StudentProfile',
+      _i7.VectorCapabilityProbe => 'VectorCapabilityProbe',
       _ => null,
     };
   }
@@ -143,14 +152,16 @@ class Protocol extends _i1.SerializationManager {
         return 'AiUsage';
       case _i5.Greeting():
         return 'Greeting';
-      case _i6.VectorCapabilityProbe():
+      case _i6.StudentProfile():
+        return 'StudentProfile';
+      case _i7.VectorCapabilityProbe():
         return 'VectorCapabilityProbe';
     }
-    className = _i9.Protocol().getClassNameForObject(data);
+    className = _i10.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_idp.$className';
     }
-    className = _i10.Protocol().getClassNameForObject(data);
+    className = _i11.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_core.$className';
     }
@@ -175,16 +186,19 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'Greeting') {
       return deserialize<_i5.Greeting>(data['data']);
     }
+    if (dataClassName == 'StudentProfile') {
+      return deserialize<_i6.StudentProfile>(data['data']);
+    }
     if (dataClassName == 'VectorCapabilityProbe') {
-      return deserialize<_i6.VectorCapabilityProbe>(data['data']);
+      return deserialize<_i7.VectorCapabilityProbe>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth_idp.')) {
       data['className'] = dataClassName.substring(19);
-      return _i9.Protocol().deserializeByClassName(data);
+      return _i10.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i10.Protocol().deserializeByClassName(data);
+      return _i11.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
@@ -199,10 +213,10 @@ class Protocol extends _i1.SerializationManager {
       return null;
     }
     try {
-      return _i9.Protocol().mapRecordToJson(record);
+      return _i10.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i10.Protocol().mapRecordToJson(record);
+      return _i11.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

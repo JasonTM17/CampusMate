@@ -21,13 +21,15 @@ import 'ai_conversations.dart' as _i5;
 import 'ai_messages.dart' as _i6;
 import 'ai_usage.dart' as _i7;
 import 'greetings/greeting.dart' as _i8;
-import 'vector_capability_probe.dart' as _i9;
-import 'package:campusmate_server/src/generated/ai_conversations.dart' as _i10;
-import 'package:campusmate_server/src/generated/ai_messages.dart' as _i11;
+import 'student_profile.dart' as _i9;
+import 'vector_capability_probe.dart' as _i10;
+import 'package:campusmate_server/src/generated/ai_conversations.dart' as _i11;
+import 'package:campusmate_server/src/generated/ai_messages.dart' as _i12;
 export 'ai_conversations.dart';
 export 'ai_messages.dart';
 export 'ai_usage.dart';
 export 'greetings/greeting.dart';
+export 'student_profile.dart';
 export 'vector_capability_probe.dart';
 
 class Protocol extends _i1.SerializationManagerServer {
@@ -274,6 +276,136 @@ class Protocol extends _i1.SerializationManagerServer {
       managed: true,
     ),
     _i2.TableDefinition(
+      name: 'student_profiles',
+      dartName: 'StudentProfile',
+      schema: 'public',
+      module: 'campusmate',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'student_profiles_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'authUserId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'studentCode',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'fullName',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'faculty',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'major',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'className',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'gpa',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: true,
+          dartType: 'double?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'credits',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'conductScore',
+          columnType: _i2.ColumnType.doublePrecision,
+          isNullable: true,
+          dartType: 'double?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'role',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'updatedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'student_profiles_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'auth_user_id_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'authUserId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'student_code_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'studentCode',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
       name: 'vector_capability_probe',
       dartName: 'VectorCapabilityProbe',
       schema: 'public',
@@ -357,8 +489,11 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i8.Greeting) {
       return _i8.Greeting.fromJson(data) as T;
     }
-    if (t == _i9.VectorCapabilityProbe) {
-      return _i9.VectorCapabilityProbe.fromJson(data) as T;
+    if (t == _i9.StudentProfile) {
+      return _i9.StudentProfile.fromJson(data) as T;
+    }
+    if (t == _i10.VectorCapabilityProbe) {
+      return _i10.VectorCapabilityProbe.fromJson(data) as T;
     }
     if (t == _i1.getType<_i5.AiConversation?>()) {
       return (data != null ? _i5.AiConversation.fromJson(data) : null) as T;
@@ -372,18 +507,21 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i8.Greeting?>()) {
       return (data != null ? _i8.Greeting.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i9.VectorCapabilityProbe?>()) {
-      return (data != null ? _i9.VectorCapabilityProbe.fromJson(data) : null)
+    if (t == _i1.getType<_i9.StudentProfile?>()) {
+      return (data != null ? _i9.StudentProfile.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i10.VectorCapabilityProbe?>()) {
+      return (data != null ? _i10.VectorCapabilityProbe.fromJson(data) : null)
           as T;
     }
-    if (t == List<_i10.AiConversation>) {
+    if (t == List<_i11.AiConversation>) {
       return (data as List)
-              .map((e) => deserialize<_i10.AiConversation>(e))
+              .map((e) => deserialize<_i11.AiConversation>(e))
               .toList()
           as T;
     }
-    if (t == List<_i11.AiMessage>) {
-      return (data as List).map((e) => deserialize<_i11.AiMessage>(e)).toList()
+    if (t == List<_i12.AiMessage>) {
+      return (data as List).map((e) => deserialize<_i12.AiMessage>(e)).toList()
           as T;
     }
     try {
@@ -404,7 +542,8 @@ class Protocol extends _i1.SerializationManagerServer {
       _i6.AiMessage => 'AiMessage',
       _i7.AiUsage => 'AiUsage',
       _i8.Greeting => 'Greeting',
-      _i9.VectorCapabilityProbe => 'VectorCapabilityProbe',
+      _i9.StudentProfile => 'StudentProfile',
+      _i10.VectorCapabilityProbe => 'VectorCapabilityProbe',
       _ => null,
     };
   }
@@ -427,7 +566,9 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'AiUsage';
       case _i8.Greeting():
         return 'Greeting';
-      case _i9.VectorCapabilityProbe():
+      case _i9.StudentProfile():
+        return 'StudentProfile';
+      case _i10.VectorCapabilityProbe():
         return 'VectorCapabilityProbe';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -463,8 +604,11 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'Greeting') {
       return deserialize<_i8.Greeting>(data['data']);
     }
+    if (dataClassName == 'StudentProfile') {
+      return deserialize<_i9.StudentProfile>(data['data']);
+    }
     if (dataClassName == 'VectorCapabilityProbe') {
-      return deserialize<_i9.VectorCapabilityProbe>(data['data']);
+      return deserialize<_i10.VectorCapabilityProbe>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -508,8 +652,10 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i6.AiMessage.t;
       case _i7.AiUsage:
         return _i7.AiUsage.t;
-      case _i9.VectorCapabilityProbe:
-        return _i9.VectorCapabilityProbe.t;
+      case _i9.StudentProfile:
+        return _i9.StudentProfile.t;
+      case _i10.VectorCapabilityProbe:
+        return _i10.VectorCapabilityProbe.t;
     }
     return null;
   }

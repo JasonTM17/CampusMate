@@ -1,3 +1,5 @@
+admin:
+  - getAccessSummary:
 aiSpike:
   - mockStream:
 emailIdp:
@@ -19,3 +21,6 @@ ai:
   - sendMessage:
 greeting:
   - hello:
+studentProfile:
+  - getMyProfile:
+  - updateMyProfile:

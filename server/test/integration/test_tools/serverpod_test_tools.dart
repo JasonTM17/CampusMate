@@ -19,6 +19,7 @@ import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
 import 'package:campusmate_server/src/generated/ai_conversations.dart' as _i5;
 import 'package:campusmate_server/src/generated/ai_messages.dart' as _i6;
 import 'package:campusmate_server/src/generated/greetings/greeting.dart' as _i7;
+import 'package:campusmate_server/src/generated/student_profile.dart' as _i8;
 import 'package:campusmate_server/src/generated/protocol.dart';
 import 'package:campusmate_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -133,6 +134,8 @@ void withServerpod(
 }
 
 class TestEndpoints {
+  late final _AdminEndpoint admin;
+
   late final _AiSpikeEndpoint aiSpike;
 
   late final _EmailIdpEndpoint emailIdp;
@@ -142,6 +145,8 @@ class TestEndpoints {
   late final _AiEndpoint ai;
 
   late final _GreetingEndpoint greeting;
+
+  late final _StudentProfileEndpoint studentProfile;
 }
 
 class _InternalTestEndpoints extends TestEndpoints
@@ -151,6 +156,10 @@ class _InternalTestEndpoints extends TestEndpoints
     _i2.SerializationManager serializationManager,
     _i2.EndpointDispatch endpoints,
   ) {
+    admin = _AdminEndpoint(
+      endpoints,
+      serializationManager,
+    );
     aiSpike = _AiSpikeEndpoint(
       endpoints,
       serializationManager,
@@ -171,6 +180,51 @@ class _InternalTestEndpoints extends TestEndpoints
       endpoints,
       serializationManager,
     );
+    studentProfile = _StudentProfileEndpoint(
+      endpoints,
+      serializationManager,
+    );
+  }
+}
+
+class _AdminEndpoint {
+  _AdminEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<String> getAccessSummary(
+    _i1.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'admin',
+            method: 'getAccessSummary',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'admin',
+          methodName: 'getAccessSummary',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
   }
 }
 
@@ -739,6 +793,82 @@ class _GreetingEndpoint {
                   _localCallContext.arguments,
                 )
                 as _i3.Future<_i7.Greeting>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
+class _StudentProfileEndpoint {
+  _StudentProfileEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<_i8.StudentProfile> getMyProfile(
+    _i1.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'studentProfile',
+            method: 'getMyProfile',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'studentProfile',
+          methodName: 'getMyProfile',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i8.StudentProfile>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i8.StudentProfile> updateMyProfile(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required String fullName,
+    required String className,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'studentProfile',
+            method: 'updateMyProfile',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'studentProfile',
+          methodName: 'updateMyProfile',
+          parameters: _i1.testObjectToJson({
+            'fullName': fullName,
+            'className': className,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i8.StudentProfile>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

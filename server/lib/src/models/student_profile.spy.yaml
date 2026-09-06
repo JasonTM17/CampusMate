@@ -1,0 +1,25 @@
+class: StudentProfile
+table: student_profiles
+fields:
+  # The identity comes from the authenticated Serverpod session.
+  authUserId: UuidValue
+  # Institutional fields are nullable until an admin/import fills them.
+  studentCode: String?
+  fullName: String?
+  faculty: String?
+  major: String?
+  className: String?
+  gpa: double?
+  credits: int?
+  conductScore: double?
+  # Derived from the current auth scope and refreshed on every profile read.
+  role: String
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  auth_user_id_idx:
+    fields: authUserId
+    unique: true
+  student_code_idx:
+    fields: studentCode
+    unique: true

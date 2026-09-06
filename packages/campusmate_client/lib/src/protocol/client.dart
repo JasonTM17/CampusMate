@@ -20,7 +20,26 @@ import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
 import 'package:campusmate_client/src/protocol/ai_conversations.dart' as _i5;
 import 'package:campusmate_client/src/protocol/ai_messages.dart' as _i6;
 import 'package:campusmate_client/src/protocol/greetings/greeting.dart' as _i7;
-import 'protocol.dart' as _i8;
+import 'package:campusmate_client/src/protocol/student_profile.dart' as _i8;
+import 'protocol.dart' as _i9;
+
+/// Small protected surface used by phase-02 to prove role isolation.
+///
+/// The real admin feature is delivered in phase-11; keeping this endpoint
+/// narrow gives the auth phase a concrete server-side 403 contract now.
+/// {@category Endpoint}
+class EndpointAdmin extends _i1.EndpointRef {
+  EndpointAdmin(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'admin';
+
+  _i2.Future<String> getAccessSummary() => caller.callServerEndpoint<String>(
+    'admin',
+    'getAccessSummary',
+    {},
+  );
+}
 
 /// Temporary streaming spike endpoint (phase-08 step 1).
 ///
@@ -355,6 +374,41 @@ class EndpointGreeting extends _i1.EndpointRef {
       );
 }
 
+/// Authenticated student profile operations.
+///
+/// The endpoint deliberately exposes no user-id parameter. The authenticated
+/// session is the only source of ownership for reads and writes.
+/// {@category Endpoint}
+class EndpointStudentProfile extends _i1.EndpointRef {
+  EndpointStudentProfile(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'studentProfile';
+
+  _i2.Future<_i8.StudentProfile> getMyProfile() =>
+      caller.callServerEndpoint<_i8.StudentProfile>(
+        'studentProfile',
+        'getMyProfile',
+        {},
+      );
+
+  /// Updates the fields that a student may edit themselves.
+  ///
+  /// Student code, academic results, faculty and major remain server-managed
+  /// so client input cannot rewrite institutional data.
+  _i2.Future<_i8.StudentProfile> updateMyProfile({
+    required String fullName,
+    required String className,
+  }) => caller.callServerEndpoint<_i8.StudentProfile>(
+    'studentProfile',
+    'updateMyProfile',
+    {
+      'fullName': fullName,
+      'className': className,
+    },
+  );
+}
+
 class Modules {
   Modules(Client client) {
     serverpod_auth_idp = _i3.Caller(client);
@@ -386,7 +440,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i8.Protocol(),
+         _i9.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -395,13 +449,17 @@ class Client extends _i1.ServerpodClientShared {
          disconnectStreamsOnLostInternetConnection:
              disconnectStreamsOnLostInternetConnection,
        ) {
+    admin = EndpointAdmin(this);
     aiSpike = EndpointAiSpike(this);
     emailIdp = EndpointEmailIdp(this);
     jwtRefresh = EndpointJwtRefresh(this);
     ai = EndpointAi(this);
     greeting = EndpointGreeting(this);
+    studentProfile = EndpointStudentProfile(this);
     modules = Modules(this);
   }
+
+  late final EndpointAdmin admin;
 
   late final EndpointAiSpike aiSpike;
 
@@ -413,15 +471,19 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointGreeting greeting;
 
+  late final EndpointStudentProfile studentProfile;
+
   late final Modules modules;
 
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
+    'admin': admin,
     'aiSpike': aiSpike,
     'emailIdp': emailIdp,
     'jwtRefresh': jwtRefresh,
     'ai': ai,
     'greeting': greeting,
+    'studentProfile': studentProfile,
   };
 
   @override
