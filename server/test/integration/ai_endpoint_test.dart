@@ -14,6 +14,13 @@ Future<String> _drain(Stream<String> stream) async {
   return buffer.toString();
 }
 
+Future<void> _expectStreamThrows(
+  Stream<String> stream,
+  Object matcher,
+) async {
+  await expectLater(stream.drain<void>(), throwsA(matcher));
+}
+
 /// Phase-08 AI endpoint integration tests against a real (test) database.
 ///
 /// Covers: auth-gated access, conversation lifecycle, streaming chat with
@@ -100,13 +107,13 @@ void main() {
           throwsA(isA<ServerpodClientNotFound>()),
         );
 
-        await expectLater(
+        await _expectStreamThrows(
           endpoints.ai.sendMessage(
             userB,
             conversationId: conv.id!,
             userMessage: 'đọc trộm',
           ),
-          throwsA(isA<ServerpodClientNotFound>()),
+          isA<ServerpodClientNotFound>(),
         );
       });
 
@@ -156,17 +163,15 @@ void main() {
             ),
           );
 
-          await expectLater(
+          await _expectStreamThrows(
             endpoints.ai.sendMessage(
               userA,
               conversationId: conv.id!,
               userMessage: 'xin chào',
             ),
-            throwsA(
-              isA<ServerpodClientException>()
-                  .having((e) => e.statusCode, 'statusCode', 429)
-                  .having((e) => e.message, 'message', contains('hạn mức')),
-            ),
+            isA<ServerpodClientException>()
+                .having((e) => e.statusCode, 'statusCode', 429)
+                .having((e) => e.message, 'message', contains('hạn mức')),
           );
 
           // The blocked turn must not be persisted.
@@ -187,13 +192,13 @@ void main() {
         // A foreign user with an injection payload still gets 404 — message
         // content never overrides the server-side ownership predicate.
         for (final payload in promptInjectionFixtures) {
-          await expectLater(
+          await _expectStreamThrows(
             endpoints.ai.sendMessage(
               userB,
               conversationId: conv.id!,
               userMessage: payload,
             ),
-            throwsA(isA<ServerpodClientNotFound>()),
+            isA<ServerpodClientNotFound>(),
           );
         }
 

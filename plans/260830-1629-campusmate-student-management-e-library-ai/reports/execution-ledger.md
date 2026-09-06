@@ -100,6 +100,22 @@ plans/260830-1629-campusmate-student-management-e-library-ai/plan.md
   - CI-only passwords/peppers were changed to obvious `campusmate_ci_*_not_secret` placeholders while keeping the Postgres service and generated `passwords.yaml` in sync.
   - `AppConfig` now normalizes custom server URLs to a trailing slash and exposes an `isAndroid` override for deterministic Android fallback tests.
   - `apps/mobile/README.md` now documents the actual CampusMate mobile app instead of the Flutter template text.
+- Follow-up server CI run `34018323963` passed container init, pub get, format, and analyze, then failed `dart test` with 33 pass / 6 fail.
+- Integration-test root cause:
+  - `server/test/integration/ai_endpoint_test.dart` asserted stream endpoint failures by passing a `Stream<String>` directly to `throwsA`.
+  - Dart's matcher reported the stream "was not a Function or Future"; the un-drained stream then left Serverpod test transactions/savepoints in a bad state, causing the later duplicate-key and concurrent-transaction failures.
+- Fix applied:
+  - Added `_expectStreamThrows()` that drains the stream future and applies `throwsA` to the resulting `Future`.
+  - Updated foreign-conversation, quota-exhausted, and prompt-injection stream error assertions to use that helper.
+- Fresh local gates after this follow-up:
+  - `dart format --output=none --set-exit-if-changed server packages\campusmate_shared packages\campusmate_client apps\mobile\lib apps\mobile\test` — PASS, 94 files, 0 changed.
+  - `$env:LOCALAPPDATA = Join-Path (Resolve-Path .).Path '.dart_tool\codex-localappdata'; dart analyze server packages\campusmate_shared packages\campusmate_client` — PASS, no issues.
+  - `cd server; dart test --exclude-tags integration` — PASS, 29 tests.
+  - `cd apps/mobile; flutter analyze` — PASS, no issues.
+  - `cd apps/mobile; flutter test` — PASS, 59 tests, 3 live-spike tests skipped by `CAMPUSMATE_LIVE_SPIKE=1` guard.
+  - `cd apps/mobile; $env:GRADLE_USER_HOME = Join-Path (Resolve-Path ..\..).Path '.dart_tool\gradle-home'; flutter build apk --debug` — PASS, built `build\app\outputs\flutter-apk\app-debug.apk`.
+  - `git diff --check` — PASS; line-ending warnings only.
+  - `docker info` — FAIL locally; daemon pipe `npipe:////./pipe/dockerDesktopLinuxEngine` unavailable.
 
 ## Completed steps & evidence
 
