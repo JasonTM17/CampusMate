@@ -45,7 +45,11 @@ class DailyMessageQuota {
   /// an exhausted user never reaches the AI and never persists a message.
   Future<void> consume(Session session, String userId) async {
     final now = DateTime.now();
-    final day = DateTime(now.year, now.month, now.day);
+    // Normalize to the UTC instant of the local day boundary so the raw-SQL
+    // parameter matches how the ORM serializes DateTime columns. Without
+    // this, non-UTC hosts (e.g. UTC+7) store a different wall time on the
+    // raw path and the upsert silently misses the existing counter row.
+    final day = DateTime(now.year, now.month, now.day).toUtc();
     final result = await session.db.unsafeQuery(
       'INSERT INTO "ai_usage" '
       '("userId", "day", "requestCount", "inputTokens", "outputTokens", '
