@@ -25,16 +25,7 @@ class StudentProfileEndpoint extends Endpoint {
     );
 
     if (profile == null) {
-      final now = DateTime.now().toUtc();
-      return StudentProfile.db.insertRow(
-        session,
-        StudentProfile(
-          authUserId: authUserId,
-          role: CampusMateAuth.roleFor(session),
-          createdAt: now,
-          updatedAt: now,
-        ),
-      );
+      return _createMyProfile(session, authUserId);
     }
 
     final currentRole = CampusMateAuth.roleFor(session);
@@ -44,6 +35,34 @@ class StudentProfileEndpoint extends Endpoint {
       await StudentProfile.db.updateRow(session, profile);
     }
     return profile;
+  }
+
+  /// Inserts the caller's profile, tolerating a concurrent first read: the
+  /// unique auth-user index makes the losing insert fail, so re-read the row
+  /// the winner created instead of surfacing a database error.
+  Future<StudentProfile> _createMyProfile(
+    Session session,
+    UuidValue authUserId,
+  ) async {
+    final now = DateTime.now().toUtc();
+    try {
+      return await StudentProfile.db.insertRow(
+        session,
+        StudentProfile(
+          authUserId: authUserId,
+          role: CampusMateAuth.roleFor(session),
+          createdAt: now,
+          updatedAt: now,
+        ),
+      );
+    } on Exception {
+      final existing = await StudentProfile.db.findFirstRow(
+        session,
+        where: (table) => table.authUserId.equals(authUserId),
+      );
+      if (existing != null) return existing;
+      rethrow;
+    }
   }
 
   /// Updates the fields that a student may edit themselves.
@@ -73,7 +92,18 @@ class StudentProfileEndpoint extends Endpoint {
         createdAt: now,
         updatedAt: now,
       );
-      return StudentProfile.db.insertRow(session, profile);
+      try {
+        return await StudentProfile.db.insertRow(session, profile);
+      } on Exception {
+        // Concurrent update lost the create race: persist onto the row the
+        // winner created instead of surfacing a database error.
+        final existing = await StudentProfile.db.findFirstRow(
+          session,
+          where: (table) => table.authUserId.equals(authUserId),
+        );
+        if (existing == null) rethrow;
+        profile = existing;
+      }
     }
 
     profile.fullName = normalizedFullName;
