@@ -113,7 +113,7 @@ class OpenAiCompatibleProvider implements AiProvider {
     final response = await httpRequest.close();
     if (response.statusCode < 200 || response.statusCode >= 300) {
       await response.drain<void>();
-      throw OpenAiProviderException(response.statusCode);
+      throw OpenAiProviderException(response.statusCode, operation: 'chat');
     }
     final lines = response
         .transform(utf8.decoder)
@@ -170,6 +170,13 @@ class OpenAiCompatibleProvider implements AiProvider {
       utf8.encode(jsonEncode({'model': model, 'input': text})),
     );
     final response = await httpRequest.close();
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      await response.drain<void>();
+      throw OpenAiProviderException(
+        response.statusCode,
+        operation: 'embedding',
+      );
+    }
     final body = await response.transform(utf8.decoder).join();
     try {
       final json = jsonDecode(body) as Map<String, dynamic>;
@@ -194,9 +201,10 @@ class OpenAiConfigException implements Exception {
 
 /// Thrown when the gateway rejects the request before streaming starts.
 class OpenAiProviderException implements Exception {
-  const OpenAiProviderException(this.statusCode);
+  const OpenAiProviderException(this.statusCode, {required this.operation});
   final int statusCode;
+  final String operation;
   @override
   String toString() =>
-      'OpenAiProviderException: chat request failed with HTTP $statusCode';
+      'OpenAiProviderException: $operation request failed with HTTP $statusCode';
 }

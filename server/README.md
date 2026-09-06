@@ -1,15 +1,26 @@
-# campusmate_server
+# CampusMate Server
 
-This is the starting point for your Serverpod server.
+Serverpod backend for CampusMate. It owns authentication, authorization,
+conversation persistence, AI provider calls, and all database access.
 
-To run your server, you first need to start Postgres and Redis. It's easiest to do with Docker.
+## Run Locally
 
-    docker compose up --build --detach
+```bash
+docker compose up -d
+dart run bin/main.dart --apply-migrations
+```
 
-Then you can start the Serverpod server.
+The development stack exposes PostgreSQL/pgvector, Redis, and MinIO. Redis is
+currently disabled in `config/development.yaml` until a phase needs caching.
 
-    dart bin/main.dart
+## Verification
 
-When you are finished, you can shut down Serverpod with `Ctrl-C`, then stop Postgres and Redis.
+```bash
+dart format --set-exit-if-changed .
+dart analyze
+dart test --exclude-tags integration
+dart test
+```
 
-    docker compose stop
+`dart test` requires Docker-backed test services on the ports configured in
+`config/test.yaml`.

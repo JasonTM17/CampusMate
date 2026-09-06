@@ -1,7 +1,6 @@
 import 'package:campusmate_server/server.dart';
 
-/// This is the starting point for your Serverpod server. Typically, there is
-/// no need to modify this file.
+/// Starts the CampusMate Serverpod backend.
 void main(List<String> args) {
   run(args);
 }

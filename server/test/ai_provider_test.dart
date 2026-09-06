@@ -300,6 +300,43 @@ AI_CHAT_MODEL=dotenv-model
       await handled;
     });
 
+    test(
+      'throws a sanitized embedding error for non-success HTTP responses',
+      () async {
+        final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+        addTearDown(server.close);
+
+        final handled = server.first.then((request) async {
+          expect(request.uri.path, '/embeddings');
+          request.response.statusCode = HttpStatus.unauthorized;
+          request.response.write('raw provider body with sk-secret');
+          await request.response.close();
+        });
+
+        final provider = OpenAiCompatibleProvider(
+          baseUrl: 'http://${server.address.host}:${server.port}',
+          apiKey: 'test-key',
+          model: 'test-model',
+          embeddingModel: 'embedding-model',
+        );
+
+        await expectLater(
+          provider.createEmbedding('campusmate rag seed'),
+          throwsA(
+            isA<OpenAiProviderException>()
+                .having((e) => e.statusCode, 'statusCode', 401)
+                .having(
+                  (e) => e.operation,
+                  'operation',
+                  'embedding',
+                )
+                .having((e) => e.toString(), 'message', isNot(contains('sk-'))),
+          ),
+        );
+        await handled;
+      },
+    );
+
     test('emits a done chunk when the gateway only sends DONE', () async {
       final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
       addTearDown(server.close);

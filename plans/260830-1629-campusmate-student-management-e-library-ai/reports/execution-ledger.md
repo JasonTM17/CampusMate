@@ -116,6 +116,33 @@ plans/260830-1629-campusmate-student-management-e-library-ai/plan.md
   - `cd apps/mobile; $env:GRADLE_USER_HOME = Join-Path (Resolve-Path ..\..).Path '.dart_tool\gradle-home'; flutter build apk --debug` — PASS, built `build\app\outputs\flutter-apk\app-debug.apk`.
   - `git diff --check` — PASS; line-ending warnings only.
   - `docker info` — FAIL locally; daemon pipe `npipe:////./pipe/dockerDesktopLinuxEngine` unavailable.
+- Push `3dbbe01` triggered GitHub Actions:
+  - Server run `34018497884` — PASS: containers, workspace pub get, password generation, format, analyze, `dart test`, stop containers.
+  - Mobile run `34018497826` — PASS: Flutter workflow completed.
+  - Both runs emitted only GitHub's Node.js 20 deprecation annotation for actions internals.
+- Code-reviewer pending-diff review after CI returned `FAIL` for incomplete template cleanup:
+  - `server/pubspec.yaml` still described the server as a template starting point.
+  - `server/web/templates/built_with_serverpod.html` still rendered "Built with Serverpod" branding/copy at `/`.
+- Fix applied after reviewer finding:
+  - Server package description now names the CampusMate backend.
+  - Root web template was renamed to `campusmate_status.html`, route/widget references were updated, and page copy now presents CampusMate Server plus app/repository links.
+  - Server README and mobile README now describe actual project commands instead of scaffold text.
+  - `/app` fallback page now states that CampusMate currently targets Android/iOS and no longer shows Serverpod template branding or an invalid Flutter web build command.
+  - `AppConfig.normalizeServerUrl` now treats blank/whitespace input as empty fallback and keeps deterministic Android/non-Android tests.
+  - OpenAI-compatible embeddings now throw a sanitized `OpenAiProviderException(operation: 'embedding')` on non-2xx responses instead of silently returning an empty vector.
+- Fresh gates after reviewer-finding fixes:
+  - `dart format --output=none --set-exit-if-changed server packages\campusmate_shared packages\campusmate_client apps\mobile\lib apps\mobile\test` — PASS, 94 files, 0 changed.
+  - `$env:LOCALAPPDATA = Join-Path (Resolve-Path .).Path '.dart_tool\codex-localappdata'; dart analyze server packages\campusmate_shared packages\campusmate_client` — PASS, no issues.
+  - `cd server; dart test --exclude-tags integration` — PASS, 30 tests.
+  - `cd apps/mobile; flutter analyze` — PASS, no issues.
+  - `cd apps/mobile; flutter test` — PASS, 59 tests, 3 live-spike tests skipped by `CAMPUSMATE_LIVE_SPIKE=1` guard.
+  - `cd apps/mobile; $env:GRADLE_USER_HOME = Join-Path (Resolve-Path ..\..).Path '.dart_tool\gradle-home'; flutter build apk --debug` — PASS, built `build\app\outputs\flutter-apk\app-debug.apk`.
+  - `rg -n "Built with Serverpod|Starting point for a Serverpod server|starting point for your Serverpod|built_with_serverpod|A new Flutter project|The missing server for Flutter|serverpod-logo" server apps README.md packages docs ...` — PASS, no matches outside ignored generated/test-tool/build paths.
+- Final staged re-review after staging replacement files:
+  - `PRIOR_FINDING_STATUS: FIXED`; no findings in staged diff.
+  - Verdict was `INCONCLUSIVE` only because the reviewer could not observe its own focused test commands finish; controller-run focused tests below closed that gap.
+  - `cd server; dart test test\ai_provider_test.dart -n "throws a sanitized embedding error for non-success HTTP responses"` — PASS, 1 test.
+  - `cd apps/mobile; flutter test test\app\config\app_config_test.dart` — PASS, 5 tests.
 
 ## Completed steps & evidence
 

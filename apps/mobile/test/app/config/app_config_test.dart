@@ -40,6 +40,7 @@ void main() {
         AppConfig.normalizeServerUrl('https://api.example.com/'),
         'https://api.example.com/',
       );
+      expect(AppConfig.normalizeServerUrl('   '), isEmpty);
     });
   });
 }

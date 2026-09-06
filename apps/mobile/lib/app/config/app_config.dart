@@ -11,8 +11,9 @@ class AppConfig {
 
   static AppConfig fromEnvironment({bool? isAndroid}) {
     const serverUrl = String.fromEnvironment('CAMPUSMATE_SERVER_URL');
-    if (serverUrl.isNotEmpty) {
-      return AppConfig(serverUrl: normalizeServerUrl(serverUrl));
+    final normalized = normalizeServerUrl(serverUrl);
+    if (normalized.isNotEmpty) {
+      return AppConfig(serverUrl: normalized);
     }
     if (isAndroid ?? Platform.isAndroid) {
       return const AppConfig(serverUrl: 'http://10.0.2.2:8080/');
@@ -22,6 +23,9 @@ class AppConfig {
 
   static String normalizeServerUrl(String value) {
     final trimmed = value.trim();
+    if (trimmed.isEmpty) {
+      return '';
+    }
     if (trimmed.endsWith('/')) {
       return trimmed;
     }
