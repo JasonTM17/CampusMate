@@ -77,7 +77,7 @@ CAMPUSMATE_LIVE_SPIKE=1 flutter test test/client_spike_test.dart
 
 ## CI
 
-GitHub Actions: `.github/workflows/mobile.yml` (format/analyze/test Flutter 3.44) và `.github/workflows/server.yml` (workspace pub get, format, analyze, `dart test` với service containers Postgres+pgvector/Redis). Repo cần remote GitHub để CI chạy — khi chưa có remote, trạng thái CI được ghi `NOT_RUN` trung thực.
+GitHub Actions: `.github/workflows/mobile.yml` (format/analyze/test Flutter 3.44 + debug APK) và `.github/workflows/server.yml` (workspace pub get, format, analyze, `dart test` với service containers Postgres+pgvector/Redis). CI chạy trên push/PR vào `main`; kết quả CI phải được đọc từ GitHub Actions, không suy ra từ local checks.
 
 ## Demo accounts (phase 02+)
 

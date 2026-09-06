@@ -1,17 +1,32 @@
-# campusmate
+# CampusMate Mobile
 
-A new Flutter project.
+Flutter client for CampusMate, focused on student workflows, e-library access,
+and the personalized AI chat experience.
 
-## Getting Started
+## Run Locally
 
-This project is a starting point for a Flutter application.
+```bash
+flutter pub get
+flutter run -d <device>
+```
 
-A few resources to get you started if this is your first Flutter project:
+On Android emulator, the app defaults to `http://10.0.2.2:8080/`. For a real
+device or a non-default server port, pass:
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+```bash
+flutter run \
+  --dart-define=CAMPUSMATE_SERVER_URL=http://<server-host>:8080/ \
+  -d <device>
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Verification
+
+```bash
+dart format --set-exit-if-changed lib test
+flutter analyze
+flutter test
+flutter build apk --debug
+```
+
+Live backend spike tests stay skipped unless `CAMPUSMATE_LIVE_SPIKE=1` is set
+and a compatible Serverpod backend is already running.

@@ -15,7 +15,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_DB: campusmate_test
-          POSTGRES_PASSWORD: ZXuvSjrINvipFrom1pwQZj8NqQUI0oAJ
+          POSTGRES_PASSWORD: campusmate_ci_database_password_not_secret
         ports:
           - 9090:5432
         options: >-
@@ -28,7 +28,7 @@ jobs:
         ports:
           - 9091:6379
         options: >-
-          --health-cmd "redis-cli -a sPqAErD0g04c3d1oGPQtWDsuZomNrrhQ ping | grep PONG"
+          --health-cmd "redis-cli ping | grep PONG"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -49,11 +49,11 @@ jobs:
         run: |
           cat > server/config/passwords.yaml <<'EOF'
           test:
-            database: 'ZXuvSjrINvipFrom1pwQZj8NqQUI0oAJ'
-            redis: 'sPqAErD0g04c3d1oGPQtWDsuZomNrrhQ'
-            emailSecretHashPepper: 'WCN8aGaTkcTIUKmuifr1gg8TjoI6kN2b'
-            jwtHmacSha512PrivateKey: '7tpv8D79fL4U2vCjeIlcP0m79M-5ay7r'
-            jwtRefreshTokenHashPepper: 'N1FlfKd5DKPns4__0zM15wAX5jsxd8iz'
+            database: 'campusmate_ci_database_password_not_secret'
+            redis: 'campusmate_ci_redis_password_not_secret'
+            emailSecretHashPepper: 'campusmate_ci_email_pepper_not_secret'
+            jwtHmacSha512PrivateKey: 'campusmate_ci_jwt_hmac_key_not_secret'
+            jwtRefreshTokenHashPepper: 'campusmate_ci_refresh_pepper_not_secret'
           EOF
 
       - name: Format check

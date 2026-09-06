@@ -9,14 +9,22 @@ class AppConfig {
 
   final String serverUrl;
 
-  static AppConfig fromEnvironment() {
+  static AppConfig fromEnvironment({bool? isAndroid}) {
     const serverUrl = String.fromEnvironment('CAMPUSMATE_SERVER_URL');
     if (serverUrl.isNotEmpty) {
-      return const AppConfig(serverUrl: serverUrl);
+      return AppConfig(serverUrl: normalizeServerUrl(serverUrl));
     }
-    if (Platform.isAndroid) {
+    if (isAndroid ?? Platform.isAndroid) {
       return const AppConfig(serverUrl: 'http://10.0.2.2:8080/');
     }
     return const AppConfig(serverUrl: 'http://localhost:8080/');
+  }
+
+  static String normalizeServerUrl(String value) {
+    final trimmed = value.trim();
+    if (trimmed.endsWith('/')) {
+      return trimmed;
+    }
+    return '$trimmed/';
   }
 }

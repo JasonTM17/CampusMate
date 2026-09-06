@@ -84,7 +84,22 @@ plans/260830-1629-campusmate-student-management-e-library-ai/plan.md
   - Independent `code-reviewer` re-review returned `PASS`: prior findings `FIXED`, `NEW_FINDINGS: NONE`. It did not rerun broad gates and relied on controller-reported fresh gate evidence.
 - Remaining blockers / NOT_RUN:
   - `docker info` still fails against `npipe:////./pipe/dockerDesktopLinuxEngine`; Docker daemon is unavailable from this session.
-  - Docker-backed `server/test/integration/ai_endpoint_test.dart`, full `cd server; dart test`, live Serverpod/Postgres quota SQL, live OpenAI/GLM provider, CI, and production cutover are `NOT_RUN`.
+  - Local Docker-backed `server/test/integration/ai_endpoint_test.dart`, local full `cd server; dart test`, live Serverpod/Postgres quota SQL, live OpenAI/GLM provider, and production cutover are `NOT_RUN`.
+  - GitHub CI is no longer `NOT_RUN`; first post-push server run failed on Redis health-check setup and is tracked in the follow-up section below.
+
+## 2026-09-06 CI follow-up after first GitHub push
+
+- `gh run list --repo JasonTM17/CampusMate --limit 5` after push showed:
+  - `server` workflow run `34017972178` — `failure`.
+  - `mobile` workflow run `34017972168` — `in_progress` at observation time.
+- Server CI root cause:
+  - Workflow created `redis:6.2.6` without `requirepass`, but its health check used `redis-cli -a ... ping`.
+  - GitHub Actions kept `redis_test` in `starting`, then marked it `unhealthy` during `Initialize containers`; Redis logs showed the server was otherwise ready.
+- Fix applied:
+  - Server CI Redis health check now uses `redis-cli ping | grep PONG`, matching current `server/config/test.yaml` where `redis.enabled: false`.
+  - CI-only passwords/peppers were changed to obvious `campusmate_ci_*_not_secret` placeholders while keeping the Postgres service and generated `passwords.yaml` in sync.
+  - `AppConfig` now normalizes custom server URLs to a trailing slash and exposes an `isAndroid` override for deterministic Android fallback tests.
+  - `apps/mobile/README.md` now documents the actual CampusMate mobile app instead of the Flutter template text.
 
 ## Completed steps & evidence
 
@@ -105,7 +120,7 @@ plans/260830-1629-campusmate-student-management-e-library-ai/plan.md
 
 ## Current step
 
-- Phase-01 exit: đóng phase sau khi commit fixes; bước kế = `phase-02-auth-student.md` (spike chọn auth generation + ADR-005).
+- AK deep-scan hardening is continuing from `main` after push to `origin/main`; current focus is GitHub CI stabilization and documentation drift cleanup before returning to the broader phase backlog.
 
 ## Phase 02 — Auth + Student + RBAC (in progress, not yet implemented)
 
@@ -127,7 +142,7 @@ No implementation steps executed yet.
 - Locale hardcode `vi` trong app.dart — language setting thực tế thuộc phase-12 settings.
 - Thư mục `features/` xuất hiện dần từ phase-02 (empty dir không track được).
 - A3 streaming spike ở phase-08 trước khi commit kiến trúc chat.
-- CI = `NOT_RUN` (chưa có git remote) — đã ghi trung thực; sẽ xanh khi user cấp remote.
+- CI first push evidence exists; server workflow initially failed on Redis health-check mismatch and is being fixed in the follow-up commit.
 - Docker Desktop đã tự tắt 2 lần trong phiên (engine chết giữa phase) — theo dõi; nếu lặp lại, kiểm tra WSL2/ram.
 
 ## Next resume point
