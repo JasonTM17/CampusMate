@@ -6,7 +6,10 @@ plugins {
 
 android {
     namespace = "com.campusmate.campusmate"
-    compileSdk = flutter.compileSdkVersion
+    // flutter_secure_storage 11.x ships AAR metadata requiring compileSdk 37,
+    // which is newer than this Flutter version's default (36). Pin the higher
+    // value here until the Flutter SDK default catches up.
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
