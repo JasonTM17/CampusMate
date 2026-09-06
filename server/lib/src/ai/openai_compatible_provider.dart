@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:campusmate_shared/campusmate_shared.dart';
 
+import '../config/runtime_environment.dart';
 import 'ai_provider.dart';
 
 /// [AiProvider] backed by any OpenAI / GLM-compatible gateway.
@@ -21,23 +22,63 @@ class OpenAiCompatibleProvider implements AiProvider {
     String? baseUrl,
     String? apiKey,
     String? model,
+    String? embeddingModel,
     HttpClient? client,
-  }) : _baseUrl = baseUrl ?? _env('AI_BASE_URL'),
-       _apiKey = apiKey ?? _env('AI_API_KEY'),
-       _model = model ?? _env('AI_CHAT_MODEL'),
+    Map<String, String>? environment,
+    String? dotenvContent,
+  }) : _baseUrl =
+           baseUrl ??
+           _env(
+             'AI_BASE_URL',
+             environment: environment,
+             dotenvContent: dotenvContent,
+           ),
+       _apiKey =
+           apiKey ??
+           _env(
+             'AI_API_KEY',
+             environment: environment,
+             dotenvContent: dotenvContent,
+           ),
+       _model =
+           model ??
+           _env(
+             'AI_CHAT_MODEL',
+             environment: environment,
+             dotenvContent: dotenvContent,
+           ),
+       _embeddingModel =
+           embeddingModel ??
+           _env(
+             'AI_EMBEDDING_MODEL',
+             environment: environment,
+             dotenvContent: dotenvContent,
+           ),
        _client = client ?? HttpClient() {
     if (_baseUrl == null || _baseUrl.isEmpty) {
-      const OpenAiConfigException('AI_BASE_URL is empty');
+      throw const OpenAiConfigException('AI_BASE_URL is empty');
+    }
+    if (_model == null || _model.isEmpty) {
+      throw const OpenAiConfigException('AI_CHAT_MODEL is empty');
     }
   }
 
   final String? _baseUrl;
   final String? _apiKey;
   final String? _model;
+  final String? _embeddingModel;
   final HttpClient _client;
 
-  static String? _env(String key) {
-    final value = Platform.environment[key];
+  static String? _env(
+    String key, {
+    Map<String, String>? environment,
+    String? dotenvContent,
+  }) {
+    final value = readRuntimeEnvironmentValue(
+      key,
+      environment: environment,
+      dotenvContent: dotenvContent,
+    );
     if (value == null || value.trim().isEmpty) return null;
     return value.trim();
   }
@@ -46,6 +87,9 @@ class OpenAiCompatibleProvider implements AiProvider {
   @override
   Stream<AiStreamChunk> streamChat(AiRequest request) async* {
     final baseUrl = _baseUrl;
+    if (baseUrl == null || baseUrl.isEmpty) {
+      throw const OpenAiConfigException('AI_BASE_URL is empty');
+    }
     final uri = Uri.parse('$baseUrl/chat/completions');
     final httpRequest = await _client.postUrl(uri);
     httpRequest.headers.contentType = ContentType.json;
@@ -67,37 +111,52 @@ class OpenAiCompatibleProvider implements AiProvider {
     );
 
     final response = await httpRequest.close();
-    await for (final chunk in response.transform(utf8.decoder)) {
-      for (final line in chunk.split('\n')) {
-        final data = line.trim();
-        if (!data.startsWith('data:')) continue;
-        final payload = data.substring(5).trim();
-        if (payload == '[DONE]') return;
-        try {
-          final json = jsonDecode(payload) as Map<String, dynamic>;
-          final choices = json['choices'] as List<dynamic>?;
-          final delta = choices?.first as Map<String, dynamic>?;
-          final content = delta?['content'] as String? ?? '';
-          final finish = delta?['finish_reason'];
-          if (content.isNotEmpty || finish != null) {
-            yield AiStreamChunk(
-              text: content,
-              isDone: finish != null,
-            );
-          }
-        } on Object {
-          // Skip malformed event frames rather than failing the stream.
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      await response.drain<void>();
+      throw OpenAiProviderException(response.statusCode);
+    }
+    final lines = response
+        .transform(utf8.decoder)
+        .transform(
+          const LineSplitter(),
+        );
+    var yieldedDone = false;
+    await for (final line in lines) {
+      final data = line.trim();
+      if (!data.startsWith('data:')) continue;
+      final payload = data.substring(5).trim();
+      if (payload == '[DONE]') {
+        if (!yieldedDone) {
+          yield const AiStreamChunk(text: '', isDone: true);
         }
+        return;
+      }
+      try {
+        final json = jsonDecode(payload) as Map<String, dynamic>;
+        final choices = json['choices'] as List<dynamic>?;
+        final choice = choices?.first as Map<String, dynamic>?;
+        final delta = choice?['delta'] as Map<String, dynamic>?;
+        final content = delta?['content'] as String? ?? '';
+        final finish = choice?['finish_reason'];
+        if (content.isNotEmpty || finish != null) {
+          yieldedDone = finish != null;
+          yield AiStreamChunk(
+            text: content,
+            isDone: yieldedDone,
+          );
+        }
+      } on Object {
+        // Skip malformed event frames rather than failing the stream.
       }
     }
   }
 
-  /// Embeddings via the gateway's `/embeddings` endpoint. Falls back to a
-  /// zero vector if no embedding model is configured, so callers degrade
+  /// Embeddings via the gateway's `/embeddings` endpoint. Returns an empty
+  /// vector if no embedding model is configured, so callers degrade
   /// gracefully instead of crashing.
   @override
   Future<List<double>> createEmbedding(String text) async {
-    final model = Platform.environment['AI_EMBEDDING_MODEL']?.trim();
+    final model = _embeddingModel;
     if (model == null || model.isEmpty) {
       return const <double>[];
     }
@@ -131,4 +190,13 @@ class OpenAiConfigException implements Exception {
   final String message;
   @override
   String toString() => 'OpenAiConfigException: $message';
+}
+
+/// Thrown when the gateway rejects the request before streaming starts.
+class OpenAiProviderException implements Exception {
+  const OpenAiProviderException(this.statusCode);
+  final int statusCode;
+  @override
+  String toString() =>
+      'OpenAiProviderException: chat request failed with HTTP $statusCode';
 }

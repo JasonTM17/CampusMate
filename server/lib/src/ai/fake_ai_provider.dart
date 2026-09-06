@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:campusmate_shared/campusmate_shared.dart';
 
 import 'ai_provider.dart';
@@ -49,7 +51,7 @@ class FakeAiProvider implements AiProvider {
       counts[i % dim] += lower.codeUnitAt(i);
     }
     final norm = counts.fold<double>(0, (s, v) => s + v * v);
-    final magnitude = norm == 0 ? 1.0 : norm;
+    final magnitude = norm == 0 ? 1.0 : math.sqrt(norm);
     return counts.map((v) => v / magnitude).toList(growable: false);
   }
 

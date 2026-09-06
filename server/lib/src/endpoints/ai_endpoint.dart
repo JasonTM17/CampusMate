@@ -6,6 +6,8 @@ import 'package:campusmate_shared/campusmate_shared.dart' as shared;
 
 import '../../src/ai/ai_provider_factory.dart';
 import '../../src/ai/ai_provider.dart';
+import '../../src/ai/chat_request_builder.dart';
+import '../../src/ai/quota.dart';
 import '../../src/generated/protocol.dart';
 
 /// AI assistant endpoints (phase-08): conversation lifecycle, message history,
@@ -16,6 +18,9 @@ import '../../src/generated/protocol.dart';
 /// or write another user's conversation — the `userId` predicate is in every
 /// query, so tenant isolation holds even if a client forges an id.
 class AiEndpoint extends Endpoint {
+  /// Per-user daily chat gate (stage 6) — limit from `AI_DAILY_MESSAGE_QUOTA`.
+  final DailyMessageQuota _quota = DailyMessageQuota();
+
   /// Resolves the caller's stable user id or throws if not signed in.
   ///
   /// Reads the already-authenticated identity synchronously from the session
@@ -106,14 +111,19 @@ class AiEndpoint extends Endpoint {
     required String userMessage,
   }) async* {
     final userId = _requireUserId(session);
-    final provider = createAiProvider();
 
-    // Ownership check.
+    // Ownership check — before the quota so foreign ids never consume quota.
     final owned = await AiConversation.db.count(
       session,
       where: (t) => t.id.equals(conversationId) & t.userId.equals(userId),
     );
     if (owned == 0) throw ServerpodClientNotFound();
+
+    final provider = createAiProvider();
+
+    // Daily quota gate: runs BEFORE context building and the provider call
+    // (plan C6) — an exhausted user never reaches the AI.
+    await _quota.consume(session, userId);
 
     // Load transcript and persist the user turn.
     final history = await AiMessage.db.find(
@@ -133,11 +143,10 @@ class AiEndpoint extends Endpoint {
 
     final request = shared.AiRequest(
       conversationId: conversationId.toString(),
-      messages: [
-        for (final m in history)
-          shared.AiMessage(role: m.role, content: m.content),
-        shared.AiMessage(role: 'user', content: userMessage),
-      ],
+      messages: assembleChatMessages(
+        history: [for (final m in history) (m.role, m.content)],
+        userMessage: userMessage,
+      ),
       studentContext: null, // wired by the context builder in phase-09
     );
 

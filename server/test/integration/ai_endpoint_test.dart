@@ -1,7 +1,18 @@
+import 'package:campusmate_server/src/generated/protocol.dart';
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:test/test.dart';
 
+import '../fixtures/prompt_injection_fixtures.dart';
 import 'test_tools/serverpod_test_tools.dart';
+
+/// Collects a streaming reply into its full text.
+Future<String> _drain(Stream<String> stream) async {
+  final buffer = StringBuffer();
+  await for (final chunk in stream) {
+    buffer.write(chunk);
+  }
+  return buffer.toString();
+}
 
 /// Phase-08 AI endpoint integration tests against a real (test) database.
 ///
@@ -97,6 +108,112 @@ void main() {
           ),
           throwsA(isA<ServerpodClientNotFound>()),
         );
+      });
+
+      test('counts usage and passes while below the daily limit', () async {
+        final session = sessionBuilder.build();
+        final conv = await endpoints.ai.createConversation(
+          userA,
+          title: 'Counter',
+        );
+
+        final reply = await _drain(
+          endpoints.ai.sendMessage(
+            userA,
+            conversationId: conv.id!,
+            userMessage: 'lần 1',
+          ),
+        );
+        expect(reply, isNotEmpty);
+
+        final usage = await AiUsage.db.find(session);
+        expect(usage, hasLength(1));
+        expect(usage.single.userId, 'user-a');
+        expect(usage.single.requestCount, 1);
+      });
+
+      test(
+        'blocks the 51st message of the day with a friendly error',
+        () async {
+          final session = sessionBuilder.build();
+          final conv = await endpoints.ai.createConversation(
+            userA,
+            title: 'Quota',
+          );
+
+          // Simulate a user who has already used the whole daily quota.
+          final now = DateTime.now();
+          final today = DateTime(now.year, now.month, now.day);
+          await AiUsage.db.insertRow(
+            session,
+            AiUsage(
+              userId: 'user-a',
+              day: today,
+              requestCount: 50,
+              inputTokens: 0,
+              outputTokens: 0,
+              estimatedCost: 0,
+            ),
+          );
+
+          await expectLater(
+            endpoints.ai.sendMessage(
+              userA,
+              conversationId: conv.id!,
+              userMessage: 'xin chào',
+            ),
+            throwsA(
+              isA<ServerpodClientException>()
+                  .having((e) => e.statusCode, 'statusCode', 429)
+                  .having((e) => e.message, 'message', contains('hạn mức')),
+            ),
+          );
+
+          // The blocked turn must not be persisted.
+          final messages = await endpoints.ai.getMessages(
+            userA,
+            conversationId: conv.id!,
+          );
+          expect(messages, isEmpty);
+        },
+      );
+
+      test('injection payloads cannot change authorization behavior', () async {
+        final conv = await endpoints.ai.createConversation(
+          userA,
+          title: 'Vault',
+        );
+
+        // A foreign user with an injection payload still gets 404 — message
+        // content never overrides the server-side ownership predicate.
+        for (final payload in promptInjectionFixtures) {
+          await expectLater(
+            endpoints.ai.sendMessage(
+              userB,
+              conversationId: conv.id!,
+              userMessage: payload,
+            ),
+            throwsA(isA<ServerpodClientNotFound>()),
+          );
+        }
+
+        // The owner sending the same payloads is treated as plain data: the
+        // reply streams and the stored user turn matches byte-for-byte.
+        final reply = await _drain(
+          endpoints.ai.sendMessage(
+            userA,
+            conversationId: conv.id!,
+            userMessage: promptInjectionFixtures.first,
+          ),
+        );
+        expect(reply, isNotEmpty);
+
+        final messages = await endpoints.ai.getMessages(
+          userA,
+          conversationId: conv.id!,
+        );
+        expect(messages.first.role, 'user');
+        expect(messages.first.content, promptInjectionFixtures.first);
       });
 
       test('user B cannot see user A conversations in the list', () async {
