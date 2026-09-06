@@ -1,7 +1,7 @@
 ---
 phase: 2
 title: "Auth + Student + RBAC"
-status: in-progress
+status: completed
 priority: P1
 effort: M
 dependencies: [1]
@@ -43,11 +43,11 @@ Authentication hoàn chỉnh + RBAC 4 role kiểm quyền ở SERVER + student p
 
 ## Success Criteria
 
-- [ ] Login demo student bằng tài khoản seed; kill app → mở lại vẫn giữ session; logout sạch.
-- [ ] Student đăng nhập KHÔNG gọi được endpoint admin/librarian (403 có structure).
-- [ ] Isolation suite PASS: mọi đường "lấy dữ liệu user khác" trả 403/404, không bao giờ 200.
-- [ ] `dart analyze`/`flutter analyze`/tests PASS; secrets scan sạch (`git grep` trên diff cho password/token thật).
-- [ ] Wukong verdict phase-02 (claim IDOR) = NOT_FALSIFIED hoặc finding đã fix + retest.
+- [x] Login demo student bằng tài khoản seed; kill app → mở lại vẫn giữ session; logout sạch. (Live qua Flutter web + backend local 2026-09-06: login `student001@campusmate.local`, session restore qua full page reload, route guard dẫn về `#/home`; logout/restore coverage trong mobile tests.)
+- [x] Student đăng nhập KHÔNG gọi được endpoint admin/librarian (403 có structure). (Integration `blocks students from the protected admin surface` — `ServerpodInsufficientAccessException` in-process / 403 qua HTTP.)
+- [x] Isolation suite PASS: mọi đường "lấy dữ liệu user khác" trả 403/404, không bao giờ 200. (16/16 integration tests PASS, gồm A↔B profile isolation + AI conversation ownership.)
+- [x] `dart analyze`/`flutter analyze`/tests PASS; secrets scan sạch (`git grep` trên diff cho password/token thật). (Server 48/48, mobile 65 pass/3 skip; scan chỉ thấy test fixture.)
+- [x] Wukong verdict phase-02 (claim IDOR) = NOT_FALSIFIED hoặc finding đã fix + retest. (Wukong độc lập 2026-09-06: C1/C2/C3 = NOT_FALSIFIED, GATE PROCEED; tự chạy lại 6/6 integration.)
 
 ## Risk Assessment
 

@@ -165,9 +165,96 @@ plans/260830-1629-campusmate-student-management-e-library-ai/plan.md
 
 - AK deep-scan hardening is continuing from `main` after push to `origin/main`; current focus is GitHub CI stabilization and documentation drift cleanup before returning to the broader phase backlog.
 
-## Phase 02 — Auth + Student + RBAC (in progress, not yet implemented)
+## Phase 02 — Auth + Student + RBAC (completion session 2026-09-06)
 
-No implementation steps executed yet.
+Working tree carries the full phase-02 implementation (server auth idp wiring,
+student/admin endpoints, migration `20260906080612724-phase02-auth-student`,
+seed script, mobile password-reset + student profile + router guard, l10n).
+This session completes, verifies, polishes, commits and pushes it under the
+plan-lock overlay (direct user instruction: finish thoroughly + FE UI/UX
+polish + commit + push).
+
+### Advisory wave (read-only subagents, 2026-09-06)
+
+- **Advisor**: phase-02 substantially complete; open items = observed DB-backed
+  gates, Wukong IDOR verdict, ADR-005 (implementation already chose
+  `serverpod_auth_idp`); UI polish bounded to phase-02 surfaces and sequenced
+  AFTER green auth baseline; 7-slice commit plan; direct push to main is
+  consistent with repo history once all gates are green.
+- **Kongming**: GO-WITH-CONDITIONS — (1) server commit must be atomic
+  (spy.yaml + migration + registry + generated protocol + client protocol);
+  (2) Docker integration tests before push; (3) seed script must stay
+  env-password-only and is a footgun from phase-11 onward; polish LAST as its
+  own commit.
+- **Wukong (independent agent, 2026-09-06)**: C1 IDOR / C2 RBAC / C3 secrets
+  all **NOT_FALSIFIED**, GATE PROCEED — endpoint surface exposes no
+  client-supplied user id, framework-enforced scopes traced in vendored
+  sources, seed env-only; independently re-ran the 6/6 integration suite.
+  Residual: dev-mode verification codes stay in server logs; integration
+  tests inject identity in-process rather than exercising live JWT
+  validation (vendored framework code).
+- **UI/UX specialist**: scorecard login 7.5 / registration 7 / reset 6 /
+  profile 5.5 / shell 8.5; P0 = dark-mode hint contrast (~1.4:1), error text
+  contrast + no live-region, unlabeled reset spinner, save wipes form via
+  full-screen loading; P1 = shared FilledButton theme, autofill parity,
+  autofocus on step change, email regex, digits-only codes, profile
+  validation + token spacing, AppEmptyState-based error view.
+
+### Plan-lock delta (authorized by direct user instruction)
+
+- In scope NOW: finish phase-02 gates (incl. integration), ADR-005, bounded
+  UI/UX polish on phase-02 surfaces, ledger/phase status sync, 7-slice
+  conventional commits, push origin/main, watch CI.
+- Out of scope (LATER): mail provider for codes; faculties/majors/programs
+  tables (phase-03); real admin feature (phase-11); seed config guard
+  (before phase-11); `.mimosa/`/`.video_agent/` never staged.
+
+### Environmental findings (machine, not repo)
+
+- Pub cache at `%LOCALAPPDATA%\Pub\Cache` was found wiped twice during this
+  session (only README.md remains; unknown external cleaner). Workaround:
+  repo-local `PUB_CACHE=D:\Mobile_Project\.dart_tool\pub-cache` (gitignored)
+  used for all dart/flutter commands this session. Stale cache explains the
+  first mobile analyze run showing 256 missing-package issues.
+
+## Phase 02 — completion evidence (2026-09-06)
+
+- Gates observed: server `dart analyze` clean, `dart format --set-exit-if-changed`
+  PASS across server/packages/mobile, `dart test` **48/48** (32 offline +
+  16 DB-backed integration incl. A↔B isolation and admin 403); mobile
+  `flutter analyze` clean, `flutter test` **65 pass / 3 skip**; `git diff --check`
+  clean; secret scan of the whole diff only surfaced test fixtures.
+- Live E2E (Flutter web build pointed at the local backend on :8083, seeded
+  accounts): real login as `student001@campusmate.local` → authenticated
+  shell; **session restored across a full page reload**; screenshots of the
+  polished login screen (dark) and the home shell recorded via the browser
+  automation session.
+- Defects found & fixed during verification:
+  - `DailyMessageQuota.consume` mixed a local-midnight raw-SQL parameter with
+    ORM UTC serialization — quota never blocked on non-UTC hosts (`76ae41d`).
+  - Integration expectations for endpoint-level `requireLogin`/`requiredScopes`
+    corrected to the framework exception types with an explanatory comment.
+- UI/UX polish (Advisor/Kongming/UI-specialist wave): shared FilledButton
+  theme, brightness-aware hint/error contrast (was ~1.4:1 in dark),
+  `AppErrorBanner` with live-region semantics, strict email validation,
+  digits-only code fields with autofocus/autofill, profile save no longer
+  wipes the form, profile identity header + AppEmptyState error view,
+  `authUseDifferentEmail` escape hatches, en/vi key parity.
+- Commit slice: `76ae41d` fix(ai) → `605ae77` feat(auth) server → `c7f4958`
+  chore(server) seed → `f347df2` feat(auth) mobile (profile merged into the
+  mobile slice: the router imports the profile screen, so separate commits
+  would break per-commit builds — plan-lock execution ruling).
+- Environmental: pub cache at `%LOCALAPPDATA%\Pub\Cache` wiped twice by an
+  unknown external cleaner mid-session; all dart/flutter commands therefore
+  ran with `PUB_CACHE=D:\Mobile_Project\.dart_tool\pub-cache`. The 43MB
+  stale `server/web/app` build artifact (gitignored) had to be removed
+  before the Mimosa commit hook would pass. `server/config/development.yaml`
+  was temporarily shifted to port 8083 for the live run and reverted — not
+  committed. Flutter `web/` platform files were generated for browser
+  verification and remain untracked; committing web support is a user
+  decision (LATER).
+- Phase-02 status flipped to `completed` with all five Success Criteria
+  checked against the evidence above.
 
 ## Authorized rulings
 
