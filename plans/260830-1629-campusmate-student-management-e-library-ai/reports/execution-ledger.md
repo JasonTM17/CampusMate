@@ -255,6 +255,17 @@ polish + commit + push).
   decision (LATER).
 - Phase-02 status flipped to `completed` with all five Success Criteria
   checked against the evidence above.
+- **Independent code review (2026-09-06)** on `1e21a7d..775f22f`:
+  SPEC COMPLIANCE PASS, verdict APPROVE-WITH-NITPICKS. Findings applied
+  immediately: refresh clears the session only on 401/403 (transient
+  failures keep it, regression-tested), failed profile saves keep the form
+  and surface a snackbar, client validators mirror the 120-char server cap,
+  and concurrent first profile reads tolerate the unique-index race
+  (`a1e3a5b`, `9987708`). Post-fix gates: server 48/48, mobile 68 pass /
+  3 skip, analyze + format clean. Deferred (LATER, next defect checkpoint):
+  GoRouter rebuilt on every auth transition (switch to refreshListenable),
+  server-side refresh-token revocation on sign-out, faculties/majors/
+  programs tables (phase-03).
 
 ## Authorized rulings
 
