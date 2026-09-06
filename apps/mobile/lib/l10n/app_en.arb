@@ -76,6 +76,7 @@
   "profileSaveError": "Could not save profile.",
   "profileFullNameRequired": "Please enter your full name.",
   "profileClassNameRequired": "Please enter your class.",
+  "profileFieldTooLong": "Use 120 characters or fewer.",
   "profileLoadError": "Could not load profile.",
   "profileSignOut": "Sign out",
   "profilePrivilegedArea": "Administration"

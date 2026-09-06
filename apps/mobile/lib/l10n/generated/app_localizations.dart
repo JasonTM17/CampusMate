@@ -554,6 +554,12 @@ abstract class AppLocalizations {
   /// **'Please enter your class.'**
   String get profileClassNameRequired;
 
+  /// No description provided for @profileFieldTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Use 120 characters or fewer.'**
+  String get profileFieldTooLong;
+
   /// No description provided for @profileLoadError.
   ///
   /// In en, this message translates to:

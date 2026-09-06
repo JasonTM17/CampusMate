@@ -26,12 +26,9 @@ class StudentProfileController extends AsyncNotifier<StudentProfile> {
     required String fullName,
     required String className,
   }) async {
-    // No AsyncLoading swap here: wiping `state` would unmount the form for a
-    // full-screen spinner on every save. The screen drives the save spinner
-    // locally while the profile data (and scroll position) stays put.
-    state = await AsyncValue.guard(
-      () =>
-          _repository.updateMyProfile(fullName: fullName, className: className),
-    );
+    // Save failures propagate to the screen (which shows a snackbar) instead
+    // of replacing `state`: an AsyncError here would swap the whole form for
+    // the full-screen error view and destroy the user's typed input.
+    await _repository.updateMyProfile(fullName: fullName, className: className);
   }
 }

@@ -244,6 +244,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get profileClassNameRequired => 'Vui lòng nhập lớp.';
 
   @override
+  String get profileFieldTooLong => 'Tối đa 120 ký tự.';
+
+  @override
   String get profileLoadError => 'Không thể tải hồ sơ.';
 
   @override

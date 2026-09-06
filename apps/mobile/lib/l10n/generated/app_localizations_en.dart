@@ -247,6 +247,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileClassNameRequired => 'Please enter your class.';
 
   @override
+  String get profileFieldTooLong => 'Use 120 characters or fewer.';
+
+  @override
   String get profileLoadError => 'Could not load profile.';
 
   @override

@@ -58,11 +58,17 @@ class SessionAuthKeyProvider implements RefresherClientAuthKeyProvider {
         ),
       );
       return RefreshAuthKeyResult.success;
-    } on ServerpodClientException {
-      // Invalid/expired refresh token or server rejection: drop the session
-      // so the next guarded call treats the user as signed out.
-      await _storage.clear();
-      return RefreshAuthKeyResult.failedUnauthorized;
+    } on ServerpodClientException catch (error) {
+      if (error.statusCode == 401 || error.statusCode == 403) {
+        // Invalid/expired refresh token rejected by the server: drop the
+        // session so the next guarded call treats the user as signed out.
+        await _storage.clear();
+        return RefreshAuthKeyResult.failedUnauthorized;
+      }
+      // Transient transport or server-side failures keep the stored session
+      // so a network blip near token expiry does not force a logout; the
+      // next guarded call retries the refresh.
+      return RefreshAuthKeyResult.failedOther;
     } on Exception {
       return RefreshAuthKeyResult.failedOther;
     }

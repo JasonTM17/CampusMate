@@ -81,21 +81,25 @@ class _StudentProfileScreenState extends ConsumerState<StudentProfileScreen> {
   Future<void> _save() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     setState(() => _saving = true);
-    await ref
-        .read(studentProfileControllerProvider.notifier)
-        .updateMyProfile(
-          fullName: _fullNameController.text,
-          className: _classNameController.text,
-        );
-    if (!mounted) return;
-    setState(() => _saving = false);
-    final state = ref.read(studentProfileControllerProvider);
     final loc = AppLocalizations.of(context)!;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(state.hasError ? loc.profileSaveError : loc.profileSaved),
-      ),
-    );
+    String message;
+    try {
+      await ref
+          .read(studentProfileControllerProvider.notifier)
+          .updateMyProfile(
+            fullName: _fullNameController.text,
+            className: _classNameController.text,
+          );
+      message = loc.profileSaved;
+    } on Exception {
+      message = loc.profileSaveError;
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   Future<void> _signOut() async {
@@ -130,6 +134,15 @@ class _ProfileForm extends StatelessWidget {
   final VoidCallback onSave;
   final VoidCallback onOpenPrivilegedArea;
   final VoidCallback onSignOut;
+
+  /// Mirrors the server-side `_normalizeRequired` rules so a rejectable
+  /// input never reaches the network: non-empty and at most 120 characters.
+  String? _validateField(String? value, String requiredMessage) {
+    final trimmed = value?.trim() ?? '';
+    if (trimmed.isEmpty) return requiredMessage;
+    if (trimmed.length > 120) return loc.profileFieldTooLong;
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -184,9 +197,8 @@ class _ProfileForm extends StatelessWidget {
             textInputAction: TextInputAction.next,
             decoration: InputDecoration(labelText: loc.profileFullName),
             enabled: !isSaving,
-            validator: (value) => (value == null || value.trim().isEmpty)
-                ? loc.profileFullNameRequired
-                : null,
+            validator: (value) =>
+                _validateField(value, loc.profileFullNameRequired),
           ),
           SizedBox(height: AppSpacing.itemGap),
           TextFormField(
@@ -194,9 +206,8 @@ class _ProfileForm extends StatelessWidget {
             textInputAction: TextInputAction.done,
             decoration: InputDecoration(labelText: loc.profileClassName),
             enabled: !isSaving,
-            validator: (value) => (value == null || value.trim().isEmpty)
-                ? loc.profileClassNameRequired
-                : null,
+            validator: (value) =>
+                _validateField(value, loc.profileClassNameRequired),
           ),
           SizedBox(height: AppSpacing.itemGap),
           FilledButton.icon(

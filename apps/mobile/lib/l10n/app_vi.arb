@@ -76,6 +76,7 @@
   "profileSaveError": "Không thể lưu hồ sơ.",
   "profileFullNameRequired": "Vui lòng nhập họ tên.",
   "profileClassNameRequired": "Vui lòng nhập lớp.",
+  "profileFieldTooLong": "Tối đa 120 ký tự.",
   "profileLoadError": "Không thể tải hồ sơ.",
   "profileSignOut": "Đăng xuất",
   "profilePrivilegedArea": "Khu vực quản trị"
