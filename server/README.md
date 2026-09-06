@@ -13,6 +13,21 @@ dart run bin/main.dart --apply-migrations
 The development stack exposes PostgreSQL/pgvector, Redis, and MinIO. Redis is
 currently disabled in `config/development.yaml` until a phase needs caching.
 
+## Seed Demo Accounts
+
+Stop the running backend first so the one-shot seed process can use the same
+development ports. Set `CAMPUSMATE_SEED_PASSWORD` locally (at least 12
+characters, never commit it), then run:
+
+```powershell
+$env:CAMPUSMATE_SEED_PASSWORD = '<local-only-password>'
+dart run bin/seed.dart --apply-migrations
+```
+
+The command is idempotent and creates `student001@campusmate.local`,
+`librarian@campusmate.local`, `admin@campusmate.local`, and 20 Vietnamese demo
+student profiles. It is for local development only.
+
 ## Verification
 
 ```bash

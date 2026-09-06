@@ -49,6 +49,11 @@ dart pub get
 cd server
 dart run bin/main.dart --apply-migrations   # giữ terminal này chạy
 
+# 2b. Seed demo accounts (chạy ở terminal riêng; dừng backend trước để tránh
+#     trùng port, rồi khởi động lại backend sau khi seed xong)
+$env:CAMPUSMATE_SEED_PASSWORD = '<mật-khẩu-local-it-nhất-12-ký-tự>'
+dart run bin/seed.dart --apply-migrations
+
 # Redis hiện đang tắt trong config (redis.enabled: false) — container vẫn chạy
 # sẵn để bật cache ở phase sau mà không cần đổi hạ tầng.
 
@@ -88,6 +93,10 @@ student001@campusmate.local   — sinh viên demo
 librarian@campusmate.local    — thủ thư
 admin@campusmate.local        — quản trị
 ```
+
+`CAMPUSMATE_SEED_PASSWORD` chỉ tồn tại trong môi trường local và không được
+commit vào repo, CI, staging hoặc production. Script seed có thể chạy lại để
+cập nhật password/profile mà không tạo bản ghi trùng.
 
 ## Environment variables
 
