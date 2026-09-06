@@ -49,17 +49,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             email: _emailController.text.trim(),
             password: _passwordController.text,
           );
-      if (mounted) context.go('/ai');
+      if (mounted) {
+        context.go('/ai');
+      }
     } on AuthFailure catch (failure) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _failure = failure;
         });
+      }
     } finally {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _submitting = false;
         });
+      }
     }
   }
 

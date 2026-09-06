@@ -6,7 +6,6 @@ import '../../../app/theme/app_spacing.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../application/chat_controller.dart';
 import '../domain/chat_message.dart';
-import '../domain/chat_repository.dart';
 import '../domain/chat_state.dart';
 import 'message_bubble.dart';
 
@@ -52,15 +51,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   /// Ensures there is a conversation to talk to, then loads its history.
   Future<void> _bootstrap() async {
-    final controller = ref.read(chatControllerProvider.notifier);
-    final repo = ref.read(aiRepositoryProvider);
-    final id = widget.conversationId;
-    if (id != null) {
-      await controller.openConversation(id);
-    } else {
-      final conv = await repo.createConversation(title: 'Hội thoại mới');
-      await controller.openConversation(conv.id);
-    }
+    await ref
+        .read(chatControllerProvider.notifier)
+        .openOrCreateConversation(
+          conversationId: widget.conversationId,
+          newConversationTitle: 'Hội thoại mới',
+        );
     _scrollToBottom();
   }
 
@@ -117,6 +113,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     if (chat.status == ChatStatus.loadingHistory) {
       return const Center(child: CircularProgressIndicator());
     }
+    if (chat.status == ChatStatus.error && chat.messages.isEmpty) {
+      return _ErrorState(
+        message: chat.error ?? l10n.errorGeneric,
+        actionLabel: l10n.retry,
+        onRetry: () {
+          _bootstrap();
+        },
+      );
+    }
     if (chat.messages.isEmpty) {
       return _EmptyState(
         suggestions: _suggestions,
@@ -131,7 +136,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       controller: _scrollController,
       padding: AppSpacing.mHorizontal,
       itemCount: chat.messages.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 8),
+      separatorBuilder: (_, _) => const SizedBox(height: 8),
       itemBuilder: (context, index) {
         final message = chat.messages[index];
         final isLastAssistant =
@@ -195,6 +200,47 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             style: IconButton.styleFrom(minimumSize: const Size(48, 48)),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Error state shown when a conversation cannot be loaded.
+class _ErrorState extends StatelessWidget {
+  const _ErrorState({
+    required this.message,
+    required this.actionLabel,
+    required this.onRetry,
+  });
+
+  final String message;
+  final String actionLabel;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Center(
+      child: SingleChildScrollView(
+        padding: AppSpacing.lHorizontal,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
+            SizedBox(height: AppSpacing.m),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleMedium,
+            ),
+            SizedBox(height: AppSpacing.m),
+            FilledButton.icon(
+              onPressed: onRetry,
+              icon: const Icon(Icons.refresh),
+              label: Text(actionLabel),
+            ),
+          ],
+        ),
       ),
     );
   }

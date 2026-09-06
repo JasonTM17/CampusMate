@@ -58,43 +58,53 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
       _submitting = true;
       _failure = null;
     });
-    final controller = ref.read(authControllerProvider.notifier);
     final repository = ref.read(authRepositoryProvider);
     try {
       if (_onEmailStep) {
         final requestId = await repository.startRegistration(
           email: _emailController.text.trim(),
         );
-        if (mounted)
+        if (mounted) {
           setState(() {
             _accountRequestId = requestId;
           });
+        }
+        return;
       } else if (_onCodeStep) {
         final token = await repository.verifyRegistrationCode(
           accountRequestId: _accountRequestId!,
           verificationCode: _codeController.text.trim(),
         );
-        if (mounted)
+        if (mounted) {
           setState(() {
             _registrationToken = token;
           });
-        await controller.completeRegistration(
-          email: _emailController.text.trim(),
-          registrationToken: token,
-          password: _passwordController.text,
-        );
-        if (mounted) context.go('/ai');
+        }
+        return;
+      }
+
+      await ref
+          .read(authControllerProvider.notifier)
+          .completeRegistration(
+            email: _emailController.text.trim(),
+            registrationToken: _registrationToken!,
+            password: _passwordController.text,
+          );
+      if (mounted) {
+        context.go('/ai');
       }
     } on AuthFailure catch (failure) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _failure = failure;
         });
+      }
     } finally {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _submitting = false;
         });
+      }
     }
   }
 

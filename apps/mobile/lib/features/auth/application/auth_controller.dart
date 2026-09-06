@@ -1,15 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/providers.dart';
-import '../data/auth_token_storage.dart';
 import '../data/serverpod_auth_repository.dart';
 import '../domain/auth_repository.dart';
 import '../domain/auth_user.dart';
-
-/// Provides the local token store (single instance).
-final authTokenStorageProvider = Provider<AuthTokenStorage>(
-  (ref) => AuthTokenStorage(),
-);
 
 /// Provides the app-wide [AuthRepository] implementation. Widget/unit tests
 /// override this provider with a fake to exercise UI without a server.

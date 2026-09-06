@@ -1,4 +1,3 @@
-import 'package:campusmate_client/campusmate_client.dart';
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart';
 
 import 'auth_token_storage.dart';
@@ -12,8 +11,8 @@ import 'auth_token_storage.dart';
 class SessionAuthKeyProvider implements RefresherClientAuthKeyProvider {
   SessionAuthKeyProvider({
     required this._storage,
-    required Future<AuthSuccess> Function(String refreshToken) refreshTokens,
-  }) : _refreshTokens = refreshTokens;
+    required this._refreshTokens,
+  });
 
   final AuthTokenStorage _storage;
   final Future<AuthSuccess> Function(String refreshToken) _refreshTokens;

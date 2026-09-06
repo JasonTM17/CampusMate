@@ -19,14 +19,31 @@ class AuthTokenStorage {
     final prefs = await _prefs;
     final accessToken = prefs.getString(_keyAccessToken);
     if (accessToken == null) return null;
+    final expiresAtRaw = prefs.getString(_keyAccessTokenExpiresAt);
+    DateTime? accessTokenExpiresAt;
+    if (expiresAtRaw != null) {
+      try {
+        accessTokenExpiresAt = DateTime.parse(expiresAtRaw);
+      } on FormatException {
+        await clear();
+        return null;
+      }
+    }
+    final email = prefs.getString(_keyEmail);
+    final authUserId = prefs.getString(_keyAuthUserId);
+    if (email == null ||
+        email.isEmpty ||
+        authUserId == null ||
+        authUserId.isEmpty) {
+      await clear();
+      return null;
+    }
     return StoredSession(
       accessToken: accessToken,
-      accessTokenExpiresAt: prefs.getString(_keyAccessTokenExpiresAt) == null
-          ? null
-          : DateTime.parse(prefs.getString(_keyAccessTokenExpiresAt)!),
+      accessTokenExpiresAt: accessTokenExpiresAt,
       refreshToken: prefs.getString(_keyRefreshToken),
-      email: prefs.getString(_keyEmail) ?? '',
-      authUserId: prefs.getString(_keyAuthUserId) ?? '',
+      email: email,
+      authUserId: authUserId,
     );
   }
 

@@ -13,6 +13,7 @@ class FakeAiRepository implements AiRepository {
   List<ChatMessage> history;
   int sendCalls = 0;
   int openCalls = 0;
+  int createCalls = 0;
   String? lastMessage;
 
   @override
@@ -21,8 +22,10 @@ class FakeAiRepository implements AiRepository {
   @override
   Future<ConversationSummary> createConversation({
     required String title,
-  }) async =>
-      ConversationSummary(id: 1, title: 'New', updatedAt: DateTime.now());
+  }) async {
+    createCalls++;
+    return ConversationSummary(id: 1, title: title, updatedAt: DateTime.now());
+  }
 
   @override
   Future<void> deleteConversation(int conversationId) async {}
@@ -62,6 +65,24 @@ Future<void> _untilIdle(ProviderContainer container) async {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  test('ChatState.copyWith can clear nullable fields', () {
+    const state = ChatState(
+      status: ChatStatus.error,
+      conversationId: 7,
+      error: 'stale',
+    );
+
+    final next = state.copyWith(
+      status: ChatStatus.idle,
+      conversationId: null,
+      error: null,
+    );
+
+    expect(next.status, ChatStatus.idle);
+    expect(next.conversationId, isNull);
+    expect(next.error, isNull);
+  });
+
   test('openConversation loads history and transitions idle', () async {
     final history = [
       const ChatMessage(
@@ -84,6 +105,53 @@ void main() {
     expect(state.messages, hasLength(1));
     expect(state.messages.first.content, 'Chào');
   });
+
+  test(
+    'openOrCreateConversation creates a new conversation then loads it',
+    () async {
+      final repo = FakeAiRepository();
+      final container = _containerWith(repo);
+      addTearDown(container.dispose);
+
+      await container
+          .read(chatControllerProvider.notifier)
+          .openOrCreateConversation(newConversationTitle: 'Hội thoại mới');
+
+      final state = container.read(chatControllerProvider);
+      expect(repo.createCalls, 1);
+      expect(repo.openCalls, 1);
+      expect(state.status, ChatStatus.idle);
+      expect(state.conversationId, 1);
+      expect(state.error, isNull);
+    },
+  );
+
+  test(
+    'openOrCreateConversation surfaces conversation creation failures',
+    () async {
+      final repo = _CreateThrowingRepo();
+      final container = _containerWith(repo);
+      addTearDown(container.dispose);
+
+      await container.read(chatControllerProvider.notifier).openConversation(7);
+      expect(container.read(chatControllerProvider).conversationId, 7);
+
+      await container
+          .read(chatControllerProvider.notifier)
+          .openOrCreateConversation(newConversationTitle: 'Hội thoại mới');
+
+      final state = container.read(chatControllerProvider);
+      expect(state.status, ChatStatus.error);
+      expect(state.conversationId, isNull);
+      expect(state.messages, isEmpty);
+      expect(state.error, 'Không thể tải lịch sử.');
+
+      await container
+          .read(chatControllerProvider.notifier)
+          .sendMessage('stale?');
+      expect(repo.sendCalls, 0);
+    },
+  );
 
   test('sendMessage streams reply into assistant bubble', () async {
     final repo = FakeAiRepository(reply: 'Một hai ba');
@@ -109,7 +177,6 @@ void main() {
   test(
     'sendMessage on repository error marks assistant turn as error',
     () async {
-      final repo = FakeAiRepository()..reply = 'ok';
       // Override sendMessage to throw by using a throwing subclass.
       final container = _containerWith(_ThrowingRepo());
       addTearDown(container.dispose);
@@ -123,6 +190,7 @@ void main() {
 
       final state = container.read(chatControllerProvider);
       expect(state.status, ChatStatus.error);
+      expect(state.messages.first.status, MessageStatus.error);
       expect(state.messages.last.status, MessageStatus.error);
     },
   );
@@ -147,6 +215,14 @@ class _ThrowingRepo extends FakeAiRepository {
     required String content,
   }) {
     throw constFormatException('boom');
+  }
+}
+
+/// Fake whose createConversation throws to exercise the bootstrap error path.
+class _CreateThrowingRepo extends FakeAiRepository {
+  @override
+  Future<ConversationSummary> createConversation({required String title}) {
+    throw StateError('offline');
   }
 }
 

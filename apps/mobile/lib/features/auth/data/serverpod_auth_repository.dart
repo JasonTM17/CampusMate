@@ -1,6 +1,4 @@
 import 'package:campusmate_client/campusmate_client.dart';
-import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    hide AuthUser;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     hide AuthUser;
 
@@ -14,11 +12,7 @@ import 'auth_token_storage.dart';
 /// Persists every `AuthSuccess` into [AuthTokenStorage] so restarts restore
 /// the session, and classifies module exceptions into typed [AuthFailure]s.
 class ServerpodAuthRepository implements AuthRepository {
-  ServerpodAuthRepository({
-    required Client client,
-    required AuthTokenStorage storage,
-  }) : _client = client,
-       _storage = storage;
+  ServerpodAuthRepository({required this._client, required this._storage});
 
   final Client _client;
   final AuthTokenStorage _storage;

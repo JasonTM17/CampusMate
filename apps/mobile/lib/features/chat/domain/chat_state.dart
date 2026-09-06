@@ -1,5 +1,8 @@
 import 'package:campusmate/features/chat/domain/chat_message.dart';
 
+const Object _unsetError = Object();
+const Object _unsetConversationId = Object();
+
 /// UI-layer state for the chat screen.
 enum ChatStatus { idle, loadingHistory, streaming, error }
 
@@ -18,15 +21,17 @@ class ChatState {
 
   ChatState copyWith({
     ChatStatus? status,
-    int? conversationId,
+    Object? conversationId = _unsetConversationId,
     List<ChatMessage>? messages,
-    String? error,
+    Object? error = _unsetError,
   }) {
     return ChatState(
       status: status ?? this.status,
-      conversationId: conversationId ?? this.conversationId,
+      conversationId: identical(conversationId, _unsetConversationId)
+          ? this.conversationId
+          : conversationId as int?,
       messages: messages ?? this.messages,
-      error: error ?? this.error,
+      error: identical(error, _unsetError) ? this.error : error as String?,
     );
   }
 }

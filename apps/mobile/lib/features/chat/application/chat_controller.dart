@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:serverpod_client/serverpod_client.dart';
 
 import '../domain/chat_message.dart';
 import '../domain/chat_repository.dart';
@@ -22,15 +23,52 @@ class ChatController extends Notifier<ChatState> {
 
   AiRepository get _repo => ref.read(aiRepositoryProvider);
 
+  /// Opens an existing conversation, or creates the first empty conversation.
+  Future<void> openOrCreateConversation({
+    int? conversationId,
+    required String newConversationTitle,
+  }) async {
+    if (conversationId != null) {
+      await openConversation(conversationId);
+      return;
+    }
+
+    state = state.copyWith(
+      status: ChatStatus.loadingHistory,
+      conversationId: null,
+      messages: const [],
+      error: null,
+    );
+    try {
+      final conversation = await _repo.createConversation(
+        title: newConversationTitle,
+      );
+      await openConversation(conversation.id);
+    } on Object {
+      state = state.copyWith(
+        status: ChatStatus.error,
+        conversationId: null,
+        messages: const [],
+        error: 'Không thể tải lịch sử.',
+      );
+    }
+  }
+
   /// Opens [conversationId], loading its history into state.
   Future<void> openConversation(int conversationId) async {
     state = state.copyWith(
       status: ChatStatus.loadingHistory,
       conversationId: conversationId,
+      messages: const [],
+      error: null,
     );
     try {
       final rows = await _repo.getMessages(conversationId);
-      state = state.copyWith(status: ChatStatus.idle, messages: rows);
+      state = state.copyWith(
+        status: ChatStatus.idle,
+        messages: rows,
+        error: null,
+      );
     } on Object {
       state = state.copyWith(
         status: ChatStatus.error,
@@ -60,6 +98,7 @@ class ChatController extends Notifier<ChatState> {
     state = state.copyWith(
       status: ChatStatus.streaming,
       messages: [...state.messages, userMsg, assistantMsg],
+      error: null,
     );
 
     try {
@@ -81,9 +120,28 @@ class ChatController extends Notifier<ChatState> {
           .copyWith(status: MessageStatus.sent);
       finalized[finalized.length - 1] = finalized[finalized.length - 1]
           .copyWith(status: MessageStatus.sent);
-      state = state.copyWith(status: ChatStatus.idle, messages: finalized);
+      state = state.copyWith(
+        status: ChatStatus.idle,
+        messages: finalized,
+        error: null,
+      );
+    } on ServerpodClientException catch (e) {
+      final updated = state.messages.toList();
+      updated[updated.length - 2] = updated[updated.length - 2].copyWith(
+        status: MessageStatus.error,
+      );
+      // 429 = daily quota exhausted: the server message is already written
+      // for users (Vietnamese) — surface it verbatim (phase-08 stage 6).
+      updated[updated.length - 1] = updated.last.copyWith(
+        content: e.statusCode == 429 ? e.message : 'Không gửi được. Thử lại.',
+        status: MessageStatus.error,
+      );
+      state = state.copyWith(status: ChatStatus.error, messages: updated);
     } on Object {
       final updated = state.messages.toList();
+      updated[updated.length - 2] = updated[updated.length - 2].copyWith(
+        status: MessageStatus.error,
+      );
       updated[updated.length - 1] = updated.last.copyWith(
         content: 'Không gửi được. Thử lại.',
         status: MessageStatus.error,

@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 
 enum LogLevel { debug, info, warning, error }
 
+typedef LogSink = void Function(String message);
+
 /// Logging boundary. Production rules (§50/§59): never log passwords,
 /// tokens, AI keys or signed URLs. `context` values are scrubbed for
 /// sensitive keys as a last line of defense — callers must still avoid
@@ -49,6 +51,8 @@ abstract class AppLogger {
 }
 
 class ConsoleAppLogger extends AppLogger {
+  ConsoleAppLogger({LogSink? sink}) : _sink = sink ?? _defaultSink;
+
   /// Matched against lower-cased context keys, so `Password`, `accessToken`,
   /// `API_KEY` and snake_case variants are all caught.
   static const _sensitiveKeys = {
@@ -66,6 +70,12 @@ class ConsoleAppLogger extends AppLogger {
     'authorization',
   };
 
+  final LogSink _sink;
+
+  static void _defaultSink(String message) {
+    debugPrint(message);
+  }
+
   @override
   void log(
     LogLevel level,
@@ -81,8 +91,7 @@ class ConsoleAppLogger extends AppLogger {
         _sensitiveKeys.contains(k.toLowerCase()) ? '«redacted»' : v,
       ),
     );
-    // ignore: avoid_print
-    print(
+    _sink(
       '[${level.name.toUpperCase()}] $message'
       '${scrubbed.isEmpty ? '' : ' $scrubbed'}'
       '${error == null ? '' : ' error=$error'}'
