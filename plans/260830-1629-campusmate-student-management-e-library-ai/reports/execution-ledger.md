@@ -28,9 +28,63 @@ plans/260830-1629-campusmate-student-management-e-library-ai/plan.md
 
 ## Remaining (resume point)
 
-- **Stage 6 — Quota + injection**: server-side quota check against `ai_usage` (config-driven 50 msg/day, NOT hard-coded), friendly quota-exhausted error; prompt-injection baseline + fixtures. Needs a quota-exhausted test + injection test.
-- **Stage 7 — hardening**: run `flutter analyze`/`flutter test`/`dart test` (test needs Docker), `git diff --check`, `/ak:code-review`, update README (AI section), handoff.
+- **Stage 6 — Quota + injection**: implemented and covered by `server/test/ai_provider_test.dart` plus `server/test/ai/chat_request_builder_test.dart`; quota uses `AI_DAILY_MESSAGE_QUOTA` and prompt-injection baseline now strips stored `system` rows.
+- **Stage 7 — hardening**: `flutter analyze`, `flutter test`, `dart analyze`, `dart format --set-exit-if-changed`, and `git diff --check` are PASS. `server/test/integration/ai_endpoint_test.dart` and full `server dart test` remain `NOT_RUN` because Docker engine did not expose `dockerDesktopLinuxEngine`.
+- Provider factory now reads runtime `Platform.environment['AI_PROVIDER']` instead of compile-time defines; regression covered by `server/test/ai_provider_test.dart`.
+- Runtime AI config now falls back from process environment to `.env`/`../.env` without adding a dependency; provider factory, quota, and OpenAI-compatible provider share this loader.
+- `OpenAiCompatibleProvider` now fails fast when `AI_CHAT_MODEL` is missing, so real-provider configuration errors are local and sanitized instead of becoming provider-side 400s.
+- OpenAI-compatible provider now throws sanitized HTTP status errors and emits a final done chunk when gateways terminate with `data: [DONE]` only; both regressions are covered by `server/test/ai_provider_test.dart`.
+- `AiEndpoint.sendMessage` creates the AI provider after ownership validation but before quota/history/user persistence, so foreign conversation ids do not reveal provider config and misconfigured AI does not persist a user turn.
+- Server unit/offline test gate is now explicit: `dart test --exclude-tags integration` PASS, while Docker-backed integration remains separate.
+- `serverpod generate` PASS and produced no generated protocol/client diff, confirming generated parity for current endpoint signatures.
+- Mobile logger cleanup: `ConsoleAppLogger` now accepts an injectable sink, removing the direct `print` dependency and simplifying tests.
+- Auth storage hardening: malformed `auth.accessTokenExpiresAt` now clears the local session instead of throwing during restore.
+- Latest mobile verification after these hardenings: `flutter analyze` PASS and full `flutter test` PASS.
+- Chat error-state hardening: failed sends now mark the optimistic user turn as `MessageStatus.error` instead of leaving it stuck in `sending`; covered by `apps/mobile/test/chat_controller_test.dart`.
+- CI hardening: server workflow now analyzes `packages/campusmate_shared`; mobile workflow now runs `flutter build apk --debug`.
+- Android Gradle comments were normalized so the repo no longer advertises template TODOs for `applicationId` and release signing.
+- Android build hardening: `kotlin.incremental=false` added to avoid Windows C:/D: cross-drive Kotlin cache failures; `flutter build apk --debug` PASS with `GRADLE_USER_HOME=.dart_tool/gradle-home`.
+- Docker service check during this turn: `com.docker.service` reported `Stopped` and could not be started from this session, so the integration blocker is environmental not code-level.
 - Integration test `ai_endpoint_test.dart` requires Docker (test postgres on 9090) to run.
+
+## 2026-09-06 AK deep-scan refresh
+
+- Workflow used: `/ak:scout` → `/ak:fix` → `/ak:test` → `/ak:code-review` (project-local `.codex/skills`; no extra registry loaded).
+- Server AI hardening completed:
+  - `AiEndpoint.sendMessage` validates ownership before provider/quota/history/persistence, preventing provider-config leaks and foreign-conversation side effects.
+  - Server-owned prompt assembly now prepends `system_prompt.dart`, strips stored `system` rows, and keeps injection fixtures as user data.
+  - `DailyMessageQuota` uses runtime `AI_DAILY_MESSAGE_QUOTA` and camelCase generated DB columns (`userId`, `requestCount`, etc.).
+  - Runtime AI config reads process environment first, then `.env` / `../.env`; factory/provider/quota share the loader.
+  - `AI_PROVIDER=openai-compatible` and `openai_compatible` both select `OpenAiCompatibleProvider`; factory now passes `environment` and `dotenvContent` through to the provider.
+  - OpenAI-compatible streaming handles split SSE delta chunks, sanitized non-2xx errors, missing model/base URL, and `data: [DONE]` without a prior finish reason.
+  - `FakeAiProvider` embeddings are now unit-normalized.
+- Mobile hardening completed:
+  - Auth repository/session storage now share one token storage provider; malformed or identity-incomplete local sessions are cleared instead of throwing during restore.
+  - Registration flow no longer calls `completeRegistration` after the code-verification step; completion waits for password confirmation.
+  - Chat send failures mark both optimistic user and assistant turns as `MessageStatus.error`; 429 quota messages surface the server message.
+  - Chat bootstrap now handles both history-load and create-conversation failures with a visible retry state; stale `conversationId` / `error` can be cleared through `ChatState.copyWith`.
+  - `ConsoleAppLogger` accepts an injectable sink, removing direct `print` coupling from tests.
+- CI/docs/build hardening completed:
+  - Server CI now analyzes `packages/campusmate_shared`; mobile CI now runs `flutter build apk --debug`.
+  - Android template TODO comments were replaced with project-specific notes.
+  - `kotlin.incremental=false` avoids the observed Windows C:/D: Kotlin cache failure; debug APK builds pass with repo-local `GRADLE_USER_HOME`.
+  - Mobile config now uses the Android emulator host bridge (`10.0.2.2`) by default on Android when `CAMPUSMATE_SERVER_URL` is not supplied; README and `.env.example` document AI provider/runtime knobs and separate offline server tests from Docker integration.
+- Fresh gates observed:
+  - `dart format --output=none --set-exit-if-changed server packages\campusmate_shared packages\campusmate_client apps\mobile\lib apps\mobile\test` — PASS, 94 files, 0 changed.
+  - `$env:LOCALAPPDATA = Join-Path (Resolve-Path .).Path '.dart_tool\codex-localappdata'; dart analyze server packages\campusmate_shared packages\campusmate_client` — PASS, no issues.
+  - `cd server; dart test --exclude-tags integration` — PASS, 29 tests.
+  - `cd apps/mobile; flutter analyze` — PASS, no issues.
+  - `cd apps/mobile; flutter test` — PASS, 57 tests, 3 live-spike tests skipped by `CAMPUSMATE_LIVE_SPIKE=1` guard.
+  - `cd apps/mobile; $env:GRADLE_USER_HOME = Join-Path (Resolve-Path ..\..).Path '.dart_tool\gradle-home'; flutter build apk --debug` — PASS, built `build\app\outputs\flutter-apk\app-debug.apk`.
+  - `cd server; & (Join-Path $env:LOCALAPPDATA 'Pub\Cache\bin\serverpod.bat') generate` — PASS; generated protocol/client files have no diff.
+  - `docker info` — FAIL; Docker client is installed, but daemon pipe `npipe:////./pipe/dockerDesktopLinuxEngine` is unavailable.
+- Review evidence:
+  - Independent `code-reviewer` first pass on branch `main` / HEAD `604200cf07c4f13ce890c45ea1daad4ed6febe5b` returned `FAIL` for three real issues: documented `openai-compatible` alias unsupported, factory config injection dropped for real provider, and stale chat `conversationId` after create failure.
+  - All three findings were fixed with regressions in `server/test/ai_provider_test.dart` and `apps/mobile/test/chat_controller_test.dart`.
+  - Independent `code-reviewer` re-review returned `PASS`: prior findings `FIXED`, `NEW_FINDINGS: NONE`. It did not rerun broad gates and relied on controller-reported fresh gate evidence.
+- Remaining blockers / NOT_RUN:
+  - `docker info` still fails against `npipe:////./pipe/dockerDesktopLinuxEngine`; Docker daemon is unavailable from this session.
+  - Docker-backed `server/test/integration/ai_endpoint_test.dart`, full `cd server; dart test`, live Serverpod/Postgres quota SQL, live OpenAI/GLM provider, CI, and production cutover are `NOT_RUN`.
 
 ## Completed steps & evidence
 
@@ -78,4 +132,4 @@ No implementation steps executed yet.
 
 ## Next resume point
 
-- `ak plan check` phase-01 → đọc `phase-02-auth-student.md` từ Implementation Steps 1 (spike auth generation, ADR-005).
+- Re-check Docker engine, then run `server/test/integration/ai_endpoint_test.dart` and full `server dart test`; otherwise hand off with `NOT_RUN` recorded honestly.

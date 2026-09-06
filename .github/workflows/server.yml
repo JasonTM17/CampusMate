@@ -63,6 +63,7 @@ jobs:
         run: |
           dart analyze server
           dart analyze packages/campusmate_client
+          dart analyze packages/campusmate_shared
 
       - name: Test
         working-directory: server

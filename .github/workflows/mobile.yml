@@ -34,3 +34,6 @@ jobs:
       # stay skipped in CI by design.
       - name: Test
         run: flutter test
+
+      - name: Build Android debug APK
+        run: flutter build apk --debug

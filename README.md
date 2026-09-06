@@ -55,14 +55,17 @@ dart run bin/main.dart --apply-migrations   # giữ terminal này chạy
 # 3. Mobile app
 cd ../apps/mobile
 flutter pub get
-flutter run -d <device>   # Android emulator: server URL mặc định trỏ localhost;
-                          # emulator dùng --dart-define=CAMPUSMATE_SERVER_URL=http://10.0.2.2:8080/
+flutter run -d <device>   # Android emulator sẽ tự dùng 10.0.2.2 nếu chưa có dart-define;
+                          # Android máy thật nên truyền CAMPUSMATE_SERVER_URL riêng
 ```
 
 ## Tests
 
 ```bash
-# Server (cần docker compose test services đang chạy)
+# Server unit/offline tests (không cần Docker)
+cd server && dart test --exclude-tags integration
+
+# Server full tests (cần docker compose test services đang chạy)
 cd server && dart test
 
 # Mobile
@@ -89,6 +92,13 @@ admin@campusmate.local        — quản trị
 ## Environment variables
 
 Xem `.env.example` (tên biến bắt buộc, không chứa secret). AI key chỉ nằm ở server (`AI_API_KEY`), mobile nhận URL qua `--dart-define=CAMPUSMATE_SERVER_URL`.
+
+## AI runtime
+
+- `AI_PROVIDER=fake` là mặc định cho local dev; đổi sang `openai-compatible` hoặc `glm` khi có `AI_BASE_URL`, `AI_CHAT_MODEL`, và khóa provider nếu gateway yêu cầu `AI_API_KEY`. `openai_compatible` vẫn được chấp nhận như alias tương thích.
+- `AI_DAILY_MESSAGE_QUOTA` là hạn mức tin nhắn/ngày/người dùng, server-enforced, mặc định `50`.
+- Server luôn chèn system prompt cố định và bỏ qua mọi `system` row nằm trong history để giảm prompt-injection.
+- `server/test/integration/ai_endpoint_test.dart` cần Docker engine đang chạy; nếu không có Docker, gate này là `NOT_RUN`.
 
 ## Cảnh báo bảo mật dev
 
