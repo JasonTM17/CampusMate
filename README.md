@@ -116,6 +116,8 @@ Password Postgres/Redis/JWT trong `server/config/passwords.yaml`, `server/docker
 ## Troubleshooting
 
 - `Failed to bind socket, port 8080` → server cũ còn chạy: `netstat -ano | findstr :8080` → `taskkill /F /PID <pid>`.
+- **Cổng 8080 bị dự án Docker khác chiếm** (vd một compose stack `infrastructure` chạy sẵn): đổi `port` trong `server/config/development.yaml` sang cổng khác (vd 8083), rồi truyền URL tương ứng cho app — `flutter run --dart-define=CAMPUSMATE_SERVER_URL=http://localhost:8083/` (Android emulator: `http://10.0.2.2:8083/`). Không commit phần đổi cổng này — nó là cấu hình machine-local.
+- App trắng/không gọi được server khi `flutter run` → kiểm tra app đang trỏ tới đâu: mặc định không có `--dart-define` là `localhost:8080` (Android emulator `10.0.2.2:8080`); đảm bảo backend đang chạy đúng cổng đó (`curl http://localhost:<port>/` phải trả HTTP bất kỳ, không timeout).
 - Docker daemon down sau khi máy sleep → mở Docker Desktop, chờ engine lên, `docker compose up -d` lại trong `server/`.
 - `flutter pub get` báo Developer Mode trên Windows → bật Dev Mode hoặc xóa platform `windows/` (chỉ build Android/iOS).
 - Page/server lỗi 503 khi GET root `/` trên port 8080 là hành vi bình thường (protocol endpoint); test thật bằng client call (spike test).
