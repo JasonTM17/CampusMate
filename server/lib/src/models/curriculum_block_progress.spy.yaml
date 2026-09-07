@@ -1,0 +1,5 @@
+class: CurriculumBlockProgress
+fields:
+  name: String
+  creditsEarned: int
+  creditsRequired: int

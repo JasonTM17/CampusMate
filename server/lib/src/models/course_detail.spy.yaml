@@ -1,0 +1,11 @@
+class: CourseDetail
+fields:
+  summary: CourseSummary
+  description: String
+  faculty: String
+  department: String
+  schedules: List<TimetableEntry>
+  grades: List<GradeComponentScore>
+  documentsPlaceholder: String
+  relatedBooksPlaceholder: String
+  askAiPlaceholder: String

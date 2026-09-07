@@ -1,0 +1,8 @@
+class: GradeSummary
+fields:
+  semester: SemesterSummary
+  courses: List<CourseSummary>
+  semesterGpa: double
+  cumulativeGpa: double
+  creditsEarned: int
+  creditsAttempted: int

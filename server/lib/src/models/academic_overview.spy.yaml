@@ -1,0 +1,13 @@
+class: AcademicOverview
+fields:
+  currentSemester: SemesterSummary
+  availableSemesters: List<SemesterSummary>
+  courses: List<CourseSummary>
+  today: List<TimetableEntry>
+  upcomingExams: List<ExamSummary>
+  progress: CurriculumProgress
+  semesterGpa: double
+  cumulativeGpa: double
+  creditsEarned: int
+  creditsRequired: int
+  syncedAt: DateTime

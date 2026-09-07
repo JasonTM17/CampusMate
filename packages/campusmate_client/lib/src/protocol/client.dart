@@ -13,15 +13,143 @@
 
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
+import 'package:campusmate_client/src/protocol/academic_overview.dart' as _i3;
+import 'package:campusmate_client/src/protocol/course_summary.dart' as _i4;
+import 'package:campusmate_client/src/protocol/course_detail.dart' as _i5;
+import 'package:campusmate_client/src/protocol/timetable_entry.dart' as _i6;
+import 'package:campusmate_client/src/protocol/grade_summary.dart' as _i7;
+import 'package:campusmate_client/src/protocol/exam_summary.dart' as _i8;
+import 'package:campusmate_client/src/protocol/curriculum_progress.dart' as _i9;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _i3;
+    as _i10;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i4;
-import 'package:campusmate_client/src/protocol/ai_conversations.dart' as _i5;
-import 'package:campusmate_client/src/protocol/ai_messages.dart' as _i6;
-import 'package:campusmate_client/src/protocol/greetings/greeting.dart' as _i7;
-import 'package:campusmate_client/src/protocol/student_profile.dart' as _i8;
-import 'protocol.dart' as _i9;
+    as _i11;
+import 'package:campusmate_client/src/protocol/ai_conversations.dart' as _i12;
+import 'package:campusmate_client/src/protocol/ai_messages.dart' as _i13;
+import 'package:campusmate_client/src/protocol/greetings/greeting.dart' as _i14;
+import 'package:campusmate_client/src/protocol/student_profile.dart' as _i15;
+import 'protocol.dart' as _i16;
+
+/// {@category Endpoint}
+class EndpointAcademic extends _i1.EndpointRef {
+  EndpointAcademic(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'academic';
+
+  _i2.Future<_i3.AcademicOverview> getOverview() =>
+      caller.callServerEndpoint<_i3.AcademicOverview>(
+        'academic',
+        'getOverview',
+        {},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointCourses extends _i1.EndpointRef {
+  EndpointCourses(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'courses';
+
+  _i2.Future<List<_i4.CourseSummary>> getMyCourses({int? semesterId}) =>
+      caller.callServerEndpoint<List<_i4.CourseSummary>>(
+        'courses',
+        'getMyCourses',
+        {'semesterId': semesterId},
+      );
+
+  _i2.Future<_i5.CourseDetail> getCourseDetail({required int offeringId}) =>
+      caller.callServerEndpoint<_i5.CourseDetail>(
+        'courses',
+        'getCourseDetail',
+        {'offeringId': offeringId},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointTimetable extends _i1.EndpointRef {
+  EndpointTimetable(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'timetable';
+
+  _i2.Future<List<_i6.TimetableEntry>> getWeekly({
+    DateTime? weekStart,
+    DateTime? now,
+  }) => caller.callServerEndpoint<List<_i6.TimetableEntry>>(
+    'timetable',
+    'getWeekly',
+    {
+      'weekStart': weekStart,
+      'now': now,
+    },
+  );
+
+  _i2.Future<List<_i6.TimetableEntry>> getDaily({
+    DateTime? day,
+    DateTime? now,
+  }) => caller.callServerEndpoint<List<_i6.TimetableEntry>>(
+    'timetable',
+    'getDaily',
+    {
+      'day': day,
+      'now': now,
+    },
+  );
+}
+
+/// {@category Endpoint}
+class EndpointGrades extends _i1.EndpointRef {
+  EndpointGrades(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'grades';
+
+  _i2.Future<_i7.GradeSummary> getBySemester({int? semesterId}) =>
+      caller.callServerEndpoint<_i7.GradeSummary>(
+        'grades',
+        'getBySemester',
+        {'semesterId': semesterId},
+      );
+
+  _i2.Future<_i7.GradeSummary> getCumulative() =>
+      caller.callServerEndpoint<_i7.GradeSummary>(
+        'grades',
+        'getCumulative',
+        {},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointExams extends _i1.EndpointRef {
+  EndpointExams(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'exams';
+
+  _i2.Future<List<_i8.ExamSummary>> getUpcoming({DateTime? now}) =>
+      caller.callServerEndpoint<List<_i8.ExamSummary>>(
+        'exams',
+        'getUpcoming',
+        {'now': now},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointProgress extends _i1.EndpointRef {
+  EndpointProgress(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'progress';
+
+  _i2.Future<_i9.CurriculumProgress> getCurriculumProgress() =>
+      caller.callServerEndpoint<_i9.CurriculumProgress>(
+        'progress',
+        'getCurriculumProgress',
+        {},
+      );
+}
 
 /// Small protected surface used by phase-02 to prove role isolation.
 ///
@@ -70,7 +198,7 @@ class EndpointAiSpike extends _i1.EndpointRef {
 /// are made available on the server and enable the corresponding sign-in widget
 /// on the client.
 /// {@category Endpoint}
-class EndpointEmailIdp extends _i3.EndpointEmailIdpBase {
+class EndpointEmailIdp extends _i10.EndpointEmailIdpBase {
   EndpointEmailIdp(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -86,10 +214,10 @@ class EndpointEmailIdp extends _i3.EndpointEmailIdpBase {
   ///
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   @override
-  _i2.Future<_i4.AuthSuccess> login({
+  _i2.Future<_i11.AuthSuccess> login({
     required String email,
     required String password,
-  }) => caller.callServerEndpoint<_i4.AuthSuccess>(
+  }) => caller.callServerEndpoint<_i11.AuthSuccess>(
     'emailIdp',
     'login',
     {
@@ -154,10 +282,10 @@ class EndpointEmailIdp extends _i3.EndpointEmailIdpBase {
   ///
   /// Returns a session for the newly created user.
   @override
-  _i2.Future<_i4.AuthSuccess> finishRegistration({
+  _i2.Future<_i11.AuthSuccess> finishRegistration({
     required String registrationToken,
     required String password,
-  }) => caller.callServerEndpoint<_i4.AuthSuccess>(
+  }) => caller.callServerEndpoint<_i11.AuthSuccess>(
     'emailIdp',
     'finishRegistration',
     {
@@ -252,7 +380,7 @@ class EndpointEmailIdp extends _i3.EndpointEmailIdpBase {
 /// By extending [RefreshJwtTokensEndpoint], the JWT token refresh endpoint
 /// is made available on the server and enables automatic token refresh on the client.
 /// {@category Endpoint}
-class EndpointJwtRefresh extends _i4.EndpointRefreshJwtTokens {
+class EndpointJwtRefresh extends _i11.EndpointRefreshJwtTokens {
   EndpointJwtRefresh(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -277,9 +405,9 @@ class EndpointJwtRefresh extends _i4.EndpointRefreshJwtTokens {
   /// This endpoint is unauthenticated, meaning the client won't include any
   /// authentication information with the call.
   @override
-  _i2.Future<_i4.AuthSuccess> refreshAccessToken({
+  _i2.Future<_i11.AuthSuccess> refreshAccessToken({
     required String refreshToken,
-  }) => caller.callServerEndpoint<_i4.AuthSuccess>(
+  }) => caller.callServerEndpoint<_i11.AuthSuccess>(
     'jwtRefresh',
     'refreshAccessToken',
     {'refreshToken': refreshToken},
@@ -302,16 +430,16 @@ class EndpointAi extends _i1.EndpointRef {
   String get name => 'ai';
 
   /// Loads the user's conversations, newest first.
-  _i2.Future<List<_i5.AiConversation>> listConversations() =>
-      caller.callServerEndpoint<List<_i5.AiConversation>>(
+  _i2.Future<List<_i12.AiConversation>> listConversations() =>
+      caller.callServerEndpoint<List<_i12.AiConversation>>(
         'ai',
         'listConversations',
         {},
       );
 
   /// Creates a new empty conversation owned by the caller.
-  _i2.Future<_i5.AiConversation> createConversation({required String title}) =>
-      caller.callServerEndpoint<_i5.AiConversation>(
+  _i2.Future<_i12.AiConversation> createConversation({required String title}) =>
+      caller.callServerEndpoint<_i12.AiConversation>(
         'ai',
         'createConversation',
         {'title': title},
@@ -326,8 +454,8 @@ class EndpointAi extends _i1.EndpointRef {
       );
 
   /// Returns the caller's messages for a conversation, oldest first.
-  _i2.Future<List<_i6.AiMessage>> getMessages({required int conversationId}) =>
-      caller.callServerEndpoint<List<_i6.AiMessage>>(
+  _i2.Future<List<_i13.AiMessage>> getMessages({required int conversationId}) =>
+      caller.callServerEndpoint<List<_i13.AiMessage>>(
         'ai',
         'getMessages',
         {'conversationId': conversationId},
@@ -366,8 +494,8 @@ class EndpointGreeting extends _i1.EndpointRef {
   String get name => 'greeting';
 
   /// Returns a personalized greeting message: "Hello {name}".
-  _i2.Future<_i7.Greeting> hello(String name) =>
-      caller.callServerEndpoint<_i7.Greeting>(
+  _i2.Future<_i14.Greeting> hello(String name) =>
+      caller.callServerEndpoint<_i14.Greeting>(
         'greeting',
         'hello',
         {'name': name},
@@ -385,8 +513,8 @@ class EndpointStudentProfile extends _i1.EndpointRef {
   @override
   String get name => 'studentProfile';
 
-  _i2.Future<_i8.StudentProfile> getMyProfile() =>
-      caller.callServerEndpoint<_i8.StudentProfile>(
+  _i2.Future<_i15.StudentProfile> getMyProfile() =>
+      caller.callServerEndpoint<_i15.StudentProfile>(
         'studentProfile',
         'getMyProfile',
         {},
@@ -396,10 +524,10 @@ class EndpointStudentProfile extends _i1.EndpointRef {
   ///
   /// Student code, academic results, faculty and major remain server-managed
   /// so client input cannot rewrite institutional data.
-  _i2.Future<_i8.StudentProfile> updateMyProfile({
+  _i2.Future<_i15.StudentProfile> updateMyProfile({
     required String fullName,
     required String className,
-  }) => caller.callServerEndpoint<_i8.StudentProfile>(
+  }) => caller.callServerEndpoint<_i15.StudentProfile>(
     'studentProfile',
     'updateMyProfile',
     {
@@ -411,13 +539,13 @@ class EndpointStudentProfile extends _i1.EndpointRef {
 
 class Modules {
   Modules(Client client) {
-    serverpod_auth_idp = _i3.Caller(client);
-    serverpod_auth_core = _i4.Caller(client);
+    serverpod_auth_idp = _i10.Caller(client);
+    serverpod_auth_core = _i11.Caller(client);
   }
 
-  late final _i3.Caller serverpod_auth_idp;
+  late final _i10.Caller serverpod_auth_idp;
 
-  late final _i4.Caller serverpod_auth_core;
+  late final _i11.Caller serverpod_auth_core;
 }
 
 class Client extends _i1.ServerpodClientShared {
@@ -440,7 +568,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i9.Protocol(),
+         _i16.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -449,6 +577,12 @@ class Client extends _i1.ServerpodClientShared {
          disconnectStreamsOnLostInternetConnection:
              disconnectStreamsOnLostInternetConnection,
        ) {
+    academic = EndpointAcademic(this);
+    courses = EndpointCourses(this);
+    timetable = EndpointTimetable(this);
+    grades = EndpointGrades(this);
+    exams = EndpointExams(this);
+    progress = EndpointProgress(this);
     admin = EndpointAdmin(this);
     aiSpike = EndpointAiSpike(this);
     emailIdp = EndpointEmailIdp(this);
@@ -458,6 +592,18 @@ class Client extends _i1.ServerpodClientShared {
     studentProfile = EndpointStudentProfile(this);
     modules = Modules(this);
   }
+
+  late final EndpointAcademic academic;
+
+  late final EndpointCourses courses;
+
+  late final EndpointTimetable timetable;
+
+  late final EndpointGrades grades;
+
+  late final EndpointExams exams;
+
+  late final EndpointProgress progress;
 
   late final EndpointAdmin admin;
 
@@ -477,6 +623,12 @@ class Client extends _i1.ServerpodClientShared {
 
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
+    'academic': academic,
+    'courses': courses,
+    'timetable': timetable,
+    'grades': grades,
+    'exams': exams,
+    'progress': progress,
     'admin': admin,
     'aiSpike': aiSpike,
     'emailIdp': emailIdp,

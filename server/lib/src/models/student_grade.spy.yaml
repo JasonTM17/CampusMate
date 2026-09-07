@@ -1,0 +1,16 @@
+class: StudentGrade
+table: student_grades
+fields:
+  enrollmentId: int, relation(parent=enrollments, onDelete=Cascade)
+  componentName: String
+  weight: double
+  score: double
+  maxScore: double
+  letter: String?
+  gradedAt: DateTime?
+indexes:
+  student_grade_enrollment_component_idx:
+    fields: enrollmentId,componentName
+    unique: true
+  student_grade_enrollment_idx:
+    fields: enrollmentId

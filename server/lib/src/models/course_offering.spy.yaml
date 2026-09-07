@@ -1,0 +1,13 @@
+class: CourseOffering
+table: course_offerings
+fields:
+  courseId: int, relation(parent=courses, onDelete=Cascade)
+  semesterId: int, relation(parent=semesters, onDelete=Cascade)
+  section: String
+  lecturerName: String
+  room: String?
+indexes:
+  offering_course_semester_idx:
+    fields: courseId,semesterId
+  offering_semester_idx:
+    fields: semesterId

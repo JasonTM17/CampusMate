@@ -1,0 +1,16 @@
+class: TimetableEntry
+fields:
+  scheduleId: int
+  offeringId: int
+  courseCode: String
+  title: String
+  lecturerName: String
+  weekday: int
+  startMinute: int
+  endMinute: int
+  room: String
+  campus: String
+  status: String
+  startsAt: DateTime
+  endsAt: DateTime
+  isCurrent: bool

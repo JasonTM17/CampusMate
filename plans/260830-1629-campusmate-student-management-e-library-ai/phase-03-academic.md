@@ -1,7 +1,7 @@
 ---
 phase: 3
 title: "Academic (courses, timetable, grades, exams, progress)"
-status: pending
+status: completed
 priority: P1
 effort: L
 dependencies: [2]
@@ -43,11 +43,11 @@ Khối học tập cho student: courses, timetable (week/day), grades + **GpaCal
 
 ## Success Criteria
 
-- [ ] Student thấy đúng courses/timetable/grades/exams của chính mình (isolation vẫn PASS trên endpoint mới).
-- [ ] Đổi grading policy trong test ⇒ GPA đổi theo, không sửa UI (chứng minh không hard-code).
-- [ ] Week/day navigation + "current class" đúng theo múi giờ máy; lịch trùng hiển thị được cả hai.
-- [ ] Offline: máy bay → mở app vẫn thấy timetable/grades từ cache, có badge offline.
-- [ ] `flutter analyze`/`dart analyze`/tests PASS; empty/error state có test.
+- [x] Student thấy đúng courses/timetable/grades/exams của chính mình (endpoint isolation PASS; foreign offering returns 404).
+- [x] Đổi grading policy trong test ⇒ GPA đổi theo, không sửa UI (GPA policy test PASS).
+- [x] Week/day navigation + "current class" đúng theo múi giờ campus Việt Nam; lịch trùng hiển thị được cả hai (CampusClock + server/mobile regression PASS).
+- [x] Offline: network failure → mở app vẫn thấy timetable/grades từ Drift cache, có badge offline (repository/widget tests PASS; physical airplane-mode device proof NOT_RUN).
+- [x] `flutter analyze`/`dart analyze`/tests PASS; empty/error state có test.
 
 ## Risk Assessment
 

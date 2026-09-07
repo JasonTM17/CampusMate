@@ -1,0 +1,16 @@
+class: Enrollment
+table: enrollments
+fields:
+  studentProfileId: int, relation(parent=student_profiles, onDelete=Cascade)
+  offeringId: int, relation(parent=course_offerings, onDelete=Cascade)
+  status: String
+  progressPercent: double
+  attendancePercent: double
+indexes:
+  enrollment_student_offering_idx:
+    fields: studentProfileId,offeringId
+    unique: true
+  enrollment_student_idx:
+    fields: studentProfileId
+  enrollment_offering_idx:
+    fields: offeringId

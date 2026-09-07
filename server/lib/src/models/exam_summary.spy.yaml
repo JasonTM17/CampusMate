@@ -1,0 +1,12 @@
+class: ExamSummary
+fields:
+  examId: int
+  offeringId: int
+  courseCode: String
+  title: String
+  examType: String
+  startsAt: DateTime
+  endsAt: DateTime
+  room: String
+  notes: String?
+  daysUntil: int

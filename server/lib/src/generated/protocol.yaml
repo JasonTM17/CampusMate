@@ -1,3 +1,18 @@
+academic:
+  - getOverview:
+courses:
+  - getMyCourses:
+  - getCourseDetail:
+timetable:
+  - getWeekly:
+  - getDaily:
+grades:
+  - getBySemester:
+  - getCumulative:
+exams:
+  - getUpcoming:
+progress:
+  - getCurriculumProgress:
 admin:
   - getAccessSummary:
 aiSpike:

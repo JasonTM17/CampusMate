@@ -1,0 +1,15 @@
+class: Course
+table: courses
+fields:
+  code: String
+  title: String
+  description: String
+  credits: int
+  faculty: String
+  department: String
+indexes:
+  course_code_idx:
+    fields: code
+    unique: true
+  course_title_idx:
+    fields: title

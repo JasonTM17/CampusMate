@@ -1,0 +1,8 @@
+class: GradeComponentScore
+fields:
+  name: String
+  weight: double
+  score: double
+  maxScore: double
+  letter: String?
+  gradedAt: DateTime?

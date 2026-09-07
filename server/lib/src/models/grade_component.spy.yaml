@@ -1,0 +1,10 @@
+class: GradeComponent
+table: grade_components
+fields:
+  offeringId: int, relation(parent=course_offerings, onDelete=Cascade)
+  name: String
+  weight: double
+  maxScore: double
+indexes:
+  grade_component_offering_idx:
+    fields: offeringId

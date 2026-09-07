@@ -1,0 +1,13 @@
+class: CourseSummary
+fields:
+  offeringId: int
+  courseCode: String
+  title: String
+  credits: int
+  lecturerName: String
+  section: String
+  status: String
+  progressPercent: double
+  attendancePercent: double
+  finalScore: double?
+  letter: String?

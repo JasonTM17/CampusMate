@@ -1,0 +1,8 @@
+class: SemesterSummary
+fields:
+  id: int
+  code: String
+  name: String
+  startsAt: DateTime
+  endsAt: DateTime
+  isCurrent: bool

@@ -7,20 +7,76 @@
 ## Kiến trúc
 
 ```mermaid
-flowchart LR
-    F[Flutter app — apps/mobile] --> S[Serverpod API — server]
-    S --> P[(PostgreSQL + pgvector)]
-    S --> R[(Redis)]
-    S --> O[MinIO / S3]
-    S --> AI[AI Provider — GLM / OpenAI-compatible / Fake]
+flowchart TB
+    student[Student app\nFlutter + Material 3] --> router[go_router shell\nHome / Academic / Library / AI / Profile]
+    router --> riverpod[Riverpod controllers\nfeature state + auth session]
+    riverpod --> cache[(Drift offline cache\nprofile / timetable / grades)]
+    riverpod --> client[Generated Serverpod client\npackages/campusmate_client]
+
+    client --> api[Serverpod API\nserver endpoints + auth scopes]
+    api --> auth[Serverpod Auth IDP\nemail + JWT refresh]
+    api --> academic[Academic domain\ncourses / timetable / grades / exams / progress]
+    api --> ai[AI domain\nchat / quota / prompt guard]
+    api --> library[Library domain\nplanned catalog / lending / reader]
+
+    academic --> pg[(PostgreSQL + pgvector)]
+    ai --> pg
+    library --> pg
+    api --> redis[(Redis\nphase-gated cache)]
+    library --> minio[(MinIO / S3\nplanned books + assets)]
+    ai --> provider[AI provider\nFake / GLM / OpenAI-compatible]
+
+    classDef mobile fill:#d9f99d,stroke:#3f6212,color:#1a2e05
+    classDef server fill:#bfdbfe,stroke:#1d4ed8,color:#172554
+    classDef data fill:#fde68a,stroke:#b45309,color:#451a03
+    classDef external fill:#fbcfe8,stroke:#be185d,color:#500724
+    class student,router,riverpod,cache,client mobile
+    class api,auth,academic,ai,library server
+    class pg,redis,minio data
+    class provider external
 ```
 
-- **apps/mobile** — Flutter + Material 3 + Riverpod + go_router (+ Drift offline ở phase sau).
+```mermaid
+erDiagram
+    STUDENT_PROFILES ||--o{ ENROLLMENTS : owns
+    ACADEMIC_YEARS ||--o{ SEMESTERS : contains
+    SEMESTERS ||--o{ COURSE_OFFERINGS : schedules
+    COURSES ||--o{ COURSE_OFFERINGS : opens
+    COURSE_OFFERINGS ||--o{ COURSE_SCHEDULES : meets
+    COURSE_OFFERINGS ||--o{ EXAM_SCHEDULES : assesses
+    COURSE_OFFERINGS ||--o{ GRADE_COMPONENTS : defines
+    ENROLLMENTS ||--o{ STUDENT_GRADES : records
+    COURSE_OFFERINGS ||--o{ ENROLLMENTS : enrolls
+```
+
+- **apps/mobile** — Flutter + Material 3 + Riverpod + go_router + Drift offline pull-cache.
 - **server** — Serverpod 3.4.x (Dart), migrations, RBAC kiểm quyền ở server.
 - **packages/campusmate_client** — generated client (không sửa tay; dùng `serverpod generate`).
+- **packages/campusmate_shared** — pure Dart domain logic dùng chung, ví dụ GPA calculation.
+- **docs/architecture.md** — sơ đồ hệ thống, trust boundary và runtime flow.
+- **docs/database.md** — ERD học vụ và quy tắc dữ liệu.
+- **docs/release-packages.md** — chính sách GitHub Releases/GitHub Packages.
 - **docs/adr/** — các quyết định kiến trúc quan trọng.
 
 Quy tắc cứng: mobile không bao giờ giữ AI key hay kết nối DB trực tiếp; mọi authorization kiểm tra ở SERVER; identity chỉ lấy từ session (không tin `userId` từ payload).
+
+## GitHub repository surface
+
+Suggested About:
+
+```text
+CampusMate — Flutter + Serverpod student management, e-library, offline academic dashboard, and personalized AI assistant.
+```
+
+Suggested topics: `flutter`, `dart`, `serverpod`, `postgresql`, `pgvector`, `riverpod`, `drift`, `student-management`, `e-library`, `ai-assistant`.
+
+Release/package policy:
+
+- **GitHub Releases**: publish only tagged, evidence-backed builds after the matching local gates and GitHub Actions pass. Attach release notes from the plan ledger, not ad-hoc claims.
+- **GitHub Packages**: use GitHub Packages/GHCR only for ship-ready server images or generated deliverables once a package workflow exists. Current CI builds a debug APK for verification, but does not publish packages yet.
+- **Current state**: no production release is claimed until phases, CI, review, and live evidence are complete.
+
+See [docs/release-packages.md](docs/release-packages.md) for the release and package contract.
 
 ## Prerequisites
 
@@ -75,6 +131,7 @@ cd server && dart test
 
 # Mobile
 cd apps/mobile && flutter analyze && flutter test
+cd apps/mobile && flutter build apk --debug
 
 # Spike gọi server thật (tùy chọn, cần server đang chạy)
 CAMPUSMATE_LIVE_SPIKE=1 flutter test test/client_spike_test.dart

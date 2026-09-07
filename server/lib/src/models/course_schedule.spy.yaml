@@ -1,0 +1,17 @@
+class: CourseSchedule
+table: course_schedules
+fields:
+  offeringId: int, relation(parent=course_offerings, onDelete=Cascade)
+  weekday: int
+  startMinute: int
+  endMinute: int
+  room: String
+  campus: String
+  startsAt: DateTime
+  endsAt: DateTime
+  status: String
+indexes:
+  schedule_offering_idx:
+    fields: offeringId
+  schedule_weekday_idx:
+    fields: weekday,startMinute

@@ -267,6 +267,97 @@ polish + commit + push).
   server-side refresh-token revocation on sign-out, faculties/majors/
   programs tables (phase-03).
 
+## Phase 03 — Academic completion evidence (2026-09-08)
+
+- Implemented DB-backed academic domain: Serverpod schema/models/migration for
+  academic years, semesters, courses, offerings, enrollments, schedules, exams,
+  grade components, student grades, and read DTOs. `serverpod generate` updated
+  `server/lib/src/generated/**`, `server/lib/src/generated/protocol.yaml`, and
+  `packages/campusmate_client/lib/src/protocol/**`.
+- Implemented student-scoped academic endpoints: overview, courses/detail,
+  weekly/daily timetable, semester/cumulative grades, upcoming exams, and
+  curriculum progress. Reads derive identity from the authenticated session and
+  filter through `StudentProfile`/`Enrollment`; foreign offering detail returns
+  404.
+- Implemented demo academic seed: 15 fake Vietnamese courses, 25 current
+  offerings/schedules, 75 grade components, 50 exams, two enrolled demo
+  students with 10 enrollments/30 grades, plus historical semester
+  `2025-HK2` for a real semester selector option.
+- Added `packages/campusmate_shared/src/gpa_calculator.dart` and
+  `packages/campusmate_shared/src/campus_clock.dart`. GPA is policy-injected
+  outside UI; `CampusClock` fixes academic day/week projection to Vietnam
+  campus time (UTC+7), including the early-Monday-local/Sunday-UTC edge.
+- Implemented mobile Academic route: overview metrics/progress, course detail
+  bottom sheet, week/day timetable with prev/next/today, current/conflict
+  badges, semester-backed grades dropdown, exams list/countdown, loading/error/
+  empty/offline states.
+- Implemented Drift pull-cache for academic profile/timetable/grades, keyed by
+  authenticated account plus week/semester where relevant. Offline fallback and
+  account partitioning are covered by tests; physical airplane-mode device proof
+  remains `NOT_RUN`.
+- Repository docs upgraded for GitHub presentation: README architecture ERD and
+  system diagram; `docs/architecture.md`, `docs/database.md`, and
+  `docs/release-packages.md` added. Mermaid CLI rendered the Markdown diagrams
+  into `.dart_tool/mermaid-proof/**` successfully.
+- GitHub About metadata updated with `gh repo edit` for
+  `JasonTM17/CampusMate`: description set to "CampusMate — Flutter + Serverpod
+  student management, e-library, offline academic dashboard, and personalized
+  AI assistant."; topics include `flutter`, `dart`, `serverpod`, `postgresql`,
+  `pgvector`, `riverpod`, `drift`, `student-management`, `e-library`,
+  `ai-assistant`. `gh repo view` shows `latestRelease: null`.
+- Release/package truth boundary: docs now define GitHub Releases and GitHub
+  Packages/GHCR policy, but no release or package is claimed/published until
+  Phase 12 ship gates, GitHub Actions evidence, tag, and package workflow exist.
+
+Observed gates:
+
+- `docker info` — PASS; Docker Desktop available. `docker compose up -d` in
+  `server/` started required Postgres/Redis services; MinIO port 9000 is held by
+  an existing external `infrastructure-minio-1` container, so no destructive
+  action was taken.
+- `serverpod generate` — PASS after adding `AcademicOverview.availableSemesters`.
+- `serverpod create-migration --tag phase03-academic` — PASS; migration
+  `server/migrations/20260907154030243-phase03-academic`.
+- `flutter pub get` in `apps/mobile` — PASS; added local
+  `campusmate_shared` dependency.
+- `dart run build_runner build --delete-conflicting-outputs` in `apps/mobile`
+  — PASS; generated Drift database code.
+- `dart format --output=none --set-exit-if-changed server packages apps\mobile\lib apps\mobile\test`
+  — PASS, 167 files, 0 changed.
+- `$env:LOCALAPPDATA = Join-Path (Resolve-Path .).Path '.dart_tool\codex-localappdata'; dart analyze server packages\campusmate_shared packages\campusmate_client apps\mobile`
+  — PASS, no issues.
+- `git diff --check` — PASS, CRLF warnings only.
+- `dart test` in `packages/campusmate_shared` — PASS, 5/5.
+- `dart test test\integration\academic_endpoint_test.dart` in `server` —
+  PASS, 9/9.
+- `dart test` in `server` — PASS, 57/57.
+- `flutter test test\academics` in `apps/mobile` — PASS, 5/5.
+- `flutter test` in `apps/mobile` — PASS, 73 pass / 3 skip; skipped tests are
+  live dev-server spikes gated by `CAMPUSMATE_LIVE_SPIKE`.
+- `flutter build apk --debug` in `apps/mobile` — PASS; generated
+  `build/app/outputs/flutter-apk/app-debug.apk`.
+- `npx -y @mermaid-js/mermaid-cli` over `docs/architecture.md`,
+  `docs/database.md`, and `docs/release-packages.md` — PASS; diagrams rendered
+  to `.dart_tool/mermaid-proof`.
+
+Independent review:
+
+- First code-reviewer pass returned `VERDICT: FAIL` for three load-bearing
+  issues: no independent semester window enforcement, UTC-based day/week
+  handling, and cosmetic one-item semester selector.
+- Fixes applied narrowly: timetable now intersects schedule and semester
+  windows; server/mobile use shared `CampusClock`; overview exposes
+  `availableSemesters`; seed adds historical semester; widget test switches
+  selector and asserts requested `semesterId`.
+- Second code-reviewer pass returned `VERDICT: PASS`. Reviewer independently
+  verified the prior findings as fixed and noted one non-blocking docs mismatch
+  (`student_grades.gradeComponentId` vs actual `componentName`), which was fixed
+  immediately in `docs/database.md` and re-rendered with Mermaid CLI.
+
+Phase-03 status flipped to `completed`. Current authoritative limitation:
+offline behavior is covered by deterministic cache/network-failure tests rather
+than a physical device airplane-mode run.
+
 ## Authorized rulings
 
 - AGENTS.md untracked (global gitignore user) — không force-add.
@@ -288,4 +379,9 @@ polish + commit + push).
 
 ## Next resume point
 
-- Re-check Docker engine, then run `server/test/integration/ai_endpoint_test.dart` and full `server dart test`; otherwise hand off with `NOT_RUN` recorded honestly.
+- Prepare an exact-scope commit for Phase 03 academic + docs after one final
+  staging audit that excludes known local/tool state
+  (`server/config/development.yaml`, `.mimosa/`, `.video_agent/`,
+  `apps/mobile/.mimosa/`, `apps/mobile/web/`, `server/.mimosa/`), then push and
+  watch GitHub Actions. After Phase 03 is safely recorded, resume Phase 04:
+  dashboard + notifications.

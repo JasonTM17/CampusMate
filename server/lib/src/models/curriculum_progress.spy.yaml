@@ -1,0 +1,6 @@
+class: CurriculumProgress
+fields:
+  blocks: List<CurriculumBlockProgress>
+  creditsEarned: int
+  creditsRequired: int
+  percentComplete: double

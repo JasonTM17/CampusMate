@@ -7,6 +7,7 @@ import '../../features/auth/domain/auth_user.dart';
 import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/password_reset_screen.dart';
 import '../../features/auth/presentation/registration_screen.dart';
+import '../../features/academics/presentation/academic_screen.dart';
 import '../../features/chat/presentation/chat_screen.dart';
 import '../../features/student_profile/presentation/student_profile_screen.dart';
 import '../../l10n/generated/app_localizations.dart';
@@ -76,10 +77,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/academic',
-                builder: (context, state) => BranchPlaceholderScreen(
-                  icon: Icons.school_outlined,
-                  title: AppLocalizations.of(context)!.navAcademic,
-                ),
+                builder: (context, state) => const AcademicScreen(),
               ),
             ],
           ),

@@ -1,0 +1,11 @@
+class: AcademicYear
+table: academic_years
+fields:
+  code: String
+  name: String
+  startsAt: DateTime
+  endsAt: DateTime
+indexes:
+  academic_year_code_idx:
+    fields: code
+    unique: true

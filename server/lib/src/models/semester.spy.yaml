@@ -1,0 +1,15 @@
+class: Semester
+table: semesters
+fields:
+  academicYearId: int, relation(parent=academic_years, onDelete=Cascade)
+  code: String
+  name: String
+  startsAt: DateTime
+  endsAt: DateTime
+  isCurrent: bool
+indexes:
+  semester_code_idx:
+    fields: code
+    unique: true
+  semester_current_idx:
+    fields: isCurrent

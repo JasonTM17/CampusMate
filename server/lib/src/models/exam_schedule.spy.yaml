@@ -1,0 +1,14 @@
+class: ExamSchedule
+table: exam_schedules
+fields:
+  offeringId: int, relation(parent=course_offerings, onDelete=Cascade)
+  examType: String
+  startsAt: DateTime
+  endsAt: DateTime
+  room: String
+  notes: String?
+indexes:
+  exam_offering_idx:
+    fields: offeringId
+  exam_starts_at_idx:
+    fields: startsAt
