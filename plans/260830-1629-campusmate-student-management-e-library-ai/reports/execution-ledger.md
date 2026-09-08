@@ -443,7 +443,10 @@ Independent review and repairs:
 - Staged strong-pattern secret scan — PASS; no token/key/private-key patterns
   found. Broader keyword hits are expected generated schema/route names such as
   `refreshToken`/`passwordHash`, not committed secret values.
-- Post-push GitHub Actions evidence is still pending at this checkpoint.
+- Post-push GitHub Actions for code commit
+  `1fb259c feat(dashboard): add student notifications` — PASS:
+  server run `34197078388` and mobile run `34197078408` both completed
+  successfully for head SHA `1fb259ced5dc281821228972b74ee9a22420375e`.
 
 Limitations and degraded gates:
 
@@ -453,8 +456,8 @@ Limitations and degraded gates:
   `CAMPUSMATE_LIVE_SPIKE=1`; local deterministic and integration gates above
   covered the Phase-04 contracts.
 
-Phase-04 status remains `completed` in the phase file, pending post-push CI
-evidence before treating the commit as release-grade.
+Phase-04 status remains `completed` in the phase file. Code commit `1fb259c`
+has local gates, independent review, push, and GitHub Actions evidence.
 
 ## Authorized rulings
 
@@ -477,10 +480,6 @@ evidence before treating the commit as release-grade.
 
 ## Next resume point
 
-- Prepare an exact-scope commit for Phase 04 dashboard + notifications after
-  reading the pending code-reviewer result, with a final staging audit that
-  excludes known local/tool state
-  (`server/config/development.yaml`, `.mimosa/`, `.video_agent/`,
-  `apps/mobile/.mimosa/`, `apps/mobile/web/`, `server/.mimosa/`), then push and
-  watch GitHub Actions. After Phase 04 is safely recorded, resume Phase 05:
-  library catalog + access policy.
+- Commit and push this docs-only CI evidence update, watch GitHub Actions for
+  the new documentation head, then resume Phase 05: library catalog + access
+  policy.
