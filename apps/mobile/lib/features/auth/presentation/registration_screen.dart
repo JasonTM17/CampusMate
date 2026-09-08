@@ -4,9 +4,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../app/router/auth_redirects.dart';
+import '../../../app/theme/app_spacing.dart';
 import '../../../core/utils/app_validators.dart';
 import '../../../core/widgets/app_error_banner.dart';
-import '../../../app/theme/app_spacing.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../application/auth_controller.dart';
 import '../domain/auth_failure.dart';
@@ -94,7 +95,9 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
             password: _passwordController.text,
           );
       if (mounted) {
-        context.go('/ai');
+        context.go(
+          postAuthRouteFor(GoRouterState.of(context).uri, fallback: '/ai'),
+        );
       }
     } on AuthFailure catch (failure) {
       if (mounted) {
@@ -281,7 +284,12 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
                     TextButton(
                       onPressed: _submitting
                           ? null
-                          : () => context.go('/login'),
+                          : () => context.go(
+                              authRouteWithCurrentFrom(
+                                GoRouterState.of(context).uri,
+                                loginPath,
+                              ),
+                            ),
                       child: Text(l10n.authAlreadyHaveAccount),
                     ),
                   ],

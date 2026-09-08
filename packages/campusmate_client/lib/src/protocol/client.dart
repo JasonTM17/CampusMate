@@ -24,11 +24,20 @@ import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     as _i10;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i11;
-import 'package:campusmate_client/src/protocol/ai_conversations.dart' as _i12;
-import 'package:campusmate_client/src/protocol/ai_messages.dart' as _i13;
-import 'package:campusmate_client/src/protocol/greetings/greeting.dart' as _i14;
-import 'package:campusmate_client/src/protocol/student_profile.dart' as _i15;
-import 'protocol.dart' as _i16;
+import 'package:campusmate_client/src/protocol/dashboard_greeting.dart' as _i12;
+import 'package:campusmate_client/src/protocol/dashboard_academic_summary.dart'
+    as _i13;
+import 'package:campusmate_client/src/protocol/announcement_summary.dart'
+    as _i14;
+import 'package:campusmate_client/src/protocol/ai_conversations.dart' as _i15;
+import 'package:campusmate_client/src/protocol/ai_messages.dart' as _i16;
+import 'package:campusmate_client/src/protocol/greetings/greeting.dart' as _i17;
+import 'package:campusmate_client/src/protocol/notification_list_page.dart'
+    as _i18;
+import 'package:campusmate_client/src/protocol/campus_notification_summary.dart'
+    as _i19;
+import 'package:campusmate_client/src/protocol/student_profile.dart' as _i20;
+import 'protocol.dart' as _i21;
 
 /// {@category Endpoint}
 class EndpointAcademic extends _i1.EndpointRef {
@@ -134,6 +143,18 @@ class EndpointExams extends _i1.EndpointRef {
         'getUpcoming',
         {'now': now},
       );
+
+  _i2.Future<_i8.ExamSummary> getDetail({
+    required int examId,
+    DateTime? now,
+  }) => caller.callServerEndpoint<_i8.ExamSummary>(
+    'exams',
+    'getDetail',
+    {
+      'examId': examId,
+      'now': now,
+    },
+  );
 }
 
 /// {@category Endpoint}
@@ -415,6 +436,57 @@ class EndpointJwtRefresh extends _i11.EndpointRefreshJwtTokens {
   );
 }
 
+/// {@category Endpoint}
+class EndpointDashboard extends _i1.EndpointRef {
+  EndpointDashboard(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'dashboard';
+
+  _i2.Future<_i12.DashboardGreeting> getGreeting({DateTime? now}) =>
+      caller.callServerEndpoint<_i12.DashboardGreeting>(
+        'dashboard',
+        'getGreeting',
+        {'now': now},
+      );
+
+  _i2.Future<_i13.DashboardAcademicSummary> getAcademicSummary() =>
+      caller.callServerEndpoint<_i13.DashboardAcademicSummary>(
+        'dashboard',
+        'getAcademicSummary',
+        {},
+      );
+
+  _i2.Future<List<_i6.TimetableEntry>> getTodayClasses({DateTime? now}) =>
+      caller.callServerEndpoint<List<_i6.TimetableEntry>>(
+        'dashboard',
+        'getTodayClasses',
+        {'now': now},
+      );
+
+  _i2.Future<_i6.TimetableEntry?> getNextClass({DateTime? now}) =>
+      caller.callServerEndpoint<_i6.TimetableEntry?>(
+        'dashboard',
+        'getNextClass',
+        {'now': now},
+      );
+
+  _i2.Future<_i8.ExamSummary?> getUpcomingExam({DateTime? now}) =>
+      caller.callServerEndpoint<_i8.ExamSummary?>(
+        'dashboard',
+        'getUpcomingExam',
+        {'now': now},
+      );
+
+  _i2.Future<List<_i14.AnnouncementSummary>> getAnnouncements({
+    required int limit,
+  }) => caller.callServerEndpoint<List<_i14.AnnouncementSummary>>(
+    'dashboard',
+    'getAnnouncements',
+    {'limit': limit},
+  );
+}
+
 /// AI assistant endpoints (phase-08): conversation lifecycle, message history,
 /// and token-by-token streaming chat backed by [AiProvider].
 ///
@@ -430,16 +502,16 @@ class EndpointAi extends _i1.EndpointRef {
   String get name => 'ai';
 
   /// Loads the user's conversations, newest first.
-  _i2.Future<List<_i12.AiConversation>> listConversations() =>
-      caller.callServerEndpoint<List<_i12.AiConversation>>(
+  _i2.Future<List<_i15.AiConversation>> listConversations() =>
+      caller.callServerEndpoint<List<_i15.AiConversation>>(
         'ai',
         'listConversations',
         {},
       );
 
   /// Creates a new empty conversation owned by the caller.
-  _i2.Future<_i12.AiConversation> createConversation({required String title}) =>
-      caller.callServerEndpoint<_i12.AiConversation>(
+  _i2.Future<_i15.AiConversation> createConversation({required String title}) =>
+      caller.callServerEndpoint<_i15.AiConversation>(
         'ai',
         'createConversation',
         {'title': title},
@@ -454,8 +526,8 @@ class EndpointAi extends _i1.EndpointRef {
       );
 
   /// Returns the caller's messages for a conversation, oldest first.
-  _i2.Future<List<_i13.AiMessage>> getMessages({required int conversationId}) =>
-      caller.callServerEndpoint<List<_i13.AiMessage>>(
+  _i2.Future<List<_i16.AiMessage>> getMessages({required int conversationId}) =>
+      caller.callServerEndpoint<List<_i16.AiMessage>>(
         'ai',
         'getMessages',
         {'conversationId': conversationId},
@@ -494,11 +566,55 @@ class EndpointGreeting extends _i1.EndpointRef {
   String get name => 'greeting';
 
   /// Returns a personalized greeting message: "Hello {name}".
-  _i2.Future<_i14.Greeting> hello(String name) =>
-      caller.callServerEndpoint<_i14.Greeting>(
+  _i2.Future<_i17.Greeting> hello(String name) =>
+      caller.callServerEndpoint<_i17.Greeting>(
         'greeting',
         'hello',
         {'name': name},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointNotification extends _i1.EndpointRef {
+  EndpointNotification(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'notification';
+
+  _i2.Future<_i18.NotificationListPage> list({
+    String? cursor,
+    required int limit,
+    String? category,
+  }) => caller.callServerEndpoint<_i18.NotificationListPage>(
+    'notification',
+    'list',
+    {
+      'cursor': cursor,
+      'limit': limit,
+      'category': category,
+    },
+  );
+
+  _i2.Future<int> unreadCount({String? category}) =>
+      caller.callServerEndpoint<int>(
+        'notification',
+        'unreadCount',
+        {'category': category},
+      );
+
+  _i2.Future<_i19.CampusNotificationSummary> markRead({
+    required int notificationId,
+  }) => caller.callServerEndpoint<_i19.CampusNotificationSummary>(
+    'notification',
+    'markRead',
+    {'notificationId': notificationId},
+  );
+
+  _i2.Future<int> markAllRead({String? category}) =>
+      caller.callServerEndpoint<int>(
+        'notification',
+        'markAllRead',
+        {'category': category},
       );
 }
 
@@ -513,8 +629,8 @@ class EndpointStudentProfile extends _i1.EndpointRef {
   @override
   String get name => 'studentProfile';
 
-  _i2.Future<_i15.StudentProfile> getMyProfile() =>
-      caller.callServerEndpoint<_i15.StudentProfile>(
+  _i2.Future<_i20.StudentProfile> getMyProfile() =>
+      caller.callServerEndpoint<_i20.StudentProfile>(
         'studentProfile',
         'getMyProfile',
         {},
@@ -524,10 +640,10 @@ class EndpointStudentProfile extends _i1.EndpointRef {
   ///
   /// Student code, academic results, faculty and major remain server-managed
   /// so client input cannot rewrite institutional data.
-  _i2.Future<_i15.StudentProfile> updateMyProfile({
+  _i2.Future<_i20.StudentProfile> updateMyProfile({
     required String fullName,
     required String className,
-  }) => caller.callServerEndpoint<_i15.StudentProfile>(
+  }) => caller.callServerEndpoint<_i20.StudentProfile>(
     'studentProfile',
     'updateMyProfile',
     {
@@ -568,7 +684,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i16.Protocol(),
+         _i21.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -587,8 +703,10 @@ class Client extends _i1.ServerpodClientShared {
     aiSpike = EndpointAiSpike(this);
     emailIdp = EndpointEmailIdp(this);
     jwtRefresh = EndpointJwtRefresh(this);
+    dashboard = EndpointDashboard(this);
     ai = EndpointAi(this);
     greeting = EndpointGreeting(this);
+    notification = EndpointNotification(this);
     studentProfile = EndpointStudentProfile(this);
     modules = Modules(this);
   }
@@ -613,9 +731,13 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointJwtRefresh jwtRefresh;
 
+  late final EndpointDashboard dashboard;
+
   late final EndpointAi ai;
 
   late final EndpointGreeting greeting;
+
+  late final EndpointNotification notification;
 
   late final EndpointStudentProfile studentProfile;
 
@@ -633,8 +755,10 @@ class Client extends _i1.ServerpodClientShared {
     'aiSpike': aiSpike,
     'emailIdp': emailIdp,
     'jwtRefresh': jwtRefresh,
+    'dashboard': dashboard,
     'ai': ai,
     'greeting': greeting,
+    'notification': notification,
     'studentProfile': studentProfile,
   };
 

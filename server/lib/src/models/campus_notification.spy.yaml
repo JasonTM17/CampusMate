@@ -1,0 +1,18 @@
+class: CampusNotification
+table: campus_notifications
+fields:
+  userId: UuidValue
+  category: String
+  title: String
+  body: String
+  targetType: String?
+  targetId: int?
+  readAt: DateTime?
+  createdAt: DateTime
+indexes:
+  notification_user_read_idx:
+    fields: userId, readAt
+  notification_user_created_idx:
+    fields: userId, createdAt, id
+  notification_user_category_created_idx:
+    fields: userId, category, createdAt, id

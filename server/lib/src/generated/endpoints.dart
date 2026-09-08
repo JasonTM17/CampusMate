@@ -17,13 +17,15 @@ import '../admin/admin_endpoint.dart' as _i3;
 import '../ai/ai_spike_endpoint.dart' as _i4;
 import '../auth/email_idp_endpoint.dart' as _i5;
 import '../auth/jwt_refresh_endpoint.dart' as _i6;
-import '../endpoints/ai_endpoint.dart' as _i7;
-import '../greetings/greeting_endpoint.dart' as _i8;
-import '../student/student_profile_endpoint.dart' as _i9;
+import '../dashboard/dashboard_endpoint.dart' as _i7;
+import '../endpoints/ai_endpoint.dart' as _i8;
+import '../greetings/greeting_endpoint.dart' as _i9;
+import '../notifications/notification_endpoint.dart' as _i10;
+import '../student/student_profile_endpoint.dart' as _i11;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i10;
+    as _i12;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i11;
+    as _i13;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -89,19 +91,31 @@ class Endpoints extends _i1.EndpointDispatch {
           'jwtRefresh',
           null,
         ),
-      'ai': _i7.AiEndpoint()
+      'dashboard': _i7.DashboardEndpoint()
+        ..initialize(
+          server,
+          'dashboard',
+          null,
+        ),
+      'ai': _i8.AiEndpoint()
         ..initialize(
           server,
           'ai',
           null,
         ),
-      'greeting': _i8.GreetingEndpoint()
+      'greeting': _i9.GreetingEndpoint()
         ..initialize(
           server,
           'greeting',
           null,
         ),
-      'studentProfile': _i9.StudentProfileEndpoint()
+      'notification': _i10.NotificationEndpoint()
+        ..initialize(
+          server,
+          'notification',
+          null,
+        ),
+      'studentProfile': _i11.StudentProfileEndpoint()
         ..initialize(
           server,
           'studentProfile',
@@ -278,6 +292,30 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async => (endpoints['exams'] as _i2.ExamsEndpoint).getUpcoming(
                 session,
+                now: params['now'],
+              ),
+        ),
+        'getDetail': _i1.MethodConnector(
+          name: 'getDetail',
+          params: {
+            'examId': _i1.ParameterDescription(
+              name: 'examId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'now': _i1.ParameterDescription(
+              name: 'now',
+              type: _i1.getType<DateTime?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['exams'] as _i2.ExamsEndpoint).getDetail(
+                session,
+                examId: params['examId'],
                 now: params['now'],
               ),
         ),
@@ -546,6 +584,117 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['dashboard'] = _i1.EndpointConnector(
+      name: 'dashboard',
+      endpoint: endpoints['dashboard']!,
+      methodConnectors: {
+        'getGreeting': _i1.MethodConnector(
+          name: 'getGreeting',
+          params: {
+            'now': _i1.ParameterDescription(
+              name: 'now',
+              type: _i1.getType<DateTime?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['dashboard'] as _i7.DashboardEndpoint).getGreeting(
+                    session,
+                    now: params['now'],
+                  ),
+        ),
+        'getAcademicSummary': _i1.MethodConnector(
+          name: 'getAcademicSummary',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['dashboard'] as _i7.DashboardEndpoint)
+                  .getAcademicSummary(session),
+        ),
+        'getTodayClasses': _i1.MethodConnector(
+          name: 'getTodayClasses',
+          params: {
+            'now': _i1.ParameterDescription(
+              name: 'now',
+              type: _i1.getType<DateTime?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['dashboard'] as _i7.DashboardEndpoint)
+                  .getTodayClasses(
+                    session,
+                    now: params['now'],
+                  ),
+        ),
+        'getNextClass': _i1.MethodConnector(
+          name: 'getNextClass',
+          params: {
+            'now': _i1.ParameterDescription(
+              name: 'now',
+              type: _i1.getType<DateTime?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['dashboard'] as _i7.DashboardEndpoint)
+                  .getNextClass(
+                    session,
+                    now: params['now'],
+                  ),
+        ),
+        'getUpcomingExam': _i1.MethodConnector(
+          name: 'getUpcomingExam',
+          params: {
+            'now': _i1.ParameterDescription(
+              name: 'now',
+              type: _i1.getType<DateTime?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['dashboard'] as _i7.DashboardEndpoint)
+                  .getUpcomingExam(
+                    session,
+                    now: params['now'],
+                  ),
+        ),
+        'getAnnouncements': _i1.MethodConnector(
+          name: 'getAnnouncements',
+          params: {
+            'limit': _i1.ParameterDescription(
+              name: 'limit',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['dashboard'] as _i7.DashboardEndpoint)
+                  .getAnnouncements(
+                    session,
+                    limit: params['limit'],
+                  ),
+        ),
+      },
+    );
     connectors['ai'] = _i1.EndpointConnector(
       name: 'ai',
       endpoint: endpoints['ai']!,
@@ -557,7 +706,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['ai'] as _i7.AiEndpoint).listConversations(
+              ) async => (endpoints['ai'] as _i8.AiEndpoint).listConversations(
                 session,
               ),
         ),
@@ -574,7 +723,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['ai'] as _i7.AiEndpoint).createConversation(
+              ) async => (endpoints['ai'] as _i8.AiEndpoint).createConversation(
                 session,
                 title: params['title'],
               ),
@@ -592,7 +741,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['ai'] as _i7.AiEndpoint).deleteConversation(
+              ) async => (endpoints['ai'] as _i8.AiEndpoint).deleteConversation(
                 session,
                 conversationId: params['conversationId'],
               ),
@@ -610,7 +759,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['ai'] as _i7.AiEndpoint).getMessages(
+              ) async => (endpoints['ai'] as _i8.AiEndpoint).getMessages(
                 session,
                 conversationId: params['conversationId'],
               ),
@@ -636,7 +785,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
                 Map<String, Stream> streamParams,
-              ) => (endpoints['ai'] as _i7.AiEndpoint).sendMessage(
+              ) => (endpoints['ai'] as _i8.AiEndpoint).sendMessage(
                 session,
                 conversationId: params['conversationId'],
                 userMessage: params['userMessage'],
@@ -661,10 +810,107 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['greeting'] as _i8.GreetingEndpoint).hello(
+              ) async => (endpoints['greeting'] as _i9.GreetingEndpoint).hello(
                 session,
                 params['name'],
               ),
+        ),
+      },
+    );
+    connectors['notification'] = _i1.EndpointConnector(
+      name: 'notification',
+      endpoint: endpoints['notification']!,
+      methodConnectors: {
+        'list': _i1.MethodConnector(
+          name: 'list',
+          params: {
+            'cursor': _i1.ParameterDescription(
+              name: 'cursor',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+            'limit': _i1.ParameterDescription(
+              name: 'limit',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'category': _i1.ParameterDescription(
+              name: 'category',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['notification'] as _i10.NotificationEndpoint).list(
+                    session,
+                    cursor: params['cursor'],
+                    limit: params['limit'],
+                    category: params['category'],
+                  ),
+        ),
+        'unreadCount': _i1.MethodConnector(
+          name: 'unreadCount',
+          params: {
+            'category': _i1.ParameterDescription(
+              name: 'category',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['notification'] as _i10.NotificationEndpoint)
+                      .unreadCount(
+                        session,
+                        category: params['category'],
+                      ),
+        ),
+        'markRead': _i1.MethodConnector(
+          name: 'markRead',
+          params: {
+            'notificationId': _i1.ParameterDescription(
+              name: 'notificationId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['notification'] as _i10.NotificationEndpoint)
+                      .markRead(
+                        session,
+                        notificationId: params['notificationId'],
+                      ),
+        ),
+        'markAllRead': _i1.MethodConnector(
+          name: 'markAllRead',
+          params: {
+            'category': _i1.ParameterDescription(
+              name: 'category',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['notification'] as _i10.NotificationEndpoint)
+                      .markAllRead(
+                        session,
+                        category: params['category'],
+                      ),
         ),
       },
     );
@@ -680,7 +926,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['studentProfile'] as _i9.StudentProfileEndpoint)
+                  (endpoints['studentProfile'] as _i11.StudentProfileEndpoint)
                       .getMyProfile(session),
         ),
         'updateMyProfile': _i1.MethodConnector(
@@ -702,7 +948,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['studentProfile'] as _i9.StudentProfileEndpoint)
+                  (endpoints['studentProfile'] as _i11.StudentProfileEndpoint)
                       .updateMyProfile(
                         session,
                         fullName: params['fullName'],
@@ -711,9 +957,9 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    modules['serverpod_auth_idp'] = _i10.Endpoints()
+    modules['serverpod_auth_idp'] = _i12.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_core'] = _i11.Endpoints()
+    modules['serverpod_auth_core'] = _i13.Endpoints()
       ..initializeEndpoints(server);
   }
 }

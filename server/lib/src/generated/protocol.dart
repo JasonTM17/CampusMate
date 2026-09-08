@@ -22,36 +22,49 @@ import 'academic_year.dart' as _i6;
 import 'ai_conversations.dart' as _i7;
 import 'ai_messages.dart' as _i8;
 import 'ai_usage.dart' as _i9;
-import 'course.dart' as _i10;
-import 'course_detail.dart' as _i11;
-import 'course_offering.dart' as _i12;
-import 'course_schedule.dart' as _i13;
-import 'course_summary.dart' as _i14;
-import 'curriculum_block_progress.dart' as _i15;
-import 'curriculum_progress.dart' as _i16;
-import 'enrollment.dart' as _i17;
-import 'exam_schedule.dart' as _i18;
-import 'exam_summary.dart' as _i19;
-import 'grade_component.dart' as _i20;
-import 'grade_component_score.dart' as _i21;
-import 'grade_summary.dart' as _i22;
-import 'greetings/greeting.dart' as _i23;
-import 'semester.dart' as _i24;
-import 'semester_summary.dart' as _i25;
-import 'student_grade.dart' as _i26;
-import 'student_profile.dart' as _i27;
-import 'timetable_entry.dart' as _i28;
-import 'vector_capability_probe.dart' as _i29;
-import 'package:campusmate_server/src/generated/course_summary.dart' as _i30;
-import 'package:campusmate_server/src/generated/timetable_entry.dart' as _i31;
-import 'package:campusmate_server/src/generated/exam_summary.dart' as _i32;
-import 'package:campusmate_server/src/generated/ai_conversations.dart' as _i33;
-import 'package:campusmate_server/src/generated/ai_messages.dart' as _i34;
+import 'announcement.dart' as _i10;
+import 'announcement_summary.dart' as _i11;
+import 'campus_notification.dart' as _i12;
+import 'campus_notification_summary.dart' as _i13;
+import 'course.dart' as _i14;
+import 'course_detail.dart' as _i15;
+import 'course_offering.dart' as _i16;
+import 'course_schedule.dart' as _i17;
+import 'course_summary.dart' as _i18;
+import 'curriculum_block_progress.dart' as _i19;
+import 'curriculum_progress.dart' as _i20;
+import 'dashboard_academic_summary.dart' as _i21;
+import 'dashboard_greeting.dart' as _i22;
+import 'enrollment.dart' as _i23;
+import 'exam_schedule.dart' as _i24;
+import 'exam_summary.dart' as _i25;
+import 'grade_component.dart' as _i26;
+import 'grade_component_score.dart' as _i27;
+import 'grade_summary.dart' as _i28;
+import 'greetings/greeting.dart' as _i29;
+import 'notification_list_page.dart' as _i30;
+import 'semester.dart' as _i31;
+import 'semester_summary.dart' as _i32;
+import 'student_grade.dart' as _i33;
+import 'student_profile.dart' as _i34;
+import 'timetable_entry.dart' as _i35;
+import 'vector_capability_probe.dart' as _i36;
+import 'package:campusmate_server/src/generated/course_summary.dart' as _i37;
+import 'package:campusmate_server/src/generated/timetable_entry.dart' as _i38;
+import 'package:campusmate_server/src/generated/exam_summary.dart' as _i39;
+import 'package:campusmate_server/src/generated/announcement_summary.dart'
+    as _i40;
+import 'package:campusmate_server/src/generated/ai_conversations.dart' as _i41;
+import 'package:campusmate_server/src/generated/ai_messages.dart' as _i42;
 export 'academic_overview.dart';
 export 'academic_year.dart';
 export 'ai_conversations.dart';
 export 'ai_messages.dart';
 export 'ai_usage.dart';
+export 'announcement.dart';
+export 'announcement_summary.dart';
+export 'campus_notification.dart';
+export 'campus_notification_summary.dart';
 export 'course.dart';
 export 'course_detail.dart';
 export 'course_offering.dart';
@@ -59,6 +72,8 @@ export 'course_schedule.dart';
 export 'course_summary.dart';
 export 'curriculum_block_progress.dart';
 export 'curriculum_progress.dart';
+export 'dashboard_academic_summary.dart';
+export 'dashboard_greeting.dart';
 export 'enrollment.dart';
 export 'exam_schedule.dart';
 export 'exam_summary.dart';
@@ -66,6 +81,7 @@ export 'grade_component.dart';
 export 'grade_component_score.dart';
 export 'grade_summary.dart';
 export 'greetings/greeting.dart';
+export 'notification_list_page.dart';
 export 'semester.dart';
 export 'semester_summary.dart';
 export 'student_grade.dart';
@@ -380,6 +396,259 @@ class Protocol extends _i1.SerializationManagerServer {
           ],
           type: 'btree',
           isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'announcements',
+      dartName: 'Announcement',
+      schema: 'public',
+      module: 'campusmate',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'announcements_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'title',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'body',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'audience',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'publishAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'expiresAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'archived',
+          columnType: _i2.ColumnType.boolean,
+          isNullable: false,
+          dartType: 'bool',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+        _i2.ColumnDefinition(
+          name: 'updatedAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'announcements_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'announcement_audience_publish_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'audience',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'publishAt',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'announcement_publish_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'publishAt',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _i2.TableDefinition(
+      name: 'campus_notifications',
+      dartName: 'CampusNotification',
+      schema: 'public',
+      module: 'campusmate',
+      columns: [
+        _i2.ColumnDefinition(
+          name: 'id',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'nextval(\'campus_notifications_id_seq\'::regclass)',
+        ),
+        _i2.ColumnDefinition(
+          name: 'userId',
+          columnType: _i2.ColumnType.uuid,
+          isNullable: false,
+          dartType: 'UuidValue',
+        ),
+        _i2.ColumnDefinition(
+          name: 'category',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'title',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'body',
+          columnType: _i2.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _i2.ColumnDefinition(
+          name: 'targetType',
+          columnType: _i2.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'targetId',
+          columnType: _i2.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'readAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: true,
+          dartType: 'DateTime?',
+        ),
+        _i2.ColumnDefinition(
+          name: 'createdAt',
+          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          isNullable: false,
+          dartType: 'DateTime',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [
+        _i2.IndexDefinition(
+          indexName: 'campus_notifications_pkey',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: true,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'notification_user_read_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'userId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'readAt',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'notification_user_created_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'userId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'createdAt',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
+          isPrimary: false,
+        ),
+        _i2.IndexDefinition(
+          indexName: 'notification_user_category_created_idx',
+          tableSpace: null,
+          elements: [
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'userId',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'category',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'createdAt',
+            ),
+            _i2.IndexElementDefinition(
+              type: _i2.IndexElementDefinitionType.column,
+              definition: 'id',
+            ),
+          ],
+          type: 'btree',
+          isUnique: false,
           isPrimary: false,
         ),
       ],
@@ -1467,65 +1736,86 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i9.AiUsage) {
       return _i9.AiUsage.fromJson(data) as T;
     }
-    if (t == _i10.Course) {
-      return _i10.Course.fromJson(data) as T;
+    if (t == _i10.Announcement) {
+      return _i10.Announcement.fromJson(data) as T;
     }
-    if (t == _i11.CourseDetail) {
-      return _i11.CourseDetail.fromJson(data) as T;
+    if (t == _i11.AnnouncementSummary) {
+      return _i11.AnnouncementSummary.fromJson(data) as T;
     }
-    if (t == _i12.CourseOffering) {
-      return _i12.CourseOffering.fromJson(data) as T;
+    if (t == _i12.CampusNotification) {
+      return _i12.CampusNotification.fromJson(data) as T;
     }
-    if (t == _i13.CourseSchedule) {
-      return _i13.CourseSchedule.fromJson(data) as T;
+    if (t == _i13.CampusNotificationSummary) {
+      return _i13.CampusNotificationSummary.fromJson(data) as T;
     }
-    if (t == _i14.CourseSummary) {
-      return _i14.CourseSummary.fromJson(data) as T;
+    if (t == _i14.Course) {
+      return _i14.Course.fromJson(data) as T;
     }
-    if (t == _i15.CurriculumBlockProgress) {
-      return _i15.CurriculumBlockProgress.fromJson(data) as T;
+    if (t == _i15.CourseDetail) {
+      return _i15.CourseDetail.fromJson(data) as T;
     }
-    if (t == _i16.CurriculumProgress) {
-      return _i16.CurriculumProgress.fromJson(data) as T;
+    if (t == _i16.CourseOffering) {
+      return _i16.CourseOffering.fromJson(data) as T;
     }
-    if (t == _i17.Enrollment) {
-      return _i17.Enrollment.fromJson(data) as T;
+    if (t == _i17.CourseSchedule) {
+      return _i17.CourseSchedule.fromJson(data) as T;
     }
-    if (t == _i18.ExamSchedule) {
-      return _i18.ExamSchedule.fromJson(data) as T;
+    if (t == _i18.CourseSummary) {
+      return _i18.CourseSummary.fromJson(data) as T;
     }
-    if (t == _i19.ExamSummary) {
-      return _i19.ExamSummary.fromJson(data) as T;
+    if (t == _i19.CurriculumBlockProgress) {
+      return _i19.CurriculumBlockProgress.fromJson(data) as T;
     }
-    if (t == _i20.GradeComponent) {
-      return _i20.GradeComponent.fromJson(data) as T;
+    if (t == _i20.CurriculumProgress) {
+      return _i20.CurriculumProgress.fromJson(data) as T;
     }
-    if (t == _i21.GradeComponentScore) {
-      return _i21.GradeComponentScore.fromJson(data) as T;
+    if (t == _i21.DashboardAcademicSummary) {
+      return _i21.DashboardAcademicSummary.fromJson(data) as T;
     }
-    if (t == _i22.GradeSummary) {
-      return _i22.GradeSummary.fromJson(data) as T;
+    if (t == _i22.DashboardGreeting) {
+      return _i22.DashboardGreeting.fromJson(data) as T;
     }
-    if (t == _i23.Greeting) {
-      return _i23.Greeting.fromJson(data) as T;
+    if (t == _i23.Enrollment) {
+      return _i23.Enrollment.fromJson(data) as T;
     }
-    if (t == _i24.Semester) {
-      return _i24.Semester.fromJson(data) as T;
+    if (t == _i24.ExamSchedule) {
+      return _i24.ExamSchedule.fromJson(data) as T;
     }
-    if (t == _i25.SemesterSummary) {
-      return _i25.SemesterSummary.fromJson(data) as T;
+    if (t == _i25.ExamSummary) {
+      return _i25.ExamSummary.fromJson(data) as T;
     }
-    if (t == _i26.StudentGrade) {
-      return _i26.StudentGrade.fromJson(data) as T;
+    if (t == _i26.GradeComponent) {
+      return _i26.GradeComponent.fromJson(data) as T;
     }
-    if (t == _i27.StudentProfile) {
-      return _i27.StudentProfile.fromJson(data) as T;
+    if (t == _i27.GradeComponentScore) {
+      return _i27.GradeComponentScore.fromJson(data) as T;
     }
-    if (t == _i28.TimetableEntry) {
-      return _i28.TimetableEntry.fromJson(data) as T;
+    if (t == _i28.GradeSummary) {
+      return _i28.GradeSummary.fromJson(data) as T;
     }
-    if (t == _i29.VectorCapabilityProbe) {
-      return _i29.VectorCapabilityProbe.fromJson(data) as T;
+    if (t == _i29.Greeting) {
+      return _i29.Greeting.fromJson(data) as T;
+    }
+    if (t == _i30.NotificationListPage) {
+      return _i30.NotificationListPage.fromJson(data) as T;
+    }
+    if (t == _i31.Semester) {
+      return _i31.Semester.fromJson(data) as T;
+    }
+    if (t == _i32.SemesterSummary) {
+      return _i32.SemesterSummary.fromJson(data) as T;
+    }
+    if (t == _i33.StudentGrade) {
+      return _i33.StudentGrade.fromJson(data) as T;
+    }
+    if (t == _i34.StudentProfile) {
+      return _i34.StudentProfile.fromJson(data) as T;
+    }
+    if (t == _i35.TimetableEntry) {
+      return _i35.TimetableEntry.fromJson(data) as T;
+    }
+    if (t == _i36.VectorCapabilityProbe) {
+      return _i36.VectorCapabilityProbe.fromJson(data) as T;
     }
     if (t == _i1.getType<_i5.AcademicOverview?>()) {
       return (data != null ? _i5.AcademicOverview.fromJson(data) : null) as T;
@@ -1542,132 +1832,174 @@ class Protocol extends _i1.SerializationManagerServer {
     if (t == _i1.getType<_i9.AiUsage?>()) {
       return (data != null ? _i9.AiUsage.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i10.Course?>()) {
-      return (data != null ? _i10.Course.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i10.Announcement?>()) {
+      return (data != null ? _i10.Announcement.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i11.CourseDetail?>()) {
-      return (data != null ? _i11.CourseDetail.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i12.CourseOffering?>()) {
-      return (data != null ? _i12.CourseOffering.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i13.CourseSchedule?>()) {
-      return (data != null ? _i13.CourseSchedule.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i14.CourseSummary?>()) {
-      return (data != null ? _i14.CourseSummary.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i15.CurriculumBlockProgress?>()) {
-      return (data != null ? _i15.CurriculumBlockProgress.fromJson(data) : null)
+    if (t == _i1.getType<_i11.AnnouncementSummary?>()) {
+      return (data != null ? _i11.AnnouncementSummary.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i16.CurriculumProgress?>()) {
-      return (data != null ? _i16.CurriculumProgress.fromJson(data) : null)
+    if (t == _i1.getType<_i12.CampusNotification?>()) {
+      return (data != null ? _i12.CampusNotification.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i17.Enrollment?>()) {
-      return (data != null ? _i17.Enrollment.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i18.ExamSchedule?>()) {
-      return (data != null ? _i18.ExamSchedule.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i19.ExamSummary?>()) {
-      return (data != null ? _i19.ExamSummary.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i20.GradeComponent?>()) {
-      return (data != null ? _i20.GradeComponent.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i21.GradeComponentScore?>()) {
-      return (data != null ? _i21.GradeComponentScore.fromJson(data) : null)
+    if (t == _i1.getType<_i13.CampusNotificationSummary?>()) {
+      return (data != null
+              ? _i13.CampusNotificationSummary.fromJson(data)
+              : null)
           as T;
     }
-    if (t == _i1.getType<_i22.GradeSummary?>()) {
-      return (data != null ? _i22.GradeSummary.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i14.Course?>()) {
+      return (data != null ? _i14.Course.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i23.Greeting?>()) {
-      return (data != null ? _i23.Greeting.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i15.CourseDetail?>()) {
+      return (data != null ? _i15.CourseDetail.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i24.Semester?>()) {
-      return (data != null ? _i24.Semester.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i16.CourseOffering?>()) {
+      return (data != null ? _i16.CourseOffering.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i25.SemesterSummary?>()) {
-      return (data != null ? _i25.SemesterSummary.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i17.CourseSchedule?>()) {
+      return (data != null ? _i17.CourseSchedule.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i26.StudentGrade?>()) {
-      return (data != null ? _i26.StudentGrade.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i18.CourseSummary?>()) {
+      return (data != null ? _i18.CourseSummary.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i27.StudentProfile?>()) {
-      return (data != null ? _i27.StudentProfile.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i28.TimetableEntry?>()) {
-      return (data != null ? _i28.TimetableEntry.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i29.VectorCapabilityProbe?>()) {
-      return (data != null ? _i29.VectorCapabilityProbe.fromJson(data) : null)
+    if (t == _i1.getType<_i19.CurriculumBlockProgress?>()) {
+      return (data != null ? _i19.CurriculumBlockProgress.fromJson(data) : null)
           as T;
     }
-    if (t == List<_i25.SemesterSummary>) {
+    if (t == _i1.getType<_i20.CurriculumProgress?>()) {
+      return (data != null ? _i20.CurriculumProgress.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i21.DashboardAcademicSummary?>()) {
+      return (data != null
+              ? _i21.DashboardAcademicSummary.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i22.DashboardGreeting?>()) {
+      return (data != null ? _i22.DashboardGreeting.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i23.Enrollment?>()) {
+      return (data != null ? _i23.Enrollment.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i24.ExamSchedule?>()) {
+      return (data != null ? _i24.ExamSchedule.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i25.ExamSummary?>()) {
+      return (data != null ? _i25.ExamSummary.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i26.GradeComponent?>()) {
+      return (data != null ? _i26.GradeComponent.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i27.GradeComponentScore?>()) {
+      return (data != null ? _i27.GradeComponentScore.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i28.GradeSummary?>()) {
+      return (data != null ? _i28.GradeSummary.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i29.Greeting?>()) {
+      return (data != null ? _i29.Greeting.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i30.NotificationListPage?>()) {
+      return (data != null ? _i30.NotificationListPage.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i31.Semester?>()) {
+      return (data != null ? _i31.Semester.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i32.SemesterSummary?>()) {
+      return (data != null ? _i32.SemesterSummary.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i33.StudentGrade?>()) {
+      return (data != null ? _i33.StudentGrade.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i34.StudentProfile?>()) {
+      return (data != null ? _i34.StudentProfile.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i35.TimetableEntry?>()) {
+      return (data != null ? _i35.TimetableEntry.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i36.VectorCapabilityProbe?>()) {
+      return (data != null ? _i36.VectorCapabilityProbe.fromJson(data) : null)
+          as T;
+    }
+    if (t == List<_i32.SemesterSummary>) {
       return (data as List)
-              .map((e) => deserialize<_i25.SemesterSummary>(e))
+              .map((e) => deserialize<_i32.SemesterSummary>(e))
               .toList()
           as T;
     }
-    if (t == List<_i14.CourseSummary>) {
+    if (t == List<_i18.CourseSummary>) {
       return (data as List)
-              .map((e) => deserialize<_i14.CourseSummary>(e))
+              .map((e) => deserialize<_i18.CourseSummary>(e))
               .toList()
           as T;
     }
-    if (t == List<_i28.TimetableEntry>) {
+    if (t == List<_i35.TimetableEntry>) {
       return (data as List)
-              .map((e) => deserialize<_i28.TimetableEntry>(e))
+              .map((e) => deserialize<_i35.TimetableEntry>(e))
               .toList()
           as T;
     }
-    if (t == List<_i19.ExamSummary>) {
+    if (t == List<_i25.ExamSummary>) {
       return (data as List)
-              .map((e) => deserialize<_i19.ExamSummary>(e))
+              .map((e) => deserialize<_i25.ExamSummary>(e))
               .toList()
           as T;
     }
-    if (t == List<_i21.GradeComponentScore>) {
+    if (t == List<_i27.GradeComponentScore>) {
       return (data as List)
-              .map((e) => deserialize<_i21.GradeComponentScore>(e))
+              .map((e) => deserialize<_i27.GradeComponentScore>(e))
               .toList()
           as T;
     }
-    if (t == List<_i15.CurriculumBlockProgress>) {
+    if (t == List<_i19.CurriculumBlockProgress>) {
       return (data as List)
-              .map((e) => deserialize<_i15.CurriculumBlockProgress>(e))
+              .map((e) => deserialize<_i19.CurriculumBlockProgress>(e))
               .toList()
           as T;
     }
-    if (t == List<_i30.CourseSummary>) {
+    if (t == List<_i13.CampusNotificationSummary>) {
       return (data as List)
-              .map((e) => deserialize<_i30.CourseSummary>(e))
+              .map((e) => deserialize<_i13.CampusNotificationSummary>(e))
               .toList()
           as T;
     }
-    if (t == List<_i31.TimetableEntry>) {
+    if (t == List<_i37.CourseSummary>) {
       return (data as List)
-              .map((e) => deserialize<_i31.TimetableEntry>(e))
+              .map((e) => deserialize<_i37.CourseSummary>(e))
               .toList()
           as T;
     }
-    if (t == List<_i32.ExamSummary>) {
+    if (t == List<_i38.TimetableEntry>) {
       return (data as List)
-              .map((e) => deserialize<_i32.ExamSummary>(e))
+              .map((e) => deserialize<_i38.TimetableEntry>(e))
               .toList()
           as T;
     }
-    if (t == List<_i33.AiConversation>) {
+    if (t == List<_i39.ExamSummary>) {
       return (data as List)
-              .map((e) => deserialize<_i33.AiConversation>(e))
+              .map((e) => deserialize<_i39.ExamSummary>(e))
               .toList()
           as T;
     }
-    if (t == List<_i34.AiMessage>) {
-      return (data as List).map((e) => deserialize<_i34.AiMessage>(e)).toList()
+    if (t == List<_i40.AnnouncementSummary>) {
+      return (data as List)
+              .map((e) => deserialize<_i40.AnnouncementSummary>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i41.AiConversation>) {
+      return (data as List)
+              .map((e) => deserialize<_i41.AiConversation>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i42.AiMessage>) {
+      return (data as List).map((e) => deserialize<_i42.AiMessage>(e)).toList()
           as T;
     }
     try {
@@ -1689,26 +2021,33 @@ class Protocol extends _i1.SerializationManagerServer {
       _i7.AiConversation => 'AiConversation',
       _i8.AiMessage => 'AiMessage',
       _i9.AiUsage => 'AiUsage',
-      _i10.Course => 'Course',
-      _i11.CourseDetail => 'CourseDetail',
-      _i12.CourseOffering => 'CourseOffering',
-      _i13.CourseSchedule => 'CourseSchedule',
-      _i14.CourseSummary => 'CourseSummary',
-      _i15.CurriculumBlockProgress => 'CurriculumBlockProgress',
-      _i16.CurriculumProgress => 'CurriculumProgress',
-      _i17.Enrollment => 'Enrollment',
-      _i18.ExamSchedule => 'ExamSchedule',
-      _i19.ExamSummary => 'ExamSummary',
-      _i20.GradeComponent => 'GradeComponent',
-      _i21.GradeComponentScore => 'GradeComponentScore',
-      _i22.GradeSummary => 'GradeSummary',
-      _i23.Greeting => 'Greeting',
-      _i24.Semester => 'Semester',
-      _i25.SemesterSummary => 'SemesterSummary',
-      _i26.StudentGrade => 'StudentGrade',
-      _i27.StudentProfile => 'StudentProfile',
-      _i28.TimetableEntry => 'TimetableEntry',
-      _i29.VectorCapabilityProbe => 'VectorCapabilityProbe',
+      _i10.Announcement => 'Announcement',
+      _i11.AnnouncementSummary => 'AnnouncementSummary',
+      _i12.CampusNotification => 'CampusNotification',
+      _i13.CampusNotificationSummary => 'CampusNotificationSummary',
+      _i14.Course => 'Course',
+      _i15.CourseDetail => 'CourseDetail',
+      _i16.CourseOffering => 'CourseOffering',
+      _i17.CourseSchedule => 'CourseSchedule',
+      _i18.CourseSummary => 'CourseSummary',
+      _i19.CurriculumBlockProgress => 'CurriculumBlockProgress',
+      _i20.CurriculumProgress => 'CurriculumProgress',
+      _i21.DashboardAcademicSummary => 'DashboardAcademicSummary',
+      _i22.DashboardGreeting => 'DashboardGreeting',
+      _i23.Enrollment => 'Enrollment',
+      _i24.ExamSchedule => 'ExamSchedule',
+      _i25.ExamSummary => 'ExamSummary',
+      _i26.GradeComponent => 'GradeComponent',
+      _i27.GradeComponentScore => 'GradeComponentScore',
+      _i28.GradeSummary => 'GradeSummary',
+      _i29.Greeting => 'Greeting',
+      _i30.NotificationListPage => 'NotificationListPage',
+      _i31.Semester => 'Semester',
+      _i32.SemesterSummary => 'SemesterSummary',
+      _i33.StudentGrade => 'StudentGrade',
+      _i34.StudentProfile => 'StudentProfile',
+      _i35.TimetableEntry => 'TimetableEntry',
+      _i36.VectorCapabilityProbe => 'VectorCapabilityProbe',
       _ => null,
     };
   }
@@ -1733,45 +2072,59 @@ class Protocol extends _i1.SerializationManagerServer {
         return 'AiMessage';
       case _i9.AiUsage():
         return 'AiUsage';
-      case _i10.Course():
+      case _i10.Announcement():
+        return 'Announcement';
+      case _i11.AnnouncementSummary():
+        return 'AnnouncementSummary';
+      case _i12.CampusNotification():
+        return 'CampusNotification';
+      case _i13.CampusNotificationSummary():
+        return 'CampusNotificationSummary';
+      case _i14.Course():
         return 'Course';
-      case _i11.CourseDetail():
+      case _i15.CourseDetail():
         return 'CourseDetail';
-      case _i12.CourseOffering():
+      case _i16.CourseOffering():
         return 'CourseOffering';
-      case _i13.CourseSchedule():
+      case _i17.CourseSchedule():
         return 'CourseSchedule';
-      case _i14.CourseSummary():
+      case _i18.CourseSummary():
         return 'CourseSummary';
-      case _i15.CurriculumBlockProgress():
+      case _i19.CurriculumBlockProgress():
         return 'CurriculumBlockProgress';
-      case _i16.CurriculumProgress():
+      case _i20.CurriculumProgress():
         return 'CurriculumProgress';
-      case _i17.Enrollment():
+      case _i21.DashboardAcademicSummary():
+        return 'DashboardAcademicSummary';
+      case _i22.DashboardGreeting():
+        return 'DashboardGreeting';
+      case _i23.Enrollment():
         return 'Enrollment';
-      case _i18.ExamSchedule():
+      case _i24.ExamSchedule():
         return 'ExamSchedule';
-      case _i19.ExamSummary():
+      case _i25.ExamSummary():
         return 'ExamSummary';
-      case _i20.GradeComponent():
+      case _i26.GradeComponent():
         return 'GradeComponent';
-      case _i21.GradeComponentScore():
+      case _i27.GradeComponentScore():
         return 'GradeComponentScore';
-      case _i22.GradeSummary():
+      case _i28.GradeSummary():
         return 'GradeSummary';
-      case _i23.Greeting():
+      case _i29.Greeting():
         return 'Greeting';
-      case _i24.Semester():
+      case _i30.NotificationListPage():
+        return 'NotificationListPage';
+      case _i31.Semester():
         return 'Semester';
-      case _i25.SemesterSummary():
+      case _i32.SemesterSummary():
         return 'SemesterSummary';
-      case _i26.StudentGrade():
+      case _i33.StudentGrade():
         return 'StudentGrade';
-      case _i27.StudentProfile():
+      case _i34.StudentProfile():
         return 'StudentProfile';
-      case _i28.TimetableEntry():
+      case _i35.TimetableEntry():
         return 'TimetableEntry';
-      case _i29.VectorCapabilityProbe():
+      case _i36.VectorCapabilityProbe():
         return 'VectorCapabilityProbe';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -1810,65 +2163,86 @@ class Protocol extends _i1.SerializationManagerServer {
     if (dataClassName == 'AiUsage') {
       return deserialize<_i9.AiUsage>(data['data']);
     }
+    if (dataClassName == 'Announcement') {
+      return deserialize<_i10.Announcement>(data['data']);
+    }
+    if (dataClassName == 'AnnouncementSummary') {
+      return deserialize<_i11.AnnouncementSummary>(data['data']);
+    }
+    if (dataClassName == 'CampusNotification') {
+      return deserialize<_i12.CampusNotification>(data['data']);
+    }
+    if (dataClassName == 'CampusNotificationSummary') {
+      return deserialize<_i13.CampusNotificationSummary>(data['data']);
+    }
     if (dataClassName == 'Course') {
-      return deserialize<_i10.Course>(data['data']);
+      return deserialize<_i14.Course>(data['data']);
     }
     if (dataClassName == 'CourseDetail') {
-      return deserialize<_i11.CourseDetail>(data['data']);
+      return deserialize<_i15.CourseDetail>(data['data']);
     }
     if (dataClassName == 'CourseOffering') {
-      return deserialize<_i12.CourseOffering>(data['data']);
+      return deserialize<_i16.CourseOffering>(data['data']);
     }
     if (dataClassName == 'CourseSchedule') {
-      return deserialize<_i13.CourseSchedule>(data['data']);
+      return deserialize<_i17.CourseSchedule>(data['data']);
     }
     if (dataClassName == 'CourseSummary') {
-      return deserialize<_i14.CourseSummary>(data['data']);
+      return deserialize<_i18.CourseSummary>(data['data']);
     }
     if (dataClassName == 'CurriculumBlockProgress') {
-      return deserialize<_i15.CurriculumBlockProgress>(data['data']);
+      return deserialize<_i19.CurriculumBlockProgress>(data['data']);
     }
     if (dataClassName == 'CurriculumProgress') {
-      return deserialize<_i16.CurriculumProgress>(data['data']);
+      return deserialize<_i20.CurriculumProgress>(data['data']);
+    }
+    if (dataClassName == 'DashboardAcademicSummary') {
+      return deserialize<_i21.DashboardAcademicSummary>(data['data']);
+    }
+    if (dataClassName == 'DashboardGreeting') {
+      return deserialize<_i22.DashboardGreeting>(data['data']);
     }
     if (dataClassName == 'Enrollment') {
-      return deserialize<_i17.Enrollment>(data['data']);
+      return deserialize<_i23.Enrollment>(data['data']);
     }
     if (dataClassName == 'ExamSchedule') {
-      return deserialize<_i18.ExamSchedule>(data['data']);
+      return deserialize<_i24.ExamSchedule>(data['data']);
     }
     if (dataClassName == 'ExamSummary') {
-      return deserialize<_i19.ExamSummary>(data['data']);
+      return deserialize<_i25.ExamSummary>(data['data']);
     }
     if (dataClassName == 'GradeComponent') {
-      return deserialize<_i20.GradeComponent>(data['data']);
+      return deserialize<_i26.GradeComponent>(data['data']);
     }
     if (dataClassName == 'GradeComponentScore') {
-      return deserialize<_i21.GradeComponentScore>(data['data']);
+      return deserialize<_i27.GradeComponentScore>(data['data']);
     }
     if (dataClassName == 'GradeSummary') {
-      return deserialize<_i22.GradeSummary>(data['data']);
+      return deserialize<_i28.GradeSummary>(data['data']);
     }
     if (dataClassName == 'Greeting') {
-      return deserialize<_i23.Greeting>(data['data']);
+      return deserialize<_i29.Greeting>(data['data']);
+    }
+    if (dataClassName == 'NotificationListPage') {
+      return deserialize<_i30.NotificationListPage>(data['data']);
     }
     if (dataClassName == 'Semester') {
-      return deserialize<_i24.Semester>(data['data']);
+      return deserialize<_i31.Semester>(data['data']);
     }
     if (dataClassName == 'SemesterSummary') {
-      return deserialize<_i25.SemesterSummary>(data['data']);
+      return deserialize<_i32.SemesterSummary>(data['data']);
     }
     if (dataClassName == 'StudentGrade') {
-      return deserialize<_i26.StudentGrade>(data['data']);
+      return deserialize<_i33.StudentGrade>(data['data']);
     }
     if (dataClassName == 'StudentProfile') {
-      return deserialize<_i27.StudentProfile>(data['data']);
+      return deserialize<_i34.StudentProfile>(data['data']);
     }
     if (dataClassName == 'TimetableEntry') {
-      return deserialize<_i28.TimetableEntry>(data['data']);
+      return deserialize<_i35.TimetableEntry>(data['data']);
     }
     if (dataClassName == 'VectorCapabilityProbe') {
-      return deserialize<_i29.VectorCapabilityProbe>(data['data']);
+      return deserialize<_i36.VectorCapabilityProbe>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -1914,26 +2288,30 @@ class Protocol extends _i1.SerializationManagerServer {
         return _i8.AiMessage.t;
       case _i9.AiUsage:
         return _i9.AiUsage.t;
-      case _i10.Course:
-        return _i10.Course.t;
-      case _i12.CourseOffering:
-        return _i12.CourseOffering.t;
-      case _i13.CourseSchedule:
-        return _i13.CourseSchedule.t;
-      case _i17.Enrollment:
-        return _i17.Enrollment.t;
-      case _i18.ExamSchedule:
-        return _i18.ExamSchedule.t;
-      case _i20.GradeComponent:
-        return _i20.GradeComponent.t;
-      case _i24.Semester:
-        return _i24.Semester.t;
-      case _i26.StudentGrade:
-        return _i26.StudentGrade.t;
-      case _i27.StudentProfile:
-        return _i27.StudentProfile.t;
-      case _i29.VectorCapabilityProbe:
-        return _i29.VectorCapabilityProbe.t;
+      case _i10.Announcement:
+        return _i10.Announcement.t;
+      case _i12.CampusNotification:
+        return _i12.CampusNotification.t;
+      case _i14.Course:
+        return _i14.Course.t;
+      case _i16.CourseOffering:
+        return _i16.CourseOffering.t;
+      case _i17.CourseSchedule:
+        return _i17.CourseSchedule.t;
+      case _i23.Enrollment:
+        return _i23.Enrollment.t;
+      case _i24.ExamSchedule:
+        return _i24.ExamSchedule.t;
+      case _i26.GradeComponent:
+        return _i26.GradeComponent.t;
+      case _i31.Semester:
+        return _i31.Semester.t;
+      case _i33.StudentGrade:
+        return _i33.StudentGrade.t;
+      case _i34.StudentProfile:
+        return _i34.StudentProfile.t;
+      case _i36.VectorCapabilityProbe:
+        return _i36.VectorCapabilityProbe.t;
     }
     return null;
   }

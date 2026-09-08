@@ -1,7 +1,7 @@
 ---
 phase: 4
 title: "Dashboard + Notifications"
-status: pending
+status: completed
 priority: P1
 effort: M
 dependencies: [3]
@@ -21,8 +21,8 @@ Dashboard có giá trị sử dụng thật (§11) + notification center với d
 
 ## Architecture
 
-- API `dashboard/getOverview` trả từng section riêng caller-side song song (tránh 1 query khổng lồ); `notifications/*` (list cursor, unreadCount, markRead, markAllRead).
-- Tables: `announcements` (audience, publishAt, archived), `notifications` (userId, category, entityType, entityId, readAt); index (user_id, read_at), (user_id, created_at desc).
+- API dashboard trả từng section riêng caller-side song song (tránh 1 query khổng lồ); `notification/*` (list cursor, unreadCount, markRead, markAllRead).
+- Tables: `announcements` (audience, publishAt, archived), `campus_notifications` (userId, category, targetType, targetId, readAt); index (userId, readAt), (userId, createdAt, id), (userId, category, createdAt, id).
 - Deep link: go_router route `exams/:id` v.v. — notification chứa entityType+entityId, app map sang route; route guard vẫn qua auth.
 
 ## Related Code Files
@@ -41,11 +41,11 @@ Dashboard có giá trị sử dụng thật (§11) + notification center với d
 
 ## Success Criteria
 
-- [ ] Dashboard hiển thị đủ section từ seed; tắt server → từng section báo lỗi riêng + retry, không white screen.
-- [ ] Continue-reading/AI suggestion ở state rỗng rõ ràng (không có nút chết).
-- [ ] Deep link exam notification mở đúng ExamDetail (test PASS).
-- [ ] Cursor pagination không tải lại trang cũ khi cuộn (test PASS).
-- [ ] `flutter analyze`/tests PASS.
+- [x] Dashboard hiển thị đủ section từ seed; từng section lỗi riêng + retry, không white screen (widget + integration evidence).
+- [x] Continue-reading/AI suggestion ở state rỗng rõ ràng (không có nút chết).
+- [x] Deep link exam notification mở đúng ExamDetail (test PASS).
+- [x] Cursor pagination không tải lại trang cũ khi cuộn (test PASS).
+- [x] `flutter analyze`/tests PASS.
 
 ## Risk Assessment
 

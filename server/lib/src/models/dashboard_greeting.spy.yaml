@@ -1,0 +1,5 @@
+class: DashboardGreeting
+fields:
+  message: String
+  studentName: String?
+  generatedAt: DateTime

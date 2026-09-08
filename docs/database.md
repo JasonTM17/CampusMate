@@ -90,6 +90,38 @@ erDiagram
     }
 ```
 
+## Dashboard And Notifications
+
+```mermaid
+erDiagram
+    STUDENT_PROFILES ||--o{ CAMPUS_NOTIFICATIONS : receives
+    COURSE_OFFERINGS ||--o{ CAMPUS_NOTIFICATIONS : targets_course
+    EXAM_SCHEDULES ||--o{ CAMPUS_NOTIFICATIONS : targets_exam
+
+    STUDENT_PROFILES {
+        int id PK
+        uuid authUserId
+    }
+
+    ANNOUNCEMENTS {
+        int id PK
+        string audience
+        datetime publishAt
+        datetime expiresAt
+        bool archived
+    }
+
+    CAMPUS_NOTIFICATIONS {
+        int id PK
+        uuid userId
+        string category
+        string targetType
+        int targetId
+        datetime readAt
+        datetime createdAt
+    }
+```
+
 ## Data Rules
 
 - Academic rows are demo data only. They are intentionally fake and must not imply an official university integration.
@@ -98,6 +130,11 @@ erDiagram
 - Weekly and daily timetable queries project recurring schedules only inside the semester/course schedule window.
 - Grade summaries use `packages/campusmate_shared` so policy changes are tested outside UI code.
 - `student_grades.componentName` stores the component label used for the recorded score; the canonical component plan remains attached to the course offering through `grade_components`.
+- Dashboard announcements are filtered by audience, publish window, and archive
+  state before they reach mobile.
+- Notifications support the allowed category set
+  `academic/library/system/ai/course/exam`; list pagination is keyset-based by
+  `(createdAt, id)` and scoped to the authenticated user.
 
 ## Local Cache Shape
 

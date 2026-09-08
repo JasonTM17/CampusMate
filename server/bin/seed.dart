@@ -7,6 +7,7 @@ import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:campusmate_server/src/academic/academic_demo_seed.dart';
 import 'package:campusmate_server/src/auth/auth_setup.dart';
 import 'package:campusmate_server/src/auth/campusmate_auth.dart';
+import 'package:campusmate_server/src/dashboard/dashboard_demo_seed.dart';
 import 'package:campusmate_server/src/generated/endpoints.dart';
 import 'package:campusmate_server/src/generated/protocol.dart';
 
@@ -98,9 +99,10 @@ Future<void> _seedAccounts(Session session, String password) async {
     await _upsertProfile(session, authUser.id, account);
   }
   await seedAcademicDemoData(session);
+  await seedDashboardNotificationDemoData(session);
 
   stdout.writeln(
-    'Seeded ${accounts.length} local accounts plus academic demo data. Password was read from CAMPUSMATE_SEED_PASSWORD.',
+    'Seeded ${accounts.length} local accounts plus academic dashboard and notification demo data. Password was read from CAMPUSMATE_SEED_PASSWORD.',
   );
 }
 

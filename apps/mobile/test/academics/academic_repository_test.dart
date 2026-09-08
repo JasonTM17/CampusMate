@@ -98,6 +98,9 @@ class _AcademicRemoteFixture implements AcademicRemoteDataSource {
     relatedBooksPlaceholder: 'Sách liên quan sẽ có ở phase catalog.',
     askAiPlaceholder: 'Ask AI sẽ nối ở phase personalized AI.',
   );
+
+  @override
+  Future<ExamSummary> getExamDetail(int examId) async => _exam;
 }
 
 class _FailingAcademicRemote implements AcademicRemoteDataSource {
@@ -117,6 +120,10 @@ class _FailingAcademicRemote implements AcademicRemoteDataSource {
 
   @override
   Future<CourseDetail> getCourseDetail(int offeringId) async =>
+      throw StateError('network unavailable');
+
+  @override
+  Future<ExamSummary> getExamDetail(int examId) async =>
       throw StateError('network unavailable');
 }
 

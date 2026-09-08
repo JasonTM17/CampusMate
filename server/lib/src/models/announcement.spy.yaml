@@ -1,0 +1,16 @@
+class: Announcement
+table: announcements
+fields:
+  title: String
+  body: String
+  audience: String
+  publishAt: DateTime
+  expiresAt: DateTime?
+  archived: bool
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  announcement_audience_publish_idx:
+    fields: audience, publishAt
+  announcement_publish_idx:
+    fields: publishAt

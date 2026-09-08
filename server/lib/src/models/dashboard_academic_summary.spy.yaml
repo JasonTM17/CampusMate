@@ -1,0 +1,10 @@
+class: DashboardAcademicSummary
+fields:
+  semesterName: String
+  semesterGpa: double
+  cumulativeGpa: double
+  semesterCredits: int
+  creditsEarned: int
+  creditsRequired: int
+  percentComplete: double
+  activeCourses: int

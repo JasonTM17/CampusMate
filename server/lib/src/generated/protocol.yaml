@@ -11,6 +11,7 @@ grades:
   - getCumulative:
 exams:
   - getUpcoming:
+  - getDetail:
 progress:
   - getCurriculumProgress:
 admin:
@@ -28,6 +29,13 @@ emailIdp:
   - hasAccount:
 jwtRefresh:
   - refreshAccessToken:
+dashboard:
+  - getGreeting:
+  - getAcademicSummary:
+  - getTodayClasses:
+  - getNextClass:
+  - getUpcomingExam:
+  - getAnnouncements:
 ai:
   - listConversations:
   - createConversation:
@@ -36,6 +44,11 @@ ai:
   - sendMessage:
 greeting:
   - hello:
+notification:
+  - list:
+  - unreadCount:
+  - markRead:
+  - markAllRead:
 studentProfile:
   - getMyProfile:
   - updateMyProfile:

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../app/router/auth_redirects.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../../core/utils/app_validators.dart';
 import '../../../core/widgets/app_error_banner.dart';
@@ -80,7 +81,9 @@ class _PasswordResetScreenState extends ConsumerState<PasswordResetScreen> {
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(loc.authResetPasswordDone)));
-          context.go('/login');
+          context.go(
+            authRouteWithCurrentFrom(GoRouterState.of(context).uri, loginPath),
+          );
         }
       }
     } on AuthFailure catch (failure) {
@@ -254,7 +257,12 @@ class _PasswordResetScreenState extends ConsumerState<PasswordResetScreen> {
                     TextButton(
                       onPressed: _submitting
                           ? null
-                          : () => context.go('/login'),
+                          : () => context.go(
+                              authRouteWithCurrentFrom(
+                                GoRouterState.of(context).uri,
+                                loginPath,
+                              ),
+                            ),
                       child: Text(loc.authBackToLogin),
                     ),
                   ],

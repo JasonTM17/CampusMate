@@ -3,9 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:campusmate/app/app.dart';
+import 'package:campusmate/features/dashboard/application/dashboard_controller.dart';
+import 'package:campusmate/features/dashboard/domain/dashboard_repository.dart';
 import 'package:campusmate/features/auth/application/auth_controller.dart';
 import 'package:campusmate/features/auth/domain/auth_repository.dart';
 import 'package:campusmate/features/auth/domain/auth_user.dart';
+import 'package:campusmate/features/notifications/application/notification_controller.dart';
+import 'package:campusmate/features/notifications/domain/notification_repository.dart';
 
 class _AuthenticatedAuthRepository implements AuthRepository {
   @override
@@ -55,6 +59,64 @@ class _AuthenticatedAuthRepository implements AuthRepository {
   Future<void> signOut() async {}
 }
 
+class _DashboardRepository implements DashboardRepository {
+  @override
+  Future<DashboardGreeting> loadGreeting({DateTime? now}) async {
+    return DashboardGreeting(
+      message: 'Chào buổi sáng',
+      generatedAt: DateTime.utc(2026, 9, 8),
+    );
+  }
+
+  @override
+  Future<DashboardAcademicSummary> loadAcademicSummary() async {
+    return DashboardAcademicSummary(
+      semesterName: 'Học kỳ 1 2026',
+      semesterGpa: 3.2,
+      cumulativeGpa: 3.1,
+      semesterCredits: 8,
+      creditsEarned: 28,
+      creditsRequired: 140,
+      percentComplete: 20,
+      activeCourses: 2,
+    );
+  }
+
+  @override
+  Future<List<TimetableEntry>> loadTodayClasses({DateTime? now}) async => [];
+
+  @override
+  Future<TimetableEntry?> loadNextClass({DateTime? now}) async => null;
+
+  @override
+  Future<ExamSummary?> loadUpcomingExam({DateTime? now}) async => null;
+
+  @override
+  Future<List<AnnouncementSummary>> loadAnnouncements({int limit = 5}) async =>
+      [];
+}
+
+class _NotificationRepository implements NotificationRepository {
+  @override
+  Future<NotificationListPage> list({
+    String? cursor,
+    int limit = 20,
+    String? category,
+  }) async {
+    return NotificationListPage(items: const [], unreadCount: 0);
+  }
+
+  @override
+  Future<int> unreadCount({String? category}) async => 0;
+
+  @override
+  Future<int> markAllRead({String? category}) => throw UnimplementedError();
+
+  @override
+  Future<CampusNotificationSummary> markRead({required int notificationId}) =>
+      throw UnimplementedError();
+}
+
 void main() {
   testWidgets('app boots into the 5-tab shell with Vietnamese default locale', (
     tester,
@@ -64,6 +126,10 @@ void main() {
         overrides: [
           authRepositoryProvider.overrideWithValue(
             _AuthenticatedAuthRepository(),
+          ),
+          dashboardRepositoryProvider.overrideWithValue(_DashboardRepository()),
+          notificationRepositoryProvider.overrideWithValue(
+            _NotificationRepository(),
           ),
         ],
         child: const CampusMateApp(),

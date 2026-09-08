@@ -1,0 +1,8 @@
+class: AnnouncementSummary
+fields:
+  id: int
+  title: String
+  body: String
+  audience: String
+  publishAt: DateTime
+  expiresAt: DateTime?

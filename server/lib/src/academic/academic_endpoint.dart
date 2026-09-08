@@ -92,6 +92,12 @@ class ExamsEndpoint extends Endpoint {
 
   Future<List<ExamSummary>> getUpcoming(Session session, {DateTime? now}) =>
       _service.getUpcomingExams(session, now: now);
+
+  Future<ExamSummary> getDetail(
+    Session session, {
+    required int examId,
+    DateTime? now,
+  }) => _service.getExamDetail(session, examId: examId, now: now);
 }
 
 class ProgressEndpoint extends Endpoint {

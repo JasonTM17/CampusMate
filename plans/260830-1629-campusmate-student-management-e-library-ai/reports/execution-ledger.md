@@ -358,6 +358,104 @@ Phase-03 status flipped to `completed`. Current authoritative limitation:
 offline behavior is covered by deterministic cache/network-failure tests rather
 than a physical device airplane-mode run.
 
+## Phase 04 — Dashboard + Notifications completion evidence (2026-09-08)
+
+- Implemented Serverpod announcement and campus notification schemas,
+  generated protocol/client files, and migration
+  `20260908004517941-phase04-dashboard-notifications` with indexes for
+  audience/publish filtering, unread counts, user cursor paging, and category
+  cursor paging.
+- Implemented student-scoped dashboard endpoints for greeting, academic
+  summary, today classes, next class, upcoming exam, and announcements.
+  Dashboard section calls remain separate so one section failure can be shown
+  independently on mobile.
+- Implemented student-scoped notification endpoints for list, unreadCount,
+  markRead, and markAllRead. Identity is always derived from the Serverpod
+  session; mobile never sends a user id. Cursor pagination is opaque and bound
+  to the active category filter.
+- Implemented demo dashboard/notification seed data. Notification seed is
+  idempotent and creates one row for each required category:
+  academic/library/system/ai/course/exam.
+- Implemented Flutter dashboard route at `/home` with real academic sections,
+  notification badge, independent loading/error/empty/retry cards, honest empty
+  continue-reading and AI suggestion states, and no dead buttons.
+- Implemented Flutter notification center at `/notifications` with six category
+  filters, unread state, mark-all, load-more pagination, mark-read on tap, and
+  exam notifications mapped to guarded `/academic/exams/:examId`.
+- Added auth redirect helpers so protected deep links survive login/loading
+  routes and external/auth-flow redirect targets are rejected.
+- Added `ExamsEndpoint.getDetail` plus mobile `ExamDetailScreen`; exam detail
+  access is scoped through the authenticated student's enrollments.
+- Repository docs updated so README, `docs/architecture.md`, and
+  `docs/database.md` show the dashboard/notification boundary and data model.
+
+Observed gates:
+
+- `dart pub global run serverpod_cli generate` in `server/` — PASS after the
+  `DashboardAcademicSummary.semesterCredits` model change and public
+  `dashboard.getAnnouncements` signature hardening.
+- `dart format --output=none --set-exit-if-changed server packages\campusmate_shared packages\campusmate_client apps\mobile\lib apps\mobile\test`
+  — PASS, 201 files, 0 changed.
+- `$env:LOCALAPPDATA = Join-Path (Resolve-Path .).Path '.dart_tool\codex-localappdata'; dart analyze server packages\campusmate_shared packages\campusmate_client`
+  — PASS, no issues.
+- `git diff --check` — PASS, CRLF warnings only.
+- `docker compose ps` in `server/` — PASS; Postgres/Redis dev and test
+  services healthy.
+- `dart test --exclude-tags integration` in `server/` — PASS, 32/32.
+- `dart test test/integration/dashboard_notification_endpoint_test.dart` in
+  `server/` — PASS, 7/7.
+- `dart test` in `server/` — PASS, 64/64.
+- `flutter analyze` in `apps/mobile` — PASS, no issues.
+- `flutter test` focused Phase 04 route/dashboard/notification/academic shell
+  suite — PASS, 14/14 after adding the cold-start exam deep-link regression.
+- `flutter test` in `apps/mobile` — PASS, 82 pass / 3 skip; skipped tests are
+  live dev-server spikes gated by `CAMPUSMATE_LIVE_SPIKE`.
+- `flutter build apk --debug` in `apps/mobile` with repo-local
+  `GRADLE_USER_HOME` — PASS; built
+  `build\app\outputs\flutter-apk\app-debug.apk`.
+- `npx -y @mermaid-js/mermaid-cli` over `README.md`,
+  `docs/architecture.md`, and `docs/database.md` — PASS; diagrams rendered
+  to `.dart_tool/mermaid-proof`.
+
+Independent review and repairs:
+
+- First Phase-04 code-reviewer pass returned `VERDICT: FAIL` for three
+  findings: client-controllable announcement visibility through public
+  `DateTime? now`, missing current-semester credits in the dashboard summary,
+  and pagination requiring a button instead of scroll-triggered load-more.
+- Fixes applied narrowly: `dashboard.getAnnouncements` now uses server time at
+  the public endpoint boundary; `DashboardAcademicSummary` exposes
+  `semesterCredits` through generated server/client protocol and the mobile UI;
+  notification center auto-loads the next cursor page near the scroll end and
+  keeps the button as an explicit fallback.
+- Second Phase-04 code-reviewer pass verified the prior three findings as
+  fixed, then returned `VERDICT: FAIL` for one P2: `appRouterProvider` rebuilt
+  `GoRouter` from `authControllerProvider`, so a protected cold-start exam deep
+  link could be lost when auth restore changed state.
+- Fix applied narrowly: `appRouterProvider` now keeps one `GoRouter` instance
+  and drives redirect refreshes through a `ValueNotifier<AuthState>`. Regression
+  `test/app_router_guard_test.dart` proves `/academic/exams/41` survives auth
+  restore and reaches `ExamDetail`.
+- Final Phase-04 code-reviewer pass returned `VERDICT: PASS`: all four prior
+  findings fixed, `NEW_FINDINGS: NONE`. The reviewer ran read-only
+  `git diff --cached --check` and accepted the controller-observed test/build
+  evidence.
+- Staged strong-pattern secret scan — PASS; no token/key/private-key patterns
+  found. Broader keyword hits are expected generated schema/route names such as
+  `refreshToken`/`passwordHash`, not committed secret values.
+- Post-push GitHub Actions evidence is still pending at this checkpoint.
+
+Limitations and degraded gates:
+
+- UI-specialist subagent attempt failed due account usage limit; main-thread
+  implementation still applied the project mobile/UI rules and widget tests.
+- Live dev-server spike tests remain skipped unless
+  `CAMPUSMATE_LIVE_SPIKE=1`; local deterministic and integration gates above
+  covered the Phase-04 contracts.
+
+Phase-04 status remains `completed` in the phase file, pending post-push CI
+evidence before treating the commit as release-grade.
+
 ## Authorized rulings
 
 - AGENTS.md untracked (global gitignore user) — không force-add.
@@ -379,9 +477,10 @@ than a physical device airplane-mode run.
 
 ## Next resume point
 
-- Prepare an exact-scope commit for Phase 03 academic + docs after one final
-  staging audit that excludes known local/tool state
+- Prepare an exact-scope commit for Phase 04 dashboard + notifications after
+  reading the pending code-reviewer result, with a final staging audit that
+  excludes known local/tool state
   (`server/config/development.yaml`, `.mimosa/`, `.video_agent/`,
   `apps/mobile/.mimosa/`, `apps/mobile/web/`, `server/.mimosa/`), then push and
-  watch GitHub Actions. After Phase 03 is safely recorded, resume Phase 04:
-  dashboard + notifications.
+  watch GitHub Actions. After Phase 04 is safely recorded, resume Phase 05:
+  library catalog + access policy.

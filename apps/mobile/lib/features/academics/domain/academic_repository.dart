@@ -25,4 +25,6 @@ abstract interface class AcademicRepository {
   });
 
   Future<CourseDetail> loadCourseDetail({required int offeringId});
+
+  Future<ExamSummary> loadExamDetail({required int examId});
 }

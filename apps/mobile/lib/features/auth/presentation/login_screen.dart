@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../app/router/auth_redirects.dart';
+import '../../../app/theme/app_spacing.dart';
 import '../../../core/utils/app_validators.dart';
 import '../../../core/widgets/app_error_banner.dart';
 import '../../../l10n/generated/app_localizations.dart';
-import '../../../app/theme/app_spacing.dart';
 import '../application/auth_controller.dart';
 import '../domain/auth_failure.dart';
 
@@ -51,7 +52,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             password: _passwordController.text,
           );
       if (mounted) {
-        context.go('/ai');
+        context.go(
+          postAuthRouteFor(GoRouterState.of(context).uri, fallback: '/ai'),
+        );
       }
     } on AuthFailure catch (failure) {
       if (mounted) {
@@ -171,7 +174,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     TextButton(
                       onPressed: _submitting
                           ? null
-                          : () => context.go('/reset-password'),
+                          : () => context.go(
+                              authRouteWithCurrentFrom(
+                                GoRouterState.of(context).uri,
+                                resetPasswordPath,
+                              ),
+                            ),
                       child: Text(l10n.authForgotPassword),
                     ),
                     SizedBox(height: AppSpacing.s),
@@ -191,7 +199,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         TextButton(
                           onPressed: _submitting
                               ? null
-                              : () => context.go('/register'),
+                              : () => context.go(
+                                  authRouteWithCurrentFrom(
+                                    GoRouterState.of(context).uri,
+                                    registerPath,
+                                  ),
+                                ),
                           child: Text(l10n.authCreateAccount),
                         ),
                       ],

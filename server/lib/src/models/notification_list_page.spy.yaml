@@ -1,0 +1,5 @@
+class: NotificationListPage
+fields:
+  items: List<CampusNotificationSummary>
+  nextCursor: String?
+  unreadCount: int

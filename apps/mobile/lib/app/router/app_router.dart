@@ -8,28 +8,43 @@ import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/password_reset_screen.dart';
 import '../../features/auth/presentation/registration_screen.dart';
 import '../../features/academics/presentation/academic_screen.dart';
+import '../../features/academics/presentation/exam_detail_screen.dart';
 import '../../features/chat/presentation/chat_screen.dart';
+import '../../features/dashboard/presentation/dashboard_screen.dart';
+import '../../features/notifications/presentation/notification_screen.dart';
 import '../../features/student_profile/presentation/student_profile_screen.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../core/widgets/app_empty_state.dart';
+import 'auth_redirects.dart';
 import 'app_shell.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
-  final authState = ref.watch(authControllerProvider);
+  final authStateNotifier = ValueNotifier(ref.read(authControllerProvider));
+  ref
+    ..onDispose(authStateNotifier.dispose)
+    ..listen<AuthState>(
+      authControllerProvider,
+      (_, next) => authStateNotifier.value = next,
+    );
+
   return GoRouter(
     initialLocation: '/home',
+    refreshListenable: authStateNotifier,
     redirect: (context, state) {
+      final authState = authStateNotifier.value;
       final path = state.uri.path;
-      final isAuthRoute =
-          path == '/login' || path == '/register' || path == '/reset-password';
-      final isLoadingRoute = path == '/auth-loading';
+      final isAuthRoute = isAuthScreenPath(path);
+      final isLoadingRoute = path == authLoadingPath;
 
       if (authState.status == AuthStatus.unknown) {
-        return isAuthRoute || isLoadingRoute ? null : '/auth-loading';
+        return isAuthRoute || isLoadingRoute
+            ? null
+            : guardedAuthRouteFor(state.uri, authLoadingPath);
       }
       if (!authState.isAuthenticated) {
-        return isAuthRoute ? null : '/login';
+        return isAuthRoute ? null : guardedAuthRouteFor(state.uri, loginPath);
       }
-      if (isAuthRoute || isLoadingRoute) return '/home';
+      if (isAuthRoute || isLoadingRoute) return postAuthRouteFor(state.uri);
       return null;
     },
     routes: [
@@ -44,13 +59,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const PasswordResetScreen(),
       ),
       GoRoute(
-        path: '/auth-loading',
+        path: authLoadingPath,
         builder: (context, state) => const _AuthLoadingScreen(),
+      ),
+      GoRoute(
+        path: '/notifications',
+        builder: (context, state) => const NotificationScreen(),
       ),
       GoRoute(
         path: '/admin',
         redirect: (context, state) {
-          final role = authState.user?.role;
+          final role = authStateNotifier.value.user?.role;
           return role != null && canAccessPrivilegedArea(role) ? null : '/home';
         },
         builder: (context, state) => BranchPlaceholderScreen(
@@ -66,10 +85,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/home',
-                builder: (context, state) => BranchPlaceholderScreen(
-                  icon: Icons.home_outlined,
-                  title: AppLocalizations.of(context)!.navHome,
-                ),
+                builder: (context, state) => const DashboardScreen(),
               ),
             ],
           ),
@@ -78,6 +94,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/academic',
                 builder: (context, state) => const AcademicScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'exams/:examId',
+                    builder: (context, state) {
+                      final examId = int.tryParse(
+                        state.pathParameters['examId'] ?? '',
+                      );
+                      if (examId == null) {
+                        return const _InvalidDeepLinkScreen();
+                      }
+                      return ExamDetailScreen(examId: examId);
+                    },
+                  ),
+                ],
               ),
             ],
           ),
@@ -126,6 +156,21 @@ class _AuthLoadingScreen extends StatelessWidget {
           label: loc.authLoading,
           child: const CircularProgressIndicator(),
         ),
+      ),
+    );
+  }
+}
+
+class _InvalidDeepLinkScreen extends StatelessWidget {
+  const _InvalidDeepLinkScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: AppEmptyState(
+        icon: Icons.link_off_outlined,
+        title: 'Liên kết không hợp lệ',
+        message: 'Màn hình này cần một mã lịch thi hợp lệ.',
       ),
     );
   }

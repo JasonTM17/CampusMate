@@ -23,6 +23,8 @@ flowchart TB
         auth[Auth endpoints]
         profile[Student profile]
         academic[Academic endpoints]
+        dashboard[Dashboard endpoints]
+        notify[Notification endpoints]
         ai[AI assistant endpoints]
         library[Library endpoints planned]
         quota[Quota + prompt guard]
@@ -47,9 +49,13 @@ flowchart TB
     session --> auth
     session --> profile
     session --> academic
+    session --> dashboard
+    session --> notify
     session --> ai
     session --> library
     academic --> postgres
+    dashboard --> postgres
+    notify --> postgres
     profile --> postgres
     auth --> postgres
     ai --> quota
@@ -64,7 +70,7 @@ flowchart TB
     classDef store fill:#fde68a,stroke:#b45309,color:#451a03
     classDef provider fill:#fbcfe8,stroke:#be185d,color:#500724
     class shell,router,controllers,drift,client,protocol mobile
-    class session,auth,profile,academic,ai,library,quota api
+    class session,auth,profile,academic,dashboard,notify,ai,library,quota api
     class postgres,redis,minio store
     class llm provider
 ```
@@ -92,6 +98,14 @@ sequenceDiagram
     Mobile->>Cache: Atomic replace for account + week + semester
     Mobile-->>Student: Render fresh data or offline badge on fallback
 
+    Student->>Mobile: Open dashboard or notification center
+    Mobile->>API: Request section data / unread state
+    API->>API: requireLogin + student scope
+    API->>DB: Query announcements, notifications, academic projections
+    DB-->>API: Section DTOs and cursor page
+    API-->>Mobile: Server-authoritative dashboard/notification DTOs
+    Mobile-->>Student: Render independent section state and exam deep link
+
     Student->>Mobile: Ask AI
     Mobile->>API: Send message without provider secret
     API->>API: Apply quota and prompt guard
@@ -105,6 +119,8 @@ sequenceDiagram
 - The mobile app never stores AI provider keys and never connects directly to the database.
 - Client payloads never decide the acting user. Endpoints derive identity from the Serverpod session.
 - Offline academic data is a pull-cache. Server data remains authoritative, and cache rows are partitioned by authenticated account, week, and semester.
+- Notification rows are user-scoped on the server; mobile deep links map typed
+  notification targets to guarded app routes.
 - Planned library and reader features must keep access checks on the server before issuing book metadata, files, or RAG context.
 - Release claims require local gates, independent review, GitHub Actions evidence, and explicit tag/package evidence.
 

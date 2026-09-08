@@ -17,6 +17,8 @@ abstract interface class AcademicRemoteDataSource {
   });
 
   Future<CourseDetail> getCourseDetail(int offeringId);
+
+  Future<ExamSummary> getExamDetail(int examId);
 }
 
 class ServerpodAcademicRemoteDataSource implements AcademicRemoteDataSource {
@@ -40,6 +42,10 @@ class ServerpodAcademicRemoteDataSource implements AcademicRemoteDataSource {
   @override
   Future<CourseDetail> getCourseDetail(int offeringId) =>
       _client.courses.getCourseDetail(offeringId: offeringId);
+
+  @override
+  Future<ExamSummary> getExamDetail(int examId) =>
+      _client.exams.getDetail(examId: examId);
 }
 
 class ServerpodAcademicRepository implements AcademicRepository {
@@ -104,6 +110,10 @@ class ServerpodAcademicRepository implements AcademicRepository {
   @override
   Future<CourseDetail> loadCourseDetail({required int offeringId}) =>
       _remote.getCourseDetail(offeringId);
+
+  @override
+  Future<ExamSummary> loadExamDetail({required int examId}) =>
+      _remote.getExamDetail(examId);
 
   Future<AcademicSnapshot?> _readCachedSnapshot({
     required String accountId,

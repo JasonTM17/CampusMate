@@ -1,0 +1,10 @@
+class: CampusNotificationSummary
+fields:
+  id: int
+  category: String
+  title: String
+  body: String
+  targetType: String?
+  targetId: int?
+  readAt: DateTime?
+  createdAt: DateTime

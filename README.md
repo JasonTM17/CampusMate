@@ -16,10 +16,12 @@ flowchart TB
     client --> api[Serverpod API\nserver endpoints + auth scopes]
     api --> auth[Serverpod Auth IDP\nemail + JWT refresh]
     api --> academic[Academic domain\ncourses / timetable / grades / exams / progress]
+    api --> dashboard[Dashboard + notifications\ngreeting / announcements / unread center]
     api --> ai[AI domain\nchat / quota / prompt guard]
     api --> library[Library domain\nplanned catalog / lending / reader]
 
     academic --> pg[(PostgreSQL + pgvector)]
+    dashboard --> pg
     ai --> pg
     library --> pg
     api --> redis[(Redis\nphase-gated cache)]
@@ -31,7 +33,7 @@ flowchart TB
     classDef data fill:#fde68a,stroke:#b45309,color:#451a03
     classDef external fill:#fbcfe8,stroke:#be185d,color:#500724
     class student,router,riverpod,cache,client mobile
-    class api,auth,academic,ai,library server
+    class api,auth,academic,dashboard,ai,library server
     class pg,redis,minio data
     class provider external
 ```
@@ -47,10 +49,13 @@ erDiagram
     COURSE_OFFERINGS ||--o{ GRADE_COMPONENTS : defines
     ENROLLMENTS ||--o{ STUDENT_GRADES : records
     COURSE_OFFERINGS ||--o{ ENROLLMENTS : enrolls
+    STUDENT_PROFILES ||--o{ CAMPUS_NOTIFICATIONS : receives
+    ANNOUNCEMENTS }o--o{ STUDENT_PROFILES : targets
 ```
 
 - **apps/mobile** — Flutter + Material 3 + Riverpod + go_router + Drift offline pull-cache.
-- **server** — Serverpod 3.4.x (Dart), migrations, RBAC kiểm quyền ở server.
+- **server** — Serverpod 3.4.x (Dart), migrations, RBAC kiểm quyền ở server,
+  dashboard và notification center derive user từ session.
 - **packages/campusmate_client** — generated client (không sửa tay; dùng `serverpod generate`).
 - **packages/campusmate_shared** — pure Dart domain logic dùng chung, ví dụ GPA calculation.
 - **docs/architecture.md** — sơ đồ hệ thống, trust boundary và runtime flow.

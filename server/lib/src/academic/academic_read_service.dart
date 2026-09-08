@@ -167,6 +167,21 @@ class AcademicReadService {
     return exams.map((exam) => _examSummary(view, exam, reference)).toList();
   }
 
+  Future<ExamSummary> getExamDetail(
+    Session session, {
+    required int examId,
+    DateTime? now,
+  }) async {
+    final view = await _loadStudentAcademicView(session);
+    final matches = view.exams.where((row) => row.id == examId);
+    final exam = matches.isEmpty ? null : matches.first;
+    if (exam == null) {
+      throw ServerpodClientException('Exam not found', 404);
+    }
+
+    return _examSummary(view, exam, now ?? CampusClock.nowUtc());
+  }
+
   Future<CurriculumProgress> getProgress(Session session) async {
     final view = await _loadStudentAcademicView(session);
     final courses = _courseSummaries(view);
