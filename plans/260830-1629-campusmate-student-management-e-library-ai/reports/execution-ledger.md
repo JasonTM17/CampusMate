@@ -501,6 +501,10 @@ Observed gates:
 - GitHub metadata verification via `gh`: repo About description and topics are
   set; `latestRelease` is `null`; `releases/latest` returns 404; filtered
   container/npm/maven package queries find no CampusMate package yet.
+- Post-push GitHub Actions for code commit
+  `5a1c26c feat(library): add catalog access policy` — PASS: server run
+  `34224474451` and mobile run `34224474507` both completed successfully for
+  head SHA `5a1c26cc697ffdc385818e1226638cb4d6016433`.
 
 Independent agents:
 
@@ -527,6 +531,9 @@ Limitations and deferred findings:
 - Library action buttons currently surface friendly placeholder SnackBars for
   reader/lending operations; actual borrow/read/download execution belongs to
   Phase 06/07 by the accepted plan.
+- GitHub Actions annotations note that `actions/checkout@v4` targets deprecated
+  Node.js 20 and is currently forced to Node.js 24 by GitHub runners. This did
+  not fail server/mobile CI, but Phase 12 should refresh CI action versions.
 
 ## Authorized rulings
 

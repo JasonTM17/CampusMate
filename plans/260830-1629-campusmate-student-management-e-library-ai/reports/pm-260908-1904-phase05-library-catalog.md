@@ -11,6 +11,7 @@
 | Build | `flutter build apk --debug` PASS |
 | Docs diagrams | Mermaid render PASS for README, architecture, database, release/package docs |
 | Review | Code-reviewer PASS after P2 stale-loadMore and cursor-index repairs |
+| Remote CI | server `34224474451` PASS; mobile `34224474507` PASS on `5a1c26c` |
 
 ## Completed
 
