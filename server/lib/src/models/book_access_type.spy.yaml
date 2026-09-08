@@ -1,0 +1,8 @@
+enum: BookAccessType
+serialized: byName
+values:
+  - publicFullText
+  - authenticatedFullText
+  - borrowRequired
+  - metadataOnly
+  - restricted

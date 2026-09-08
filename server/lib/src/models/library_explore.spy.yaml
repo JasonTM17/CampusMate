@@ -1,0 +1,4 @@
+class: LibraryExplore
+fields:
+  sections: List<LibraryExploreSection>
+  filterOptions: LibraryFilterOptions

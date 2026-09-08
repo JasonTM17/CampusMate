@@ -1,7 +1,7 @@
 ---
 title: "CampusMate student management + e-library + AI"
 description: "Greenfield Flutter + Serverpod monorepo: quan ly sinh vien, thu vien ebook online (PDF/EPUB, muon/tra, offline) va AI assistant ca nhan hoa voi RAG. 12 phase, co gate Kongming/Wukong."
-status: pending
+status: in-progress
 priority: P1
 effort: XL
 tags: [flutter, serverpod, campusmate, feature, mobile, ai, rag]

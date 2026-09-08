@@ -44,6 +44,11 @@ ai:
   - sendMessage:
 greeting:
   - hello:
+library:
+  - explore:
+  - search:
+  - getBookDetail:
+  - toggleFavorite:
 notification:
   - list:
   - unreadCount:

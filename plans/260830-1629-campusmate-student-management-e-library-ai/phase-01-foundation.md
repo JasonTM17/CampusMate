@@ -1,7 +1,7 @@
 ---
 phase: 1
 title: "Foundation + stack spike"
-status: pending
+status: completed
 priority: P1
 effort: L
 dependencies: []

@@ -26,7 +26,7 @@ flowchart TB
         dashboard[Dashboard endpoints]
         notify[Notification endpoints]
         ai[AI assistant endpoints]
-        library[Library endpoints planned]
+        library[Library catalog endpoints]
         quota[Quota + prompt guard]
     end
 
@@ -106,6 +106,14 @@ sequenceDiagram
     API-->>Mobile: Server-authoritative dashboard/notification DTOs
     Mobile-->>Student: Render independent section state and exam deep link
 
+    Student->>Mobile: Explore or search library
+    Mobile->>API: Search/filter with session token and cursor
+    API->>API: Resolve identity and access policy
+    API->>DB: Query catalog tables and favorite state
+    DB-->>API: Book metadata, relations, and access inputs
+    API-->>Mobile: DTOs with metadata and allowed actions
+    Mobile-->>Student: Render catalog, detail, and favorite state
+
     Student->>Mobile: Ask AI
     Mobile->>API: Send message without provider secret
     API->>API: Apply quota and prompt guard
@@ -121,7 +129,7 @@ sequenceDiagram
 - Offline academic data is a pull-cache. Server data remains authoritative, and cache rows are partitioned by authenticated account, week, and semester.
 - Notification rows are user-scoped on the server; mobile deep links map typed
   notification targets to guarded app routes.
-- Planned library and reader features must keep access checks on the server before issuing book metadata, files, or RAG context.
+- Library catalog access checks are server-owned before mobile receives metadata or action flags. Reader/RAG phases must keep file URL, storage key, and retrieval authorization behind the same server boundary.
 - Release claims require local gates, independent review, GitHub Actions evidence, and explicit tag/package evidence.
 
 ## Component Ownership
@@ -129,7 +137,7 @@ sequenceDiagram
 | Component | Owner | Current status |
 | --- | --- | --- |
 | `apps/mobile` | Flutter client, routing, Riverpod controllers, Drift read cache | Active |
-| `server` | Serverpod endpoints, auth, migrations, seed data | Active |
+| `server` | Serverpod endpoints, auth, library policy, migrations, seed data | Active |
 | `packages/campusmate_client` | Generated protocol/client | Generated |
 | `packages/campusmate_shared` | Pure Dart reusable domain logic | Active |
 | `docs/adr` | Architecture decisions | Active |

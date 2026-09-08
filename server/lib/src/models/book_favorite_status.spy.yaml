@@ -1,0 +1,4 @@
+class: BookFavoriteStatus
+fields:
+  bookId: int
+  isFavorite: bool

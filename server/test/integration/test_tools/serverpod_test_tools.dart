@@ -34,11 +34,18 @@ import 'package:campusmate_server/src/generated/ai_conversations.dart' as _i15;
 import 'package:campusmate_server/src/generated/ai_messages.dart' as _i16;
 import 'package:campusmate_server/src/generated/greetings/greeting.dart'
     as _i17;
-import 'package:campusmate_server/src/generated/notification_list_page.dart'
-    as _i18;
-import 'package:campusmate_server/src/generated/campus_notification_summary.dart'
+import 'package:campusmate_server/src/generated/library_explore.dart' as _i18;
+import 'package:campusmate_server/src/generated/library_search_page.dart'
     as _i19;
-import 'package:campusmate_server/src/generated/student_profile.dart' as _i20;
+import 'package:campusmate_server/src/generated/book_access_type.dart' as _i20;
+import 'package:campusmate_server/src/generated/book_detail.dart' as _i21;
+import 'package:campusmate_server/src/generated/book_favorite_status.dart'
+    as _i22;
+import 'package:campusmate_server/src/generated/notification_list_page.dart'
+    as _i23;
+import 'package:campusmate_server/src/generated/campus_notification_summary.dart'
+    as _i24;
+import 'package:campusmate_server/src/generated/student_profile.dart' as _i25;
 import 'package:campusmate_server/src/generated/protocol.dart';
 import 'package:campusmate_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -179,6 +186,8 @@ class TestEndpoints {
 
   late final _GreetingEndpoint greeting;
 
+  late final _LibraryEndpoint library;
+
   late final _NotificationEndpoint notification;
 
   late final _StudentProfileEndpoint studentProfile;
@@ -240,6 +249,10 @@ class _InternalTestEndpoints extends TestEndpoints
       serializationManager,
     );
     greeting = _GreetingEndpoint(
+      endpoints,
+      serializationManager,
+    );
+    library = _LibraryEndpoint(
       endpoints,
       serializationManager,
     );
@@ -1449,6 +1462,163 @@ class _GreetingEndpoint {
   }
 }
 
+class _LibraryEndpoint {
+  _LibraryEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i3.Future<_i18.LibraryExplore> explore(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required int limitPerSection,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'library',
+            method: 'explore',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'library',
+          methodName: 'explore',
+          parameters: _i1.testObjectToJson({
+            'limitPerSection': limitPerSection,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i18.LibraryExplore>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i19.LibrarySearchPage> search(
+    _i1.TestSessionBuilder sessionBuilder, {
+    String? query,
+    String? cursor,
+    required int limit,
+    List<String>? formats,
+    List<String>? languages,
+    List<String>? categories,
+    List<String>? authors,
+    List<int>? years,
+    List<_i20.BookAccessType>? accessTypes,
+    required bool relatedToMyCourses,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'library',
+            method: 'search',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'library',
+          methodName: 'search',
+          parameters: _i1.testObjectToJson({
+            'query': query,
+            'cursor': cursor,
+            'limit': limit,
+            'formats': formats,
+            'languages': languages,
+            'categories': categories,
+            'authors': authors,
+            'years': years,
+            'accessTypes': accessTypes,
+            'relatedToMyCourses': relatedToMyCourses,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i19.LibrarySearchPage>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i21.BookDetail> getBookDetail(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required int bookId,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'library',
+            method: 'getBookDetail',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'library',
+          methodName: 'getBookDetail',
+          parameters: _i1.testObjectToJson({'bookId': bookId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i21.BookDetail>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i3.Future<_i22.BookFavoriteStatus> toggleFavorite(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required int bookId,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'library',
+            method: 'toggleFavorite',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'library',
+          methodName: 'toggleFavorite',
+          parameters: _i1.testObjectToJson({'bookId': bookId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<_i22.BookFavoriteStatus>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
 class _NotificationEndpoint {
   _NotificationEndpoint(
     this._endpointDispatch,
@@ -1459,7 +1629,7 @@ class _NotificationEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i18.NotificationListPage> list(
+  _i3.Future<_i23.NotificationListPage> list(
     _i1.TestSessionBuilder sessionBuilder, {
     String? cursor,
     required int limit,
@@ -1488,7 +1658,7 @@ class _NotificationEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i18.NotificationListPage>);
+                as _i3.Future<_i23.NotificationListPage>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1527,7 +1697,7 @@ class _NotificationEndpoint {
     });
   }
 
-  _i3.Future<_i19.CampusNotificationSummary> markRead(
+  _i3.Future<_i24.CampusNotificationSummary> markRead(
     _i1.TestSessionBuilder sessionBuilder, {
     required int notificationId,
   }) async {
@@ -1550,7 +1720,7 @@ class _NotificationEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i19.CampusNotificationSummary>);
+                as _i3.Future<_i24.CampusNotificationSummary>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1600,7 +1770,7 @@ class _StudentProfileEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i20.StudentProfile> getMyProfile(
+  _i3.Future<_i25.StudentProfile> getMyProfile(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -1622,7 +1792,7 @@ class _StudentProfileEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i20.StudentProfile>);
+                as _i3.Future<_i25.StudentProfile>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1630,7 +1800,7 @@ class _StudentProfileEndpoint {
     });
   }
 
-  _i3.Future<_i20.StudentProfile> updateMyProfile(
+  _i3.Future<_i25.StudentProfile> updateMyProfile(
     _i1.TestSessionBuilder sessionBuilder, {
     required String fullName,
     required String className,
@@ -1657,7 +1827,7 @@ class _StudentProfileEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i20.StudentProfile>);
+                as _i3.Future<_i25.StudentProfile>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

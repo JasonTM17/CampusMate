@@ -1,0 +1,7 @@
+class: BookAccessDecision
+fields:
+  role: String
+  canRead: bool
+  canDownload: bool
+  canBorrow: bool
+  reason: String?

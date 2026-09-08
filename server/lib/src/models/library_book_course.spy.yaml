@@ -1,0 +1,13 @@
+class: LibraryBookCourse
+table: book_course_links
+fields:
+  bookId: int, relation(parent=books, onDelete=Cascade)
+  courseId: int, relation(parent=courses, onDelete=Cascade)
+indexes:
+  book_course_unique_idx:
+    fields: bookId, courseId
+    unique: true
+  book_course_book_idx:
+    fields: bookId
+  book_course_course_idx:
+    fields: courseId

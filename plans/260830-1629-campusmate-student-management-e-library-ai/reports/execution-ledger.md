@@ -459,6 +459,75 @@ Limitations and degraded gates:
 Phase-04 status remains `completed` in the phase file. Code commit `1fb259c`
 has local gates, independent review, push, and GitHub Actions evidence.
 
+## Phase 05 — Library catalog + access policy completion evidence (2026-09-08)
+
+- Implemented the Serverpod library catalog domain: access-type enum, DTOs,
+  authors/categories/books/link tables/files/course links/favorites, migration
+  `20260908075418239-phase05-library-catalog`, generated server/client
+  protocol, and idempotent demo seed with 30 clearly sample books.
+- Implemented `BookAccessPolicyService` as the single server-side authority for
+  read/download/borrow flags. `metadataOnly` never exposes read/download/borrow;
+  `restricted` read is limited to librarian/admin; inactive and expired-license
+  books block before access-type actions.
+- Implemented `LibraryEndpoint` search/explore/detail/toggleFavorite with
+  server-side filtering, opaque keyset cursor pagination bound to the filter
+  signature, and DTO responses that do not expose file URL or storage key.
+- Implemented Flutter library routes: `/library` explore/search/filter/infinite
+  scroll and `/library/books/:bookId` detail/favorite/actions. Client debounce
+  is 350 ms with stale-result cancellation; `loadMore` is generation-guarded.
+- Updated README and docs with professional Mermaid system/data/release
+  diagrams, GitHub About metadata truth, and the release/package boundary.
+
+Observed gates:
+
+- `dart pub global run serverpod_cli generate` in `server/` — PASS.
+- `dart format --output=none --set-exit-if-changed server packages\campusmate_client packages\campusmate_shared apps\mobile\lib apps\mobile\test`
+  — PASS.
+- `$env:LOCALAPPDATA = Join-Path (Resolve-Path .).Path '.dart_tool\codex-localappdata'; dart analyze server packages\campusmate_client packages\campusmate_shared`
+  — PASS.
+- `flutter analyze` in `apps/mobile` — PASS.
+- `dart test --reporter=compact` in `server` — PASS, 79/79.
+- `flutter test --reporter=compact` in `apps/mobile` — PASS, 89 passed / 3
+  skipped; skipped tests remain live dev-server spikes gated by
+  `CAMPUSMATE_LIVE_SPIKE`.
+- `flutter build apk --debug` in `apps/mobile` — PASS; built
+  `build\app\outputs\flutter-apk\app-debug.apk`.
+- Mermaid render proof with `npx -y @mermaid-js/mermaid-cli` over `README.md`,
+  `docs/architecture.md`, `docs/database.md`, and `docs/release-packages.md`
+  — PASS; output written under ignored `.dart_tool/mermaid-proof`.
+- Migration metadata parser check — PASS: `book_created_cursor_idx` maps only
+  to table `books` in `definition.json`, `definition_project.json`, and
+  `migration.json`.
+- GitHub metadata verification via `gh`: repo About description and topics are
+  set; `latestRelease` is `null`; `releases/latest` returns 404; filtered
+  container/npm/maven package queries find no CampusMate package yet.
+
+Independent agents:
+
+- Explore specialist PASS: `/library` was placeholder-only before this phase;
+  recommended repository/controller/presentation layering, nested detail route,
+  shared search bar, and fake-repository widget/controller tests.
+- Code-reviewer PASS after two targeted repairs. Initial actionable P2s were
+  stale `loadMore` result handling and missing `books(createdAt,id)` cursor
+  index; both were fixed and retested. Final reviewer verdict: PASS, no
+  P0/P1/P2 actionable findings.
+- Wukong runtime attempt timed out before verdict; this phase's falsifiable
+  high-risk gates were instead covered by controller tests plus code-reviewer.
+  Borrow-race Wukong remains required for Phase 06.
+
+Limitations and deferred findings:
+
+- No GitHub Release or GitHub Package has been published for CampusMate. Docs
+  intentionally say this remains a Phase 12 ship gate after tag, workflow, CI,
+  provenance, and package evidence exist.
+- Generated protocol still contains internal model classes with
+  `LibraryBookFile.storageKey`; current public endpoints return DTOs and tests
+  assert no leak. Reader/download phases must keep storage metadata server-only
+  at mint-time.
+- Library action buttons currently surface friendly placeholder SnackBars for
+  reader/lending operations; actual borrow/read/download execution belongs to
+  Phase 06/07 by the accepted plan.
+
 ## Authorized rulings
 
 - AGENTS.md untracked (global gitignore user) — không force-add.
@@ -475,11 +544,12 @@ has local gates, independent review, push, and GitHub Actions evidence.
 - Locale hardcode `vi` trong app.dart — language setting thực tế thuộc phase-12 settings.
 - Thư mục `features/` xuất hiện dần từ phase-02 (empty dir không track được).
 - A3 streaming spike ở phase-08 trước khi commit kiến trúc chat.
-- CI first push evidence exists; server workflow initially failed on Redis health-check mismatch and is being fixed in the follow-up commit.
-- Docker Desktop đã tự tắt 2 lần trong phiên (engine chết giữa phase) — theo dõi; nếu lặp lại, kiểm tra WSL2/ram.
+- CI first push evidence exists; server workflow initially failed on Redis health-check mismatch and was fixed in the follow-up commit.
+- Docker Desktop previously self-stopped during long tests; Phase 05 final
+  server suite and Android debug build completed with Docker/Gradle available.
 
 ## Next resume point
 
-- Commit and push this docs-only CI evidence update, watch GitHub Actions for
-  the new documentation head, then resume Phase 05: library catalog + access
-  policy.
+- Commit and push Phase 05, watch GitHub Actions for the new head, then resume
+  Phase 06: lending + audit. Required next high-risk gate: Wukong borrow-race
+  claim with a deterministic two-borrow concurrency test.

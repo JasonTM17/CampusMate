@@ -1,0 +1,14 @@
+class: LibraryCategory
+table: book_categories
+fields:
+  name: String
+  slug: String
+  description: String?
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  book_category_slug_idx:
+    fields: slug
+    unique: true
+  book_category_name_idx:
+    fields: name

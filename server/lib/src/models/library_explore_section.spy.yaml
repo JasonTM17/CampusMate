@@ -1,0 +1,5 @@
+class: LibraryExploreSection
+fields:
+  key: String
+  title: String
+  items: List<BookSummary>

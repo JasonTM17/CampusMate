@@ -1,0 +1,5 @@
+class: LibrarySearchPage
+fields:
+  items: List<BookSummary>
+  nextCursor: String?
+  totalCount: int

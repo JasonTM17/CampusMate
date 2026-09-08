@@ -10,6 +10,7 @@ import 'package:campusmate_server/src/auth/campusmate_auth.dart';
 import 'package:campusmate_server/src/dashboard/dashboard_demo_seed.dart';
 import 'package:campusmate_server/src/generated/endpoints.dart';
 import 'package:campusmate_server/src/generated/protocol.dart';
+import 'package:campusmate_server/src/library/library_demo_seed.dart';
 
 /// Seeds local-only CampusMate accounts and student profiles.
 ///
@@ -100,9 +101,10 @@ Future<void> _seedAccounts(Session session, String password) async {
   }
   await seedAcademicDemoData(session);
   await seedDashboardNotificationDemoData(session);
+  await seedLibraryDemoData(session);
 
   stdout.writeln(
-    'Seeded ${accounts.length} local accounts plus academic dashboard and notification demo data. Password was read from CAMPUSMATE_SEED_PASSWORD.',
+    'Seeded ${accounts.length} local accounts plus academic dashboard, notification, and library demo data. Password was read from CAMPUSMATE_SEED_PASSWORD.',
   );
 }
 

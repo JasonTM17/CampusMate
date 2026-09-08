@@ -11,6 +11,8 @@ import '../../features/academics/presentation/academic_screen.dart';
 import '../../features/academics/presentation/exam_detail_screen.dart';
 import '../../features/chat/presentation/chat_screen.dart';
 import '../../features/dashboard/presentation/dashboard_screen.dart';
+import '../../features/library/presentation/book_detail_screen.dart';
+import '../../features/library/presentation/library_screen.dart';
 import '../../features/notifications/presentation/notification_screen.dart';
 import '../../features/student_profile/presentation/student_profile_screen.dart';
 import '../../l10n/generated/app_localizations.dart';
@@ -115,10 +117,21 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/library',
-                builder: (context, state) => BranchPlaceholderScreen(
-                  icon: Icons.local_library_outlined,
-                  title: AppLocalizations.of(context)!.navLibrary,
-                ),
+                builder: (context, state) => const LibraryScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'books/:bookId',
+                    builder: (context, state) {
+                      final bookId = int.tryParse(
+                        state.pathParameters['bookId'] ?? '',
+                      );
+                      if (bookId == null) {
+                        return const _InvalidDeepLinkScreen();
+                      }
+                      return BookDetailScreen(bookId: bookId);
+                    },
+                  ),
+                ],
               ),
             ],
           ),

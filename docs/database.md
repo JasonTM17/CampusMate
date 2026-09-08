@@ -122,6 +122,54 @@ erDiagram
     }
 ```
 
+## Library Catalog
+
+```mermaid
+erDiagram
+    AUTHORS ||--o{ BOOK_AUTHORS : credited
+    BOOKS ||--o{ BOOK_AUTHORS : has
+    BOOK_CATEGORIES ||--o{ BOOK_CATEGORY_LINKS : contains
+    BOOKS ||--o{ BOOK_CATEGORY_LINKS : grouped
+    BOOKS ||--o{ BOOK_FILES : has_formats
+    BOOKS ||--o{ BOOK_COURSE_LINKS : supports
+    COURSES ||--o{ BOOK_COURSE_LINKS : recommends
+    BOOKS ||--o{ FAVORITE_BOOKS : favorited
+
+    AUTHORS {
+        int id PK
+        string displayName
+        string normalizedName
+    }
+
+    BOOKS {
+        int id PK
+        string title
+        string isbn
+        string accessType
+        int publishedYear
+        bool isActive
+    }
+
+    BOOK_CATEGORIES {
+        int id PK
+        string name
+        string slug
+    }
+
+    BOOK_FILES {
+        int id PK
+        int bookId FK
+        string format
+        string storageKey
+    }
+
+    FAVORITE_BOOKS {
+        int id PK
+        uuid userId
+        int bookId FK
+    }
+```
+
 ## Data Rules
 
 - Academic rows are demo data only. They are intentionally fake and must not imply an official university integration.
@@ -135,6 +183,12 @@ erDiagram
 - Notifications support the allowed category set
   `academic/library/system/ai/course/exam`; list pagination is keyset-based by
   `(createdAt, id)` and scoped to the authenticated user.
+- Library catalog APIs return DTOs owned by generated Serverpod protocol. Search
+  pagination is cursor-based and filter resolution happens before querying book
+  rows. Catalog detail may expose available formats and action flags, but not
+  storage keys or reader file URLs.
+- Library access decisions are owned by `BookAccessPolicyService`; mobile uses
+  its returned action flags instead of reimplementing role rules.
 
 ## Local Cache Shape
 

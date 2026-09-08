@@ -1,0 +1,13 @@
+class: LibraryBookCategory
+table: book_category_links
+fields:
+  bookId: int, relation(parent=books, onDelete=Cascade)
+  categoryId: int, relation(parent=book_categories, onDelete=Cascade)
+indexes:
+  book_category_unique_idx:
+    fields: bookId, categoryId
+    unique: true
+  book_category_book_idx:
+    fields: bookId
+  book_category_category_idx:
+    fields: categoryId

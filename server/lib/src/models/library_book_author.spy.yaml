@@ -1,0 +1,13 @@
+class: LibraryBookAuthor
+table: book_authors
+fields:
+  bookId: int, relation(parent=books, onDelete=Cascade)
+  authorId: int, relation(parent=authors, onDelete=Cascade)
+indexes:
+  book_author_unique_idx:
+    fields: bookId, authorId
+    unique: true
+  book_author_book_idx:
+    fields: bookId
+  book_author_author_idx:
+    fields: authorId

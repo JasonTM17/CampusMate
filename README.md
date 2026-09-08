@@ -18,7 +18,7 @@ flowchart TB
     api --> academic[Academic domain\ncourses / timetable / grades / exams / progress]
     api --> dashboard[Dashboard + notifications\ngreeting / announcements / unread center]
     api --> ai[AI domain\nchat / quota / prompt guard]
-    api --> library[Library domain\nplanned catalog / lending / reader]
+    api --> library[Library domain\ncatalog / access policy\nplanned lending / reader]
 
     academic --> pg[(PostgreSQL + pgvector)]
     dashboard --> pg
@@ -51,11 +51,19 @@ erDiagram
     COURSE_OFFERINGS ||--o{ ENROLLMENTS : enrolls
     STUDENT_PROFILES ||--o{ CAMPUS_NOTIFICATIONS : receives
     ANNOUNCEMENTS }o--o{ STUDENT_PROFILES : targets
+    AUTHORS ||--o{ BOOK_AUTHORS : writes
+    BOOKS ||--o{ BOOK_AUTHORS : credits
+    BOOK_CATEGORIES ||--o{ BOOK_CATEGORY_LINKS : groups
+    BOOKS ||--o{ BOOK_CATEGORY_LINKS : classifies
+    BOOKS ||--o{ BOOK_FILES : stores_metadata
+    BOOKS ||--o{ BOOK_COURSE_LINKS : supports
+    COURSES ||--o{ BOOK_COURSE_LINKS : recommends
+    BOOKS ||--o{ FAVORITE_BOOKS : bookmarked_by
 ```
 
 - **apps/mobile** — Flutter + Material 3 + Riverpod + go_router + Drift offline pull-cache.
 - **server** — Serverpod 3.4.x (Dart), migrations, RBAC kiểm quyền ở server,
-  dashboard và notification center derive user từ session.
+  dashboard/notifications/library derive user từ session.
 - **packages/campusmate_client** — generated client (không sửa tay; dùng `serverpod generate`).
 - **packages/campusmate_shared** — pure Dart domain logic dùng chung, ví dụ GPA calculation.
 - **docs/architecture.md** — sơ đồ hệ thống, trust boundary và runtime flow.
@@ -63,7 +71,7 @@ erDiagram
 - **docs/release-packages.md** — chính sách GitHub Releases/GitHub Packages.
 - **docs/adr/** — các quyết định kiến trúc quan trọng.
 
-Quy tắc cứng: mobile không bao giờ giữ AI key hay kết nối DB trực tiếp; mọi authorization kiểm tra ở SERVER; identity chỉ lấy từ session (không tin `userId` từ payload).
+Quy tắc cứng: mobile không bao giờ giữ AI key hay kết nối DB trực tiếp; mọi authorization kiểm tra ở SERVER; identity chỉ lấy từ session (không tin `userId` từ payload). Library detail trả DTO metadata/action theo `BookAccessPolicyService`; file URL/storage key không thuộc catalog API.
 
 ## GitHub repository surface
 
@@ -79,7 +87,7 @@ Release/package policy:
 
 - **GitHub Releases**: publish only tagged, evidence-backed builds after the matching local gates and GitHub Actions pass. Attach release notes from the plan ledger, not ad-hoc claims.
 - **GitHub Packages**: use GitHub Packages/GHCR only for ship-ready server images or generated deliverables once a package workflow exists. Current CI builds a debug APK for verification, but does not publish packages yet.
-- **Current state**: no production release is claimed until phases, CI, review, and live evidence are complete.
+- **Current state**: GitHub About description/topics have been set and verified for `JasonTM17/CampusMate`; no production release/package is claimed until phases, CI, review, and live evidence are complete.
 
 See [docs/release-packages.md](docs/release-packages.md) for the release and package contract.
 

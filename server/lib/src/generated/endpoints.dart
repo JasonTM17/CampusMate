@@ -20,12 +20,14 @@ import '../auth/jwt_refresh_endpoint.dart' as _i6;
 import '../dashboard/dashboard_endpoint.dart' as _i7;
 import '../endpoints/ai_endpoint.dart' as _i8;
 import '../greetings/greeting_endpoint.dart' as _i9;
-import '../notifications/notification_endpoint.dart' as _i10;
-import '../student/student_profile_endpoint.dart' as _i11;
+import '../library/library_endpoint.dart' as _i10;
+import '../notifications/notification_endpoint.dart' as _i11;
+import '../student/student_profile_endpoint.dart' as _i12;
+import 'package:campusmate_server/src/generated/book_access_type.dart' as _i13;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i12;
+    as _i14;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i13;
+    as _i15;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -109,13 +111,19 @@ class Endpoints extends _i1.EndpointDispatch {
           'greeting',
           null,
         ),
-      'notification': _i10.NotificationEndpoint()
+      'library': _i10.LibraryEndpoint()
+        ..initialize(
+          server,
+          'library',
+          null,
+        ),
+      'notification': _i11.NotificationEndpoint()
         ..initialize(
           server,
           'notification',
           null,
         ),
-      'studentProfile': _i11.StudentProfileEndpoint()
+      'studentProfile': _i12.StudentProfileEndpoint()
         ..initialize(
           server,
           'studentProfile',
@@ -817,6 +825,140 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['library'] = _i1.EndpointConnector(
+      name: 'library',
+      endpoint: endpoints['library']!,
+      methodConnectors: {
+        'explore': _i1.MethodConnector(
+          name: 'explore',
+          params: {
+            'limitPerSection': _i1.ParameterDescription(
+              name: 'limitPerSection',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['library'] as _i10.LibraryEndpoint).explore(
+                session,
+                limitPerSection: params['limitPerSection'],
+              ),
+        ),
+        'search': _i1.MethodConnector(
+          name: 'search',
+          params: {
+            'query': _i1.ParameterDescription(
+              name: 'query',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+            'cursor': _i1.ParameterDescription(
+              name: 'cursor',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+            'limit': _i1.ParameterDescription(
+              name: 'limit',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'formats': _i1.ParameterDescription(
+              name: 'formats',
+              type: _i1.getType<List<String>?>(),
+              nullable: true,
+            ),
+            'languages': _i1.ParameterDescription(
+              name: 'languages',
+              type: _i1.getType<List<String>?>(),
+              nullable: true,
+            ),
+            'categories': _i1.ParameterDescription(
+              name: 'categories',
+              type: _i1.getType<List<String>?>(),
+              nullable: true,
+            ),
+            'authors': _i1.ParameterDescription(
+              name: 'authors',
+              type: _i1.getType<List<String>?>(),
+              nullable: true,
+            ),
+            'years': _i1.ParameterDescription(
+              name: 'years',
+              type: _i1.getType<List<int>?>(),
+              nullable: true,
+            ),
+            'accessTypes': _i1.ParameterDescription(
+              name: 'accessTypes',
+              type: _i1.getType<List<_i13.BookAccessType>?>(),
+              nullable: true,
+            ),
+            'relatedToMyCourses': _i1.ParameterDescription(
+              name: 'relatedToMyCourses',
+              type: _i1.getType<bool>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['library'] as _i10.LibraryEndpoint).search(
+                session,
+                query: params['query'],
+                cursor: params['cursor'],
+                limit: params['limit'],
+                formats: params['formats'],
+                languages: params['languages'],
+                categories: params['categories'],
+                authors: params['authors'],
+                years: params['years'],
+                accessTypes: params['accessTypes'],
+                relatedToMyCourses: params['relatedToMyCourses'],
+              ),
+        ),
+        'getBookDetail': _i1.MethodConnector(
+          name: 'getBookDetail',
+          params: {
+            'bookId': _i1.ParameterDescription(
+              name: 'bookId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['library'] as _i10.LibraryEndpoint).getBookDetail(
+                    session,
+                    bookId: params['bookId'],
+                  ),
+        ),
+        'toggleFavorite': _i1.MethodConnector(
+          name: 'toggleFavorite',
+          params: {
+            'bookId': _i1.ParameterDescription(
+              name: 'bookId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['library'] as _i10.LibraryEndpoint).toggleFavorite(
+                    session,
+                    bookId: params['bookId'],
+                  ),
+        ),
+      },
+    );
     connectors['notification'] = _i1.EndpointConnector(
       name: 'notification',
       endpoint: endpoints['notification']!,
@@ -845,7 +987,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['notification'] as _i10.NotificationEndpoint).list(
+                  (endpoints['notification'] as _i11.NotificationEndpoint).list(
                     session,
                     cursor: params['cursor'],
                     limit: params['limit'],
@@ -866,7 +1008,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['notification'] as _i10.NotificationEndpoint)
+                  (endpoints['notification'] as _i11.NotificationEndpoint)
                       .unreadCount(
                         session,
                         category: params['category'],
@@ -886,7 +1028,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['notification'] as _i10.NotificationEndpoint)
+                  (endpoints['notification'] as _i11.NotificationEndpoint)
                       .markRead(
                         session,
                         notificationId: params['notificationId'],
@@ -906,7 +1048,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['notification'] as _i10.NotificationEndpoint)
+                  (endpoints['notification'] as _i11.NotificationEndpoint)
                       .markAllRead(
                         session,
                         category: params['category'],
@@ -926,7 +1068,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['studentProfile'] as _i11.StudentProfileEndpoint)
+                  (endpoints['studentProfile'] as _i12.StudentProfileEndpoint)
                       .getMyProfile(session),
         ),
         'updateMyProfile': _i1.MethodConnector(
@@ -948,7 +1090,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['studentProfile'] as _i11.StudentProfileEndpoint)
+                  (endpoints['studentProfile'] as _i12.StudentProfileEndpoint)
                       .updateMyProfile(
                         session,
                         fullName: params['fullName'],
@@ -957,9 +1099,9 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    modules['serverpod_auth_idp'] = _i12.Endpoints()
+    modules['serverpod_auth_idp'] = _i14.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_core'] = _i13.Endpoints()
+    modules['serverpod_auth_core'] = _i15.Endpoints()
       ..initializeEndpoints(server);
   }
 }

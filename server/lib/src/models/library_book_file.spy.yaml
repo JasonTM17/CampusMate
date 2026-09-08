@@ -1,0 +1,18 @@
+class: LibraryBookFile
+table: book_files
+fields:
+  bookId: int, relation(parent=books, onDelete=Cascade)
+  format: String
+  storageKey: String
+  byteSize: int
+  checksum: String
+  isPrimary: bool
+  createdAt: DateTime
+indexes:
+  book_file_unique_idx:
+    fields: bookId, format
+    unique: true
+  book_file_book_idx:
+    fields: bookId
+  book_file_format_idx:
+    fields: format

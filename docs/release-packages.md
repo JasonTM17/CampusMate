@@ -4,13 +4,13 @@ CampusMate uses evidence-backed release discipline. A release is not considered 
 
 ## Repository About
 
-Current GitHub About description:
+Current GitHub About description for `JasonTM17/CampusMate`:
 
 ```text
 CampusMate — Flutter + Serverpod student management, e-library, offline academic dashboard, and personalized AI assistant.
 ```
 
-Current recommended topics: `flutter`, `dart`, `serverpod`, `postgresql`, `pgvector`, `riverpod`, `drift`, `student-management`, `e-library`, `ai-assistant`.
+Current topics: `flutter`, `dart`, `serverpod`, `postgresql`, `pgvector`, `riverpod`, `drift`, `student-management`, `e-library`, `ai-assistant`.
 
 ## Release Contract
 
@@ -44,4 +44,4 @@ GitHub Packages/GHCR is reserved for ship-ready artifacts:
 - generated debug APKs only as CI artifacts, not package releases;
 - production mobile builds only after signing, store/distribution policy, and release gates are complete.
 
-Current status: the repository has CI workflows and a local debug APK gate, but there is no published GitHub Release and no GitHub Packages workflow yet. That is intentional until the project reaches the release phase.
+Current status: GitHub About metadata is set. `latestRelease` is null and the latest-release REST endpoint returns 404, so no GitHub Release is published. No CampusMate package was found under this user's container, npm, or Maven package listings. That is intentional until the project reaches the release phase and has a package workflow.

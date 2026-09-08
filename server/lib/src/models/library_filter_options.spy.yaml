@@ -1,0 +1,8 @@
+class: LibraryFilterOptions
+fields:
+  languages: List<String>
+  categories: List<String>
+  authors: List<String>
+  years: List<int>
+  accessTypes: List<BookAccessType>
+  formats: List<String>

@@ -32,12 +32,19 @@ import 'package:campusmate_client/src/protocol/announcement_summary.dart'
 import 'package:campusmate_client/src/protocol/ai_conversations.dart' as _i15;
 import 'package:campusmate_client/src/protocol/ai_messages.dart' as _i16;
 import 'package:campusmate_client/src/protocol/greetings/greeting.dart' as _i17;
-import 'package:campusmate_client/src/protocol/notification_list_page.dart'
-    as _i18;
-import 'package:campusmate_client/src/protocol/campus_notification_summary.dart'
+import 'package:campusmate_client/src/protocol/library_explore.dart' as _i18;
+import 'package:campusmate_client/src/protocol/library_search_page.dart'
     as _i19;
-import 'package:campusmate_client/src/protocol/student_profile.dart' as _i20;
-import 'protocol.dart' as _i21;
+import 'package:campusmate_client/src/protocol/book_access_type.dart' as _i20;
+import 'package:campusmate_client/src/protocol/book_detail.dart' as _i21;
+import 'package:campusmate_client/src/protocol/book_favorite_status.dart'
+    as _i22;
+import 'package:campusmate_client/src/protocol/notification_list_page.dart'
+    as _i23;
+import 'package:campusmate_client/src/protocol/campus_notification_summary.dart'
+    as _i24;
+import 'package:campusmate_client/src/protocol/student_profile.dart' as _i25;
+import 'protocol.dart' as _i26;
 
 /// {@category Endpoint}
 class EndpointAcademic extends _i1.EndpointRef {
@@ -575,17 +582,74 @@ class EndpointGreeting extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointLibrary extends _i1.EndpointRef {
+  EndpointLibrary(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'library';
+
+  _i2.Future<_i18.LibraryExplore> explore({required int limitPerSection}) =>
+      caller.callServerEndpoint<_i18.LibraryExplore>(
+        'library',
+        'explore',
+        {'limitPerSection': limitPerSection},
+      );
+
+  _i2.Future<_i19.LibrarySearchPage> search({
+    String? query,
+    String? cursor,
+    required int limit,
+    List<String>? formats,
+    List<String>? languages,
+    List<String>? categories,
+    List<String>? authors,
+    List<int>? years,
+    List<_i20.BookAccessType>? accessTypes,
+    required bool relatedToMyCourses,
+  }) => caller.callServerEndpoint<_i19.LibrarySearchPage>(
+    'library',
+    'search',
+    {
+      'query': query,
+      'cursor': cursor,
+      'limit': limit,
+      'formats': formats,
+      'languages': languages,
+      'categories': categories,
+      'authors': authors,
+      'years': years,
+      'accessTypes': accessTypes,
+      'relatedToMyCourses': relatedToMyCourses,
+    },
+  );
+
+  _i2.Future<_i21.BookDetail> getBookDetail({required int bookId}) =>
+      caller.callServerEndpoint<_i21.BookDetail>(
+        'library',
+        'getBookDetail',
+        {'bookId': bookId},
+      );
+
+  _i2.Future<_i22.BookFavoriteStatus> toggleFavorite({required int bookId}) =>
+      caller.callServerEndpoint<_i22.BookFavoriteStatus>(
+        'library',
+        'toggleFavorite',
+        {'bookId': bookId},
+      );
+}
+
+/// {@category Endpoint}
 class EndpointNotification extends _i1.EndpointRef {
   EndpointNotification(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'notification';
 
-  _i2.Future<_i18.NotificationListPage> list({
+  _i2.Future<_i23.NotificationListPage> list({
     String? cursor,
     required int limit,
     String? category,
-  }) => caller.callServerEndpoint<_i18.NotificationListPage>(
+  }) => caller.callServerEndpoint<_i23.NotificationListPage>(
     'notification',
     'list',
     {
@@ -602,9 +666,9 @@ class EndpointNotification extends _i1.EndpointRef {
         {'category': category},
       );
 
-  _i2.Future<_i19.CampusNotificationSummary> markRead({
+  _i2.Future<_i24.CampusNotificationSummary> markRead({
     required int notificationId,
-  }) => caller.callServerEndpoint<_i19.CampusNotificationSummary>(
+  }) => caller.callServerEndpoint<_i24.CampusNotificationSummary>(
     'notification',
     'markRead',
     {'notificationId': notificationId},
@@ -629,8 +693,8 @@ class EndpointStudentProfile extends _i1.EndpointRef {
   @override
   String get name => 'studentProfile';
 
-  _i2.Future<_i20.StudentProfile> getMyProfile() =>
-      caller.callServerEndpoint<_i20.StudentProfile>(
+  _i2.Future<_i25.StudentProfile> getMyProfile() =>
+      caller.callServerEndpoint<_i25.StudentProfile>(
         'studentProfile',
         'getMyProfile',
         {},
@@ -640,10 +704,10 @@ class EndpointStudentProfile extends _i1.EndpointRef {
   ///
   /// Student code, academic results, faculty and major remain server-managed
   /// so client input cannot rewrite institutional data.
-  _i2.Future<_i20.StudentProfile> updateMyProfile({
+  _i2.Future<_i25.StudentProfile> updateMyProfile({
     required String fullName,
     required String className,
-  }) => caller.callServerEndpoint<_i20.StudentProfile>(
+  }) => caller.callServerEndpoint<_i25.StudentProfile>(
     'studentProfile',
     'updateMyProfile',
     {
@@ -684,7 +748,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i21.Protocol(),
+         _i26.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -706,6 +770,7 @@ class Client extends _i1.ServerpodClientShared {
     dashboard = EndpointDashboard(this);
     ai = EndpointAi(this);
     greeting = EndpointGreeting(this);
+    library = EndpointLibrary(this);
     notification = EndpointNotification(this);
     studentProfile = EndpointStudentProfile(this);
     modules = Modules(this);
@@ -737,6 +802,8 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointGreeting greeting;
 
+  late final EndpointLibrary library;
+
   late final EndpointNotification notification;
 
   late final EndpointStudentProfile studentProfile;
@@ -758,6 +825,7 @@ class Client extends _i1.ServerpodClientShared {
     'dashboard': dashboard,
     'ai': ai,
     'greeting': greeting,
+    'library': library,
     'notification': notification,
     'studentProfile': studentProfile,
   };

@@ -1,0 +1,39 @@
+class: LibraryBook
+table: books
+fields:
+  title: String
+  subtitle: String?
+  description: String
+  isbn: String?
+  publisher: String
+  publishedYear: int
+  language: String
+  coverUrl: String?
+  accessType: BookAccessType
+  license: String
+  licenseExpiresAt: DateTime?
+  keywords: String
+  searchText: String
+  popularityScore: int
+  featuredRank: int?
+  isActive: bool
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  book_title_idx:
+    fields: title
+  book_isbn_idx:
+    fields: isbn
+    unique: true
+  book_access_type_idx:
+    fields: accessType
+  book_language_year_idx:
+    fields: language, publishedYear, id
+  book_featured_idx:
+    fields: featuredRank
+  book_popularity_idx:
+    fields: popularityScore, id
+  book_year_cursor_idx:
+    fields: publishedYear, id
+  book_created_cursor_idx:
+    fields: createdAt, id

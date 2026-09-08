@@ -1,0 +1,14 @@
+class: LibraryAuthor
+table: authors
+fields:
+  displayName: String
+  normalizedName: String
+  biography: String?
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  author_normalized_name_idx:
+    fields: normalizedName
+    unique: true
+  author_display_name_idx:
+    fields: displayName

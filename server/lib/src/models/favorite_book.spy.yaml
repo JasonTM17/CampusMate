@@ -1,0 +1,14 @@
+class: FavoriteBook
+table: favorite_books
+fields:
+  userId: UuidValue
+  bookId: int, relation(parent=books, onDelete=Cascade)
+  createdAt: DateTime
+indexes:
+  favorite_user_book_idx:
+    fields: userId, bookId
+    unique: true
+  favorite_user_idx:
+    fields: userId
+  favorite_book_idx:
+    fields: bookId

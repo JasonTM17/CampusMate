@@ -1,0 +1,19 @@
+class: BookSummary
+fields:
+  id: int
+  title: String
+  subtitle: String?
+  description: String
+  isbn: String?
+  publisher: String
+  publishedYear: int
+  language: String
+  coverUrl: String?
+  accessType: BookAccessType
+  license: String
+  authors: List<String>
+  categories: List<String>
+  courseCodes: List<String>
+  availableFormats: List<String>
+  isFavorite: bool
+  access: BookAccessDecision
