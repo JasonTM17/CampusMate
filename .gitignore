@@ -1,23 +1,17 @@
-# Dart / Flutter
-.dart_tool/
-.flutter-plugins
-.flutter-plugins-dependencies
-.packages
-build/
-coverage/
-pubspec_override.yaml
+# ==============================================================================
+# CampusMate Root .gitignore
+# Multi-package Monorepo: Flutter (Mobile/Web) + Serverpod + Dart Packages
+# ==============================================================================
 
-# Serverpod
-.serverpod/
-server/.run/
-*.g.dart.bak
+# ------------------------------------------------------------------------------
+# 1. Project Planning & Roadmaps (Local / Private)
+# ------------------------------------------------------------------------------
+plans/
+.plans/
 
-# IDE
-.idea/
-*.iml
-.vscode/
-
-# Agent runtime session state & personal skill kits
+# ------------------------------------------------------------------------------
+# 2. Agent Runtime Session State, Personal Toolkits & Scratchpads
+# ------------------------------------------------------------------------------
 .zcode/
 .mimosa/
 .video_agent/
@@ -25,18 +19,169 @@ server/.run/
 .agents/
 .codex/
 AGENTS.md
+.cursor/
+.claude/
+.gemini/
+.copilot/
+.continue/
+.specstory/
+.prompt/
 
-# Secrets & local environment (never commit)
+# ------------------------------------------------------------------------------
+# 3. Secrets & Local Environment Credentials (NEVER COMMIT)
+# ------------------------------------------------------------------------------
 .env
 .env.*
 !.env.example
 *.pem
 *.key
 *.keystore
+*.jks
+*.p12
+*.pfx
+*.p8
+*.mobileprovision
+key.properties
+**/key.properties
+local.properties
+**/local.properties
+passwords.yaml
+**/passwords.yaml
+*service_account*.json
+*service-account*.json
+*firebase_service_account*.json
+google-services.json
+**/google-services.json
+GoogleService-Info.plist
+**/GoogleService-Info.plist
+id_rsa*
+id_ed25519*
 
-# OS
+# ------------------------------------------------------------------------------
+# 4. Dart & Flutter (Workspace & All Subpackages)
+# ------------------------------------------------------------------------------
+.dart_tool/
+**/.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+**/.flutter-plugins*
+.packages
+**/.packages
+.pub/
+**/.pub/
+.pub-cache/
+**/.pub-cache/
+build/
+**/build/
+coverage/
+**/coverage/
+pubspec_override.yaml
+**/doc/api/
+*.snapshot
+*.kernel
+*.dill
+*.dill.incremental
+app.*.symbols
+app.*.map.json
+
+# ------------------------------------------------------------------------------
+# 5. Serverpod & Backend Artifacts
+# ------------------------------------------------------------------------------
+.serverpod/
+**/.serverpod/
+server/.run/
+*.g.dart.bak
+server/web/app/
+**/web/app/
+*.db
+*.sqlite
+*.sqlite3
+*.dump
+*.sql.bak
+docker-compose.override.yml
+docker-compose.local.yml
+
+# ------------------------------------------------------------------------------
+# 6. Android Platform Artifacts
+# ------------------------------------------------------------------------------
+**/.gradle/
+**/.kotlin/
+**/captures/
+**/.cxx/
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+**/android/app/debug/
+**/android/app/profile/
+**/android/app/release/
+GeneratedPluginRegistrant.java
+
+# ------------------------------------------------------------------------------
+# 7. iOS & macOS Platform Artifacts
+# ------------------------------------------------------------------------------
+**/Pods/
+**/.symlinks/
+**/DerivedData/
+xcuserdata/
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+Flutter/ephemeral/
+Flutter/Generated.xcconfig
+Flutter/flutter_export_environment.sh
+Flutter/App.framework
+Flutter/Flutter.framework
+Flutter/Flutter.podspec
+Runner/GeneratedPluginRegistrant.*
+
+# ------------------------------------------------------------------------------
+# 8. IDEs, Editors & Workspace Configs
+# ------------------------------------------------------------------------------
+.idea/
+**/.idea/
+*.iml
+**/*.iml
+*.ipr
+*.iws
+.vscode/
+**/.vscode/
+.vs/
+**/.vs/
+*.sublime-project
+*.sublime-workspace
+.history/
+
+# ------------------------------------------------------------------------------
+# 9. Operating System Artifacts
+# ------------------------------------------------------------------------------
+# macOS
 .DS_Store
-Thumbs.db
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
 
-# Logs & temp
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.fuse_hidden*
+
+# ------------------------------------------------------------------------------
+# 10. Logs, Temp & Dependencies
+# ------------------------------------------------------------------------------
 *.log
+**/*.log
+*.tmp
+*.temp
+*.swp
+*.swo
+node_modules/

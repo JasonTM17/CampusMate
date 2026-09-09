@@ -11,8 +11,21 @@ web/app
 # Directory created by dartdoc
 doc/api/
 
-# Passwords file
+# Passwords & secrets
 config/passwords.yaml
+.env
+.env.*
+!.env.example
 
 # Firebase service account key for Firebase auth
 config/firebase_service_account_key.json
+*service_account*.json
+
+# Logs & database dumps
+*.log
+*.db
+*.sqlite
+*.sqlite3
+*.dump
+*.sql.bak
+
