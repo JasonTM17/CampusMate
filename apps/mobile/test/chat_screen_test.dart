@@ -49,52 +49,52 @@ class _HistoryFailureRepo implements AiRepository {
 
   @override
   Future<StudentAiPreference> getPreferences() async => StudentAiPreference(
-        userId: UuidValue.fromString('00000000-0000-4000-8000-000000000001'),
-        explanationStyle: 'standard',
-        personalizationEnabled: true,
-        memoryEnabled: true,
-        updatedAt: DateTime.now(),
-      );
+    userId: UuidValue.fromString('00000000-0000-4000-8000-000000000001'),
+    explanationStyle: 'standard',
+    personalizationEnabled: true,
+    memoryEnabled: true,
+    updatedAt: DateTime.now(),
+  );
 
   @override
   Future<StudentAiPreference> updatePreferences({
     required String explanationStyle,
     required bool personalizationEnabled,
     required bool memoryEnabled,
-  }) async =>
-      StudentAiPreference(
-        userId: UuidValue.fromString('00000000-0000-4000-8000-000000000001'),
-        explanationStyle: explanationStyle,
-        personalizationEnabled: personalizationEnabled,
-        memoryEnabled: memoryEnabled,
-        updatedAt: DateTime.now(),
-      );
+  }) async => StudentAiPreference(
+    userId: UuidValue.fromString('00000000-0000-4000-8000-000000000001'),
+    explanationStyle: explanationStyle,
+    personalizationEnabled: personalizationEnabled,
+    memoryEnabled: memoryEnabled,
+    updatedAt: DateTime.now(),
+  );
 
   @override
   Future<List<AiUserMemory>> getMemories({bool activeOnly = false}) async => [];
 
   @override
-  Future<AiUserMemory> addMemory({required String content, String? source}) async =>
-      AiUserMemory(
-        userId: UuidValue.fromString('00000000-0000-4000-8000-000000000001'),
-        content: content,
-        source: source ?? 'user',
-        createdAt: DateTime.now(),
-      );
+  Future<AiUserMemory> addMemory({
+    required String content,
+    String? source,
+  }) async => AiUserMemory(
+    userId: UuidValue.fromString('00000000-0000-4000-8000-000000000001'),
+    content: content,
+    source: source ?? 'user',
+    createdAt: DateTime.now(),
+  );
 
   @override
   Future<AiUserMemory> toggleMemory({
     required int memoryId,
     required bool disabled,
-  }) async =>
-      AiUserMemory(
-        id: memoryId,
-        userId: UuidValue.fromString('00000000-0000-4000-8000-000000000001'),
-        content: 'Sample',
-        source: 'user',
-        createdAt: DateTime.now(),
-        disabledAt: disabled ? DateTime.now() : null,
-      );
+  }) async => AiUserMemory(
+    id: memoryId,
+    userId: UuidValue.fromString('00000000-0000-4000-8000-000000000001'),
+    content: 'Sample',
+    source: 'user',
+    createdAt: DateTime.now(),
+    disabledAt: disabled ? DateTime.now() : null,
+  );
 
   @override
   Future<void> deleteMemory({required int memoryId}) async {}

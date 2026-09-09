@@ -26,11 +26,14 @@ void main() {
       expect(CampusClock.isSameCampusDay(t2, t3), isFalse);
     });
 
-    test('campusMinuteOfDay calculates minutes since campus local midnight', () {
-      // 2026-09-09 01:30 UTC is 08:30 in Vietnam (+7)
-      final time = DateTime.utc(2026, 9, 9, 1, 30, 0);
-      expect(CampusClock.campusMinuteOfDay(time), 8 * 60 + 30);
-    });
+    test(
+      'campusMinuteOfDay calculates minutes since campus local midnight',
+      () {
+        // 2026-09-09 01:30 UTC is 08:30 in Vietnam (+7)
+        final time = DateTime.utc(2026, 9, 9, 1, 30, 0);
+        expect(CampusClock.campusMinuteOfDay(time), 8 * 60 + 30);
+      },
+    );
 
     test('startOfCampusDayUtc returns UTC timestamp representing 00:00 VN', () {
       final time = DateTime.utc(2026, 9, 9, 10, 0, 0); // 17:00 VN
@@ -42,21 +45,31 @@ void main() {
       expect(startOfDay.toUtc().add(CampusClock.vietnamOffset).minute, 0);
     });
 
-    test('dateForCampusWeekday projects weekday and minutes onto campus week', () {
-      // Week starts on Monday
-      final campusWeekStartUtc = DateTime.utc(2026, 9, 6, 17, 0, 0); // Monday 00:00 VN
+    test(
+      'dateForCampusWeekday projects weekday and minutes onto campus week',
+      () {
+        // Week starts on Monday
+        final campusWeekStartUtc = DateTime.utc(
+          2026,
+          9,
+          6,
+          17,
+          0,
+          0,
+        ); // Monday 00:00 VN
 
-      // Wednesday (weekday = 3) at 09:15 VN (555 minutes)
-      final classTime = CampusClock.dateForCampusWeekday(
-        campusWeekStartUtc,
-        weekday: DateTime.wednesday,
-        minuteOfDay: 9 * 60 + 15,
-      );
+        // Wednesday (weekday = 3) at 09:15 VN (555 minutes)
+        final classTime = CampusClock.dateForCampusWeekday(
+          campusWeekStartUtc,
+          weekday: DateTime.wednesday,
+          minuteOfDay: 9 * 60 + 15,
+        );
 
-      final vnTime = classTime.toUtc().add(CampusClock.vietnamOffset);
-      expect(vnTime.weekday, DateTime.wednesday);
-      expect(vnTime.hour, 9);
-      expect(vnTime.minute, 15);
-    });
+        final vnTime = classTime.toUtc().add(CampusClock.vietnamOffset);
+        expect(vnTime.weekday, DateTime.wednesday);
+        expect(vnTime.hour, 9);
+        expect(vnTime.minute, 15);
+      },
+    );
   });
 }

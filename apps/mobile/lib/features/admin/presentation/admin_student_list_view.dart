@@ -37,9 +37,7 @@ class AdminStudentListView extends ConsumerWidget {
                 initialValue: statusFilter,
                 icon: const Icon(Icons.filter_list),
                 onSelected: (val) {
-                  ref
-                      .read(adminStudentsStatusProvider.notifier)
-                      .setStatus(val);
+                  ref.read(adminStudentsStatusProvider.notifier).setStatus(val);
                 },
                 itemBuilder: (context) => const [
                   PopupMenuItem(value: null, child: Text('Tất cả trạng thái')),
@@ -56,7 +54,9 @@ class AdminStudentListView extends ConsumerWidget {
             error: (err, _) => Center(child: Text('Lỗi: $err')),
             data: (page) {
               if (page.students.isEmpty) {
-                return const Center(child: Text('Không tìm thấy sinh viên nào.'));
+                return const Center(
+                  child: Text('Không tìm thấy sinh viên nào.'),
+                );
               }
               return ListView.separated(
                 itemCount: page.students.length,
@@ -66,14 +66,22 @@ class AdminStudentListView extends ConsumerWidget {
                   final isActive = student.status == 'active';
                   return ListTile(
                     leading: CircleAvatar(
-                      backgroundColor: isActive ? Colors.green.shade100 : Colors.red.shade100,
+                      backgroundColor: isActive
+                          ? Colors.green.shade100
+                          : Colors.red.shade100,
                       child: Icon(
                         isActive ? Icons.person : Icons.person_off,
-                        color: isActive ? Colors.green.shade800 : Colors.red.shade800,
+                        color: isActive
+                            ? Colors.green.shade800
+                            : Colors.red.shade800,
                       ),
                     ),
-                    title: Text('${student.fullName ?? 'Chưa đặt tên'} (${student.studentCode ?? 'N/A'})'),
-                    subtitle: Text('Lớp: ${student.className ?? 'N/A'} • Khoa: ${student.faculty ?? 'N/A'}'),
+                    title: Text(
+                      '${student.fullName ?? 'Chưa đặt tên'} (${student.studentCode ?? 'N/A'})',
+                    ),
+                    subtitle: Text(
+                      'Lớp: ${student.className ?? 'N/A'} • Khoa: ${student.faculty ?? 'N/A'}',
+                    ),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -82,18 +90,29 @@ class AdminStudentListView extends ConsumerWidget {
                             isActive ? 'Hoạt động' : 'Đã khóa',
                             style: TextStyle(
                               fontSize: 12,
-                              color: isActive ? Colors.green.shade900 : Colors.red.shade900,
+                              color: isActive
+                                  ? Colors.green.shade900
+                                  : Colors.red.shade900,
                             ),
                           ),
-                          backgroundColor: isActive ? Colors.green.shade50 : Colors.red.shade50,
+                          backgroundColor: isActive
+                              ? Colors.green.shade50
+                              : Colors.red.shade50,
                         ),
                         IconButton(
                           icon: Icon(
                             isActive ? Icons.block : Icons.check_circle_outline,
                             color: isActive ? Colors.red : Colors.green,
                           ),
-                          tooltip: isActive ? 'Khóa tài khoản' : 'Kích hoạt tài khoản',
-                          onPressed: () => _confirmToggleStatus(context, ref, student.id, isActive),
+                          tooltip: isActive
+                              ? 'Khóa tài khoản'
+                              : 'Kích hoạt tài khoản',
+                          onPressed: () => _confirmToggleStatus(
+                            context,
+                            ref,
+                            student.id,
+                            isActive,
+                          ),
                         ),
                       ],
                     ),
@@ -107,11 +126,20 @@ class AdminStudentListView extends ConsumerWidget {
     );
   }
 
-  void _confirmToggleStatus(BuildContext context, WidgetRef ref, int profileId, bool currentIsActive) {
+  void _confirmToggleStatus(
+    BuildContext context,
+    WidgetRef ref,
+    int profileId,
+    bool currentIsActive,
+  ) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(currentIsActive ? 'Khóa tài khoản sinh viên?' : 'Mở khóa tài khoản sinh viên?'),
+        title: Text(
+          currentIsActive
+              ? 'Khóa tài khoản sinh viên?'
+              : 'Mở khóa tài khoản sinh viên?',
+        ),
         content: Text(
           currentIsActive
               ? 'Sinh viên sẽ không thể đăng nhập hoặc sử dụng hệ thống ngay lập tức.'

@@ -5,9 +5,19 @@ import '../../../app/providers.dart';
 
 abstract class AdminRepository {
   Future<AdminDashboardStats> getDashboardStats();
-  Future<AdminStudentPage> listStudents({String? query, String? status, int? limit});
-  Future<StudentProfile> setStudentStatus({required int profileId, required bool isActive});
-  Future<AdminAnnouncementPage> listAnnouncements({bool? includeArchived, int? limit});
+  Future<AdminStudentPage> listStudents({
+    String? query,
+    String? status,
+    int? limit,
+  });
+  Future<StudentProfile> setStudentStatus({
+    required int profileId,
+    required bool isActive,
+  });
+  Future<AdminAnnouncementPage> listAnnouncements({
+    bool? includeArchived,
+    int? limit,
+  });
   Future<Announcement> createAnnouncement({
     required String title,
     required String body,
@@ -34,18 +44,38 @@ class ServerpodAdminRepository implements AdminRepository {
   }
 
   @override
-  Future<AdminStudentPage> listStudents({String? query, String? status, int? limit}) {
-    return _client.admin.listStudents(query: query, status: status, limit: limit);
+  Future<AdminStudentPage> listStudents({
+    String? query,
+    String? status,
+    int? limit,
+  }) {
+    return _client.admin.listStudents(
+      query: query,
+      status: status,
+      limit: limit,
+    );
   }
 
   @override
-  Future<StudentProfile> setStudentStatus({required int profileId, required bool isActive}) {
-    return _client.admin.setStudentStatus(profileId: profileId, isActive: isActive);
+  Future<StudentProfile> setStudentStatus({
+    required int profileId,
+    required bool isActive,
+  }) {
+    return _client.admin.setStudentStatus(
+      profileId: profileId,
+      isActive: isActive,
+    );
   }
 
   @override
-  Future<AdminAnnouncementPage> listAnnouncements({bool? includeArchived, int? limit}) {
-    return _client.admin.listAnnouncements(includeArchived: includeArchived, limit: limit);
+  Future<AdminAnnouncementPage> listAnnouncements({
+    bool? includeArchived,
+    int? limit,
+  }) {
+    return _client.admin.listAnnouncements(
+      includeArchived: includeArchived,
+      limit: limit,
+    );
   }
 
   @override
@@ -87,7 +117,10 @@ class ServerpodAdminRepository implements AdminRepository {
     required int bookId,
     required BookAccessType accessType,
   }) {
-    return _client.library.updateAccessPolicy(bookId: bookId, accessType: accessType);
+    return _client.library.updateAccessPolicy(
+      bookId: bookId,
+      accessType: accessType,
+    );
   }
 }
 

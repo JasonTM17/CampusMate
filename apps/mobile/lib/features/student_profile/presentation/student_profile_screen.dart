@@ -257,9 +257,14 @@ class _ProfileForm extends StatelessWidget {
           ListTile(
             key: const Key('ai-settings-tile'),
             contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.psychology_outlined, color: AppColors.primary),
+            leading: const Icon(
+              Icons.psychology_outlined,
+              color: AppColors.primary,
+            ),
             title: const Text('Cài đặt & Bộ nhớ AI'),
-            subtitle: const Text('Tùy chỉnh phong cách giải thích và quản lý bộ nhớ'),
+            subtitle: const Text(
+              'Tùy chỉnh phong cách giải thích và quản lý bộ nhớ',
+            ),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push('/ai/settings'),
           ),

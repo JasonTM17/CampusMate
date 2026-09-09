@@ -33,8 +33,8 @@ class AiEndpoint extends Endpoint {
   final CitationVerifier _citationVerifier = const CitationVerifier();
   RagRetrievalService? _retrievalOverride;
 
-  RagRetrievalService _getRetrievalService() =>
-      _retrievalOverride ??= RagRetrievalService(aiProvider: createAiProvider());
+  RagRetrievalService _getRetrievalService() => _retrievalOverride ??=
+      RagRetrievalService(aiProvider: createAiProvider());
 
   void setRetrievalServiceForTest(RagRetrievalService service) {
     _retrievalOverride = service;
@@ -177,8 +177,9 @@ class AiEndpoint extends Endpoint {
         'Nếu câu trả lời dựa trên tài liệu tham khảo, hãy trích dẫn bằng dạng [Nguồn X] hoặc [Tựa đề - Chương, tr. Trang]. Nếu không có tài liệu phù hợp, hãy thông báo không tìm thấy.',
       );
     }
-    final finalContext =
-        combinedContext.isEmpty ? null : combinedContext.toString().trim();
+    final finalContext = combinedContext.isEmpty
+        ? null
+        : combinedContext.toString().trim();
 
     // Load transcript and persist the user turn.
     final history = await AiMessage.db.find(
@@ -245,7 +246,9 @@ class AiEndpoint extends Endpoint {
           }
         }
 
-        final citationsJson = CitationVerifier.encodeCitations(verifiedCitations);
+        final citationsJson = CitationVerifier.encodeCitations(
+          verifiedCitations,
+        );
 
         // Persist the completed assistant turn + bump conversation timestamp.
         await AiMessage.db.insertRow(

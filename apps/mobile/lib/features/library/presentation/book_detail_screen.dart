@@ -232,9 +232,7 @@ class _ActionPanelState extends ConsumerState<_ActionPanel> {
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
               : const Icon(Icons.assignment_return_outlined),
-          label: Text(
-            book.availableCopies == 0 ? 'Hết bản sao' : 'Mượn sách',
-          ),
+          label: Text(book.availableCopies == 0 ? 'Hết bản sao' : 'Mượn sách'),
         ),
       if (activeLoan != null &&
           activeLoan.status != BookLoanStatus.returned &&

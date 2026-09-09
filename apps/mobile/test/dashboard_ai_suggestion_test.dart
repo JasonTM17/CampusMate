@@ -36,8 +36,7 @@ class _FakeAiRepo implements AiRepository {
     required String content,
     int? bookId,
     String? selectedText,
-  }) =>
-      throw UnimplementedError();
+  }) => throw UnimplementedError();
   @override
   Future<StudentAiPreference> getPreferences() => throw UnimplementedError();
   @override
@@ -45,8 +44,7 @@ class _FakeAiRepo implements AiRepository {
     required String explanationStyle,
     required bool personalizationEnabled,
     required bool memoryEnabled,
-  }) =>
-      throw UnimplementedError();
+  }) => throw UnimplementedError();
   @override
   Future<List<AiUserMemory>> getMemories({bool activeOnly = false}) =>
       throw UnimplementedError();
@@ -57,8 +55,7 @@ class _FakeAiRepo implements AiRepository {
   Future<AiUserMemory> toggleMemory({
     required int memoryId,
     required bool disabled,
-  }) =>
-      throw UnimplementedError();
+  }) => throw UnimplementedError();
   @override
   Future<void> deleteMemory({required int memoryId}) =>
       throw UnimplementedError();
@@ -106,8 +103,7 @@ class _FakeNotifRepo implements NotificationRepository {
     String? cursor,
     int limit = 20,
     String? category,
-  }) async =>
-      NotificationListPage(items: const [], unreadCount: 0);
+  }) async => NotificationListPage(items: const [], unreadCount: 0);
 
   @override
   Future<int> unreadCount({String? category}) async => 0;
@@ -123,7 +119,9 @@ class _FakeNotifRepo implements NotificationRepository {
 Widget _hostApp(StudySuggestion? suggestion) {
   return ProviderScope(
     overrides: [
-      aiRepositoryProvider.overrideWithValue(_FakeAiRepo(suggestion: suggestion)),
+      aiRepositoryProvider.overrideWithValue(
+        _FakeAiRepo(suggestion: suggestion),
+      ),
       dashboardRepositoryProvider.overrideWithValue(_FakeDashboardRepo()),
       notificationRepositoryProvider.overrideWithValue(_FakeNotifRepo()),
     ],
@@ -149,10 +147,15 @@ void main() {
       await tester.pumpWidget(_hostApp(suggestion));
       await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('dashboard-ai-suggestion-card')), findsOneWidget);
+      expect(
+        find.byKey(const Key('dashboard-ai-suggestion-card')),
+        findsOneWidget,
+      );
       expect(find.text('Ôn thi Lập trình di động'), findsOneWidget);
       expect(
-        find.text('Kỳ thi diễn ra vào ngày 20/10 (còn 5 ngày). Ôn tập ngay nhé!'),
+        find.text(
+          'Kỳ thi diễn ra vào ngày 20/10 (còn 5 ngày). Ôn tập ngay nhé!',
+        ),
         findsOneWidget,
       );
       expect(find.text('Ưu tiên'), findsOneWidget);
@@ -169,7 +172,10 @@ void main() {
       await tester.pumpWidget(_hostApp(null));
       await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('dashboard-ai-suggestion-card')), findsNothing);
+      expect(
+        find.byKey(const Key('dashboard-ai-suggestion-card')),
+        findsNothing,
+      );
       expect(find.text('Chưa có gợi ý mới'), findsOneWidget);
     },
   );

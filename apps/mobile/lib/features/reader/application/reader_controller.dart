@@ -67,7 +67,9 @@ class ReaderState {
       bookId: bookId ?? this.bookId,
       format: format ?? this.format,
       isLoading: isLoading ?? this.isLoading,
-      errorMessage: clearErrorMessage ? null : (errorMessage ?? this.errorMessage),
+      errorMessage: clearErrorMessage
+          ? null
+          : (errorMessage ?? this.errorMessage),
       asset: asset ?? this.asset,
       progressPercent: progressPercent ?? this.progressPercent,
       currentLocation: currentLocation ?? this.currentLocation,
@@ -85,9 +87,7 @@ class ReaderState {
 }
 
 final readerControllerProvider =
-    NotifierProvider<ReaderController, ReaderState>(
-      ReaderController.new,
-    );
+    NotifierProvider<ReaderController, ReaderState>(ReaderController.new);
 
 class ReaderController extends Notifier<ReaderState> {
   ReaderRepository get _repository => ref.read(readerRepositoryProvider);
@@ -145,8 +145,12 @@ class ReaderController extends Notifier<ReaderState> {
         showResumePrompt: hasProgressToResume,
         savedProgressPercent: savedProgress?.progressPercent ?? 0.0,
         savedLocation: savedProgress?.currentLocation ?? '1',
-        progressPercent: hasProgressToResume ? 0.0 : (savedProgress?.progressPercent ?? 0.0),
-        currentLocation: hasProgressToResume ? '1' : (savedProgress?.currentLocation ?? '1'),
+        progressPercent: hasProgressToResume
+            ? 0.0
+            : (savedProgress?.progressPercent ?? 0.0),
+        currentLocation: hasProgressToResume
+            ? '1'
+            : (savedProgress?.currentLocation ?? '1'),
         lastSyncedAt: savedProgress?.updatedAt,
       );
     } on ServerpodClientException catch (e) {

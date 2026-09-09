@@ -12,9 +12,9 @@ class StudySuggestionService {
     AiPreferenceService? preferences,
     AcademicReadService? academic,
     LendingService? lending,
-  })  : _preferences = preferences ?? AiPreferenceService(),
-        _academic = academic ?? AcademicReadService(),
-        _lending = lending ?? LendingService();
+  }) : _preferences = preferences ?? AiPreferenceService(),
+       _academic = academic ?? AcademicReadService(),
+       _lending = lending ?? LendingService();
 
   final AiPreferenceService _preferences;
   final AcademicReadService _academic;
@@ -44,8 +44,8 @@ class StudySuggestionService {
           final message = diffDays <= 0
               ? 'Bạn có lịch thi môn ${exam.title} hôm nay. Chúc bạn làm bài thật tốt!'
               : (diffDays == 1
-                  ? 'Kỳ thi môn ${exam.title} diễn ra vào ngày mai. Hãy kiểm tra lại phòng thi và ôn lại kiến thức trọng tâm.'
-                  : 'Kỳ thi môn ${exam.title} vào ngày $dateStr (còn $diffDays ngày). Lên kế hoạch ôn tập ngay hôm nay nhé!');
+                    ? 'Kỳ thi môn ${exam.title} diễn ra vào ngày mai. Hãy kiểm tra lại phòng thi và ôn lại kiến thức trọng tâm.'
+                    : 'Kỳ thi môn ${exam.title} vào ngày $dateStr (còn $diffDays ngày). Lên kế hoạch ôn tập ngay hôm nay nhé!');
           return StudySuggestion(
             title: 'Ôn thi ${exam.title}',
             message: message,
@@ -59,7 +59,11 @@ class StudySuggestionService {
 
     // 2. Check active loans (overdue or due within 2 days)
     try {
-      final loanPage = await _lending.myLoans(session, limit: 5, activeOnly: true);
+      final loanPage = await _lending.myLoans(
+        session,
+        limit: 5,
+        activeOnly: true,
+      );
       for (final loan in loanPage.items) {
         if (loan.isOverdue) {
           return StudySuggestion(

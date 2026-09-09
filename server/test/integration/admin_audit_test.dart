@@ -10,7 +10,10 @@ const _adminUuid = '00000000-0000-4000-8000-0000000000b1';
 const _librarianUuid = '00000000-0000-4000-8000-0000000000b2';
 
 void main() {
-  withServerpod('Given Admin and Librarian Privileged Operations (Phase-11)', (sessionBuilder, endpoints) {
+  withServerpod('Given Admin and Librarian Privileged Operations (Phase-11)', (
+    sessionBuilder,
+    endpoints,
+  ) {
     final adminSession = sessionBuilder.copyWith(
       authentication: AuthenticationOverride.authenticationInfo(
         _adminUuid,
@@ -46,8 +49,13 @@ void main() {
           resourceType: 'student_profile',
         );
 
-        expect(logs.logs.any((l) => l.resourceId == profile.id.toString()), isTrue);
-        final log = logs.logs.firstWhere((l) => l.resourceId == profile.id.toString());
+        expect(
+          logs.logs.any((l) => l.resourceId == profile.id.toString()),
+          isTrue,
+        );
+        final log = logs.logs.firstWhere(
+          (l) => l.resourceId == profile.id.toString(),
+        );
         expect(log.action, 'ADMIN_CREATE_STUDENT');
         expect(log.actorUserId.toString(), _adminUuid);
       });
@@ -75,45 +83,57 @@ void main() {
           resourceType: 'student_profile',
         );
 
-        expect(logs.logs.any((l) => l.resourceId == profile.id.toString()), isTrue);
+        expect(
+          logs.logs.any((l) => l.resourceId == profile.id.toString()),
+          isTrue,
+        );
       });
 
-      test('deactivating and activating student logs ADMIN_DISABLE_USER and ADMIN_ACTIVATE_STUDENT', () async {
-        final profile = await endpoints.admin.createStudent(
-          adminSession,
-          email: 'statustest@campusmate.local',
-          password: 'Password123!',
-          studentCode: 'SV999903',
-          fullName: 'Nguyễn Trạng Thái',
-          className: 'K68PM99',
-        );
+      test(
+        'deactivating and activating student logs ADMIN_DISABLE_USER and ADMIN_ACTIVATE_STUDENT',
+        () async {
+          final profile = await endpoints.admin.createStudent(
+            adminSession,
+            email: 'statustest@campusmate.local',
+            password: 'Password123!',
+            studentCode: 'SV999903',
+            fullName: 'Nguyễn Trạng Thái',
+            className: 'K68PM99',
+          );
 
-        // Deactivate
-        await endpoints.admin.setStudentStatus(
-          adminSession,
-          profileId: profile.id!,
-          isActive: false,
-        );
+          // Deactivate
+          await endpoints.admin.setStudentStatus(
+            adminSession,
+            profileId: profile.id!,
+            isActive: false,
+          );
 
-        final disableLogs = await endpoints.admin.listAuditLogs(
-          adminSession,
-          action: 'ADMIN_DISABLE_USER',
-        );
-        expect(disableLogs.logs.any((l) => l.resourceId == profile.id.toString()), isTrue);
+          final disableLogs = await endpoints.admin.listAuditLogs(
+            adminSession,
+            action: 'ADMIN_DISABLE_USER',
+          );
+          expect(
+            disableLogs.logs.any((l) => l.resourceId == profile.id.toString()),
+            isTrue,
+          );
 
-        // Reactivate
-        await endpoints.admin.setStudentStatus(
-          adminSession,
-          profileId: profile.id!,
-          isActive: true,
-        );
+          // Reactivate
+          await endpoints.admin.setStudentStatus(
+            adminSession,
+            profileId: profile.id!,
+            isActive: true,
+          );
 
-        final activateLogs = await endpoints.admin.listAuditLogs(
-          adminSession,
-          action: 'ADMIN_ACTIVATE_STUDENT',
-        );
-        expect(activateLogs.logs.any((l) => l.resourceId == profile.id.toString()), isTrue);
-      });
+          final activateLogs = await endpoints.admin.listAuditLogs(
+            adminSession,
+            action: 'ADMIN_ACTIVATE_STUDENT',
+          );
+          expect(
+            activateLogs.logs.any((l) => l.resourceId == profile.id.toString()),
+            isTrue,
+          );
+        },
+      );
     });
 
     group('Librarian Mutations Audit Trail', () {
@@ -133,8 +153,13 @@ void main() {
           action: 'LIBRARIAN_CREATE_BOOK',
           resourceType: 'book',
         );
-        expect(createLogs.logs.any((l) => l.resourceId == book.id.toString()), isTrue);
-        final createLog = createLogs.logs.firstWhere((l) => l.resourceId == book.id.toString());
+        expect(
+          createLogs.logs.any((l) => l.resourceId == book.id.toString()),
+          isTrue,
+        );
+        final createLog = createLogs.logs.firstWhere(
+          (l) => l.resourceId == book.id.toString(),
+        );
         expect(createLog.actorUserId.toString(), _librarianUuid);
 
         // Update book
@@ -149,7 +174,10 @@ void main() {
           action: 'LIBRARIAN_UPDATE_BOOK',
           resourceType: 'book',
         );
-        expect(updateLogs.logs.any((l) => l.resourceId == book.id.toString()), isTrue);
+        expect(
+          updateLogs.logs.any((l) => l.resourceId == book.id.toString()),
+          isTrue,
+        );
 
         // Archive book
         await endpoints.librarian.archiveBook(
@@ -162,46 +190,57 @@ void main() {
           action: 'LIBRARIAN_ARCHIVE_BOOK',
           resourceType: 'book',
         );
-        expect(archiveLogs.logs.any((l) => l.resourceId == book.id.toString()), isTrue);
+        expect(
+          archiveLogs.logs.any((l) => l.resourceId == book.id.toString()),
+          isTrue,
+        );
       });
 
-      test('uploading book file records LIBRARIAN_UPLOAD_BOOK with metadata', () async {
-        final book = await endpoints.librarian.createBook(
-          librarianSession,
-          title: 'Uploadable Book',
-          authorNames: ['Tác giả Upload'],
-          publishedYear: 2026,
-          language: 'vi',
-        );
+      test(
+        'uploading book file records LIBRARIAN_UPLOAD_BOOK with metadata',
+        () async {
+          final book = await endpoints.librarian.createBook(
+            librarianSession,
+            title: 'Uploadable Book',
+            authorNames: ['Tác giả Upload'],
+            publishedYear: 2026,
+            language: 'vi',
+          );
 
-        final ticket = await endpoints.librarian.requestUploadTicket(
-          librarianSession,
-          bookId: book.id!,
-          filename: 'content.pdf',
-          format: 'pdf',
-          byteSize: 1024,
-        );
+          final ticket = await endpoints.librarian.requestUploadTicket(
+            librarianSession,
+            bookId: book.id!,
+            filename: 'content.pdf',
+            format: 'pdf',
+            byteSize: 1024,
+          );
 
-        final validPdfBytes = utf8.encode('%PDF-1.7\nSample content for audit upload test.');
-        final bookFile = await endpoints.librarian.uploadBookFile(
-          librarianSession,
-          bookId: book.id!,
-          uploadToken: ticket.uploadToken,
-          fileBytes: validPdfBytes,
-          format: 'pdf',
-          clientFilename: 'content.pdf',
-        );
+          final validPdfBytes = utf8.encode(
+            '%PDF-1.7\nSample content for audit upload test.',
+          );
+          final bookFile = await endpoints.librarian.uploadBookFile(
+            librarianSession,
+            bookId: book.id!,
+            uploadToken: ticket.uploadToken,
+            fileBytes: validPdfBytes,
+            format: 'pdf',
+            clientFilename: 'content.pdf',
+          );
 
-        expect(bookFile, isA<LibraryBookFile>());
-        expect(bookFile.format, 'pdf');
+          expect(bookFile, isA<LibraryBookFile>());
+          expect(bookFile.format, 'pdf');
 
-        final uploadLogs = await endpoints.admin.listAuditLogs(
-          adminSession,
-          action: 'LIBRARIAN_UPLOAD_BOOK',
-          resourceType: 'book_file',
-        );
-        expect(uploadLogs.logs.any((l) => l.resourceId == bookFile.id.toString()), isTrue);
-      });
+          final uploadLogs = await endpoints.admin.listAuditLogs(
+            adminSession,
+            action: 'LIBRARIAN_UPLOAD_BOOK',
+            resourceType: 'book_file',
+          );
+          expect(
+            uploadLogs.logs.any((l) => l.resourceId == bookFile.id.toString()),
+            isTrue,
+          );
+        },
+      );
     });
 
     group('Announcement Management & Dashboard Aggregates', () {
@@ -219,7 +258,10 @@ void main() {
           adminSession,
           action: 'ADMIN_CREATE_ANNOUNCEMENT',
         );
-        expect(createLogs.logs.any((l) => l.resourceId == item.id.toString()), isTrue);
+        expect(
+          createLogs.logs.any((l) => l.resourceId == item.id.toString()),
+          isTrue,
+        );
 
         // Update
         await endpoints.admin.updateAnnouncement(
@@ -232,7 +274,10 @@ void main() {
           adminSession,
           action: 'ADMIN_UPDATE_ANNOUNCEMENT',
         );
-        expect(updateLogs.logs.any((l) => l.resourceId == item.id.toString()), isTrue);
+        expect(
+          updateLogs.logs.any((l) => l.resourceId == item.id.toString()),
+          isTrue,
+        );
 
         // Archive
         await endpoints.admin.archiveAnnouncement(
@@ -244,7 +289,10 @@ void main() {
           adminSession,
           action: 'ADMIN_ARCHIVE_ANNOUNCEMENT',
         );
-        expect(archiveLogs.logs.any((l) => l.resourceId == item.id.toString()), isTrue);
+        expect(
+          archiveLogs.logs.any((l) => l.resourceId == item.id.toString()),
+          isTrue,
+        );
       });
 
       test('admin dashboard returns consistent aggregates', () async {

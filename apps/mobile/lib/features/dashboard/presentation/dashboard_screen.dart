@@ -630,10 +630,7 @@ class _AiSuggestionCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: AppSpacing.s),
-            Text(
-              suggestion.message,
-              style: theme.textTheme.bodyMedium,
-            ),
+            Text(suggestion.message, style: theme.textTheme.bodyMedium),
             if (suggestion.actionLabel != null &&
                 suggestion.actionRoute != null) ...[
               const SizedBox(height: AppSpacing.s),

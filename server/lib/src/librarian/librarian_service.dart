@@ -11,8 +11,8 @@ class LibrarianService {
   LibrarianService({
     AuditService? audit,
     UploadValidationService? uploadValidation,
-  })  : _audit = audit ?? AuditService(),
-        _uploadValidation = uploadValidation ?? UploadValidationService();
+  }) : _audit = audit ?? AuditService(),
+       _uploadValidation = uploadValidation ?? UploadValidationService();
 
   final AuditService _audit;
   final UploadValidationService _uploadValidation;
@@ -57,7 +57,8 @@ class LibrarianService {
           accessType: accessType,
           license: 'Proprietary - CampusMate Library',
           keywords: authorNames.join(', '),
-          searchText: '${trimmedTitle.toLowerCase()} ${authorNames.join(' ').toLowerCase()}',
+          searchText:
+              '${trimmedTitle.toLowerCase()} ${authorNames.join(' ').toLowerCase()}',
           popularityScore: 0,
           isActive: true,
           createdAt: now,
@@ -67,7 +68,8 @@ class LibrarianService {
       );
 
       // Link authors
-      for (final authorName in authorNames.map((e) => e.trim()).where((e) => e.isNotEmpty)) {
+      for (final authorName
+          in authorNames.map((e) => e.trim()).where((e) => e.isNotEmpty)) {
         var author = await LibraryAuthor.db.findFirstRow(
           session,
           where: (t) => t.displayName.equals(authorName),
@@ -77,7 +79,10 @@ class LibrarianService {
           session,
           LibraryAuthor(
             displayName: authorName,
-            normalizedName: authorName.toLowerCase().replaceAll(RegExp(r'\s+'), ' '),
+            normalizedName: authorName.toLowerCase().replaceAll(
+              RegExp(r'\s+'),
+              ' ',
+            ),
             createdAt: now,
             updatedAt: now,
           ),
@@ -95,7 +100,8 @@ class LibrarianService {
 
       // Link categories if provided
       if (categoryNames != null) {
-        for (final catName in categoryNames.map((e) => e.trim()).where((e) => e.isNotEmpty)) {
+        for (final catName
+            in categoryNames.map((e) => e.trim()).where((e) => e.isNotEmpty)) {
           var cat = await LibraryCategory.db.findFirstRow(
             session,
             where: (t) => t.name.equals(catName),
@@ -138,7 +144,9 @@ class LibrarianService {
         );
       }
 
-      final action = role == 'admin' ? 'ADMIN_CREATE_BOOK' : 'LIBRARIAN_CREATE_BOOK';
+      final action = role == 'admin'
+          ? 'ADMIN_CREATE_BOOK'
+          : 'LIBRARIAN_CREATE_BOOK';
       await _audit.record(
         session,
         actorUserId: actorUserId,
@@ -201,9 +209,15 @@ class LibrarianService {
         updatedAt: now,
       );
 
-      await LibraryBook.db.updateRow(session, updated, transaction: transaction);
+      await LibraryBook.db.updateRow(
+        session,
+        updated,
+        transaction: transaction,
+      );
 
-      final action = role == 'admin' ? 'ADMIN_UPDATE_BOOK' : 'LIBRARIAN_UPDATE_BOOK';
+      final action = role == 'admin'
+          ? 'ADMIN_UPDATE_BOOK'
+          : 'LIBRARIAN_UPDATE_BOOK';
       await _audit.record(
         session,
         actorUserId: actorUserId,
@@ -222,7 +236,10 @@ class LibrarianService {
     });
   }
 
-  Future<LibraryBook> archiveBook(Session session, {required int bookId}) async {
+  Future<LibraryBook> archiveBook(
+    Session session, {
+    required int bookId,
+  }) async {
     final actorUserId = CampusMateAuth.requireUserId(session);
     final role = CampusMateAuth.roleFor(session);
     if (role != 'librarian' && role != 'admin') {
@@ -242,9 +259,15 @@ class LibrarianService {
 
       final now = CampusClock.nowUtc();
       final updated = book.copyWith(isActive: false, updatedAt: now);
-      await LibraryBook.db.updateRow(session, updated, transaction: transaction);
+      await LibraryBook.db.updateRow(
+        session,
+        updated,
+        transaction: transaction,
+      );
 
-      final action = role == 'admin' ? 'ADMIN_ARCHIVE_BOOK' : 'LIBRARIAN_ARCHIVE_BOOK';
+      final action = role == 'admin'
+          ? 'ADMIN_ARCHIVE_BOOK'
+          : 'LIBRARIAN_ARCHIVE_BOOK';
       await _audit.record(
         session,
         actorUserId: actorUserId,
@@ -353,7 +376,9 @@ class LibrarianService {
         );
       }
 
-      final action = role == 'admin' ? 'ADMIN_UPLOAD_BOOK' : 'LIBRARIAN_UPLOAD_BOOK';
+      final action = role == 'admin'
+          ? 'ADMIN_UPLOAD_BOOK'
+          : 'LIBRARIAN_UPLOAD_BOOK';
       await _audit.record(
         session,
         actorUserId: actorUserId,

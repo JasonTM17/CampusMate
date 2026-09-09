@@ -70,7 +70,8 @@ class FakeAiProvider implements AiProvider {
 
     final hasRagContext = context != null && context.contains('[Nguồn 1');
 
-    if (prompt.contains('bịa citation') || prompt.contains('hallucinate citation')) {
+    if (prompt.contains('bịa citation') ||
+        prompt.contains('hallucinate citation')) {
       return 'Đây là câu trả lời có chứa trích dẫn bịa đặt [Sách Bịa Đặt - Chương 99, tr. 999] để kiểm tra hệ thống xác thực.';
     }
 

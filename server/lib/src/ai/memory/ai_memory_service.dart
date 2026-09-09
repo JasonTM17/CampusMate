@@ -6,7 +6,7 @@ import 'ai_preference_service.dart';
 
 class AiMemoryService {
   AiMemoryService({AiPreferenceService? preferences})
-      : _preferences = preferences ?? AiPreferenceService();
+    : _preferences = preferences ?? AiPreferenceService();
 
   final AiPreferenceService _preferences;
 

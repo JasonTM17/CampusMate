@@ -40,7 +40,9 @@ class AdminAnnouncementsView extends ConsumerWidget {
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
-                                decoration: item.archived ? TextDecoration.lineThrough : null,
+                                decoration: item.archived
+                                    ? TextDecoration.lineThrough
+                                    : null,
                               ),
                             ),
                           ),
@@ -64,11 +66,16 @@ class AdminAnnouncementsView extends ConsumerWidget {
                           ),
                           if (!item.archived)
                             TextButton.icon(
-                              icon: const Icon(Icons.archive_outlined, size: 16),
+                              icon: const Icon(
+                                Icons.archive_outlined,
+                                size: 16,
+                              ),
                               label: const Text('Lưu trữ'),
                               onPressed: () {
                                 ref
-                                    .read(adminMutationsControllerProvider.notifier)
+                                    .read(
+                                      adminMutationsControllerProvider.notifier,
+                                    )
                                     .archiveAnnouncement(item.id!);
                               },
                             ),
@@ -106,22 +113,37 @@ class AdminAnnouncementsView extends ConsumerWidget {
               children: [
                 TextField(
                   controller: titleController,
-                  decoration: const InputDecoration(labelText: 'Tiêu đề thông báo'),
+                  decoration: const InputDecoration(
+                    labelText: 'Tiêu đề thông báo',
+                  ),
                 ),
                 const SizedBox(height: 8),
                 TextField(
                   controller: bodyController,
-                  decoration: const InputDecoration(labelText: 'Nội dung chi tiết'),
+                  decoration: const InputDecoration(
+                    labelText: 'Nội dung chi tiết',
+                  ),
                   maxLines: 3,
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
                   initialValue: audience,
-                  decoration: const InputDecoration(labelText: 'Đối tượng người nhận'),
+                  decoration: const InputDecoration(
+                    labelText: 'Đối tượng người nhận',
+                  ),
                   items: const [
-                    DropdownMenuItem(value: 'all', child: Text('Tất cả trường')),
-                    DropdownMenuItem(value: 'student', child: Text('Sinh viên')),
-                    DropdownMenuItem(value: 'lecturer', child: Text('Giảng viên')),
+                    DropdownMenuItem(
+                      value: 'all',
+                      child: Text('Tất cả trường'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'student',
+                      child: Text('Sinh viên'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'lecturer',
+                      child: Text('Giảng viên'),
+                    ),
                   ],
                   onChanged: (val) {
                     if (val != null) setState(() => audience = val);
@@ -141,7 +163,9 @@ class AdminAnnouncementsView extends ConsumerWidget {
                 final body = bodyController.text.trim();
                 if (title.isEmpty || body.isEmpty) return;
                 Navigator.pop(ctx);
-                ref.read(adminMutationsControllerProvider.notifier).createAnnouncement(
+                ref
+                    .read(adminMutationsControllerProvider.notifier)
+                    .createAnnouncement(
                       title: title,
                       body: body,
                       audience: audience,

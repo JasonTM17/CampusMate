@@ -18,12 +18,18 @@ class _FakeAdminRepository implements AdminRepository {
   }
 
   @override
-  Future<AdminStudentPage> listStudents({String? query, String? status, int? limit}) async {
+  Future<AdminStudentPage> listStudents({
+    String? query,
+    String? status,
+    int? limit,
+  }) async {
     return AdminStudentPage(
       students: [
         AdminStudentItem(
           id: 1,
-          authUserId: UuidValue.fromString('00000000-0000-4000-8000-000000000001'),
+          authUserId: UuidValue.fromString(
+            '00000000-0000-4000-8000-000000000001',
+          ),
           studentCode: 'SV2026001',
           fullName: 'Nguyễn Minh Anh',
           className: 'K68PM01',
@@ -38,7 +44,10 @@ class _FakeAdminRepository implements AdminRepository {
   }
 
   @override
-  Future<StudentProfile> setStudentStatus({required int profileId, required bool isActive}) async {
+  Future<StudentProfile> setStudentStatus({
+    required int profileId,
+    required bool isActive,
+  }) async {
     return StudentProfile(
       id: profileId,
       authUserId: UuidValue.fromString('00000000-0000-4000-8000-000000000001'),
@@ -50,7 +59,10 @@ class _FakeAdminRepository implements AdminRepository {
   }
 
   @override
-  Future<AdminAnnouncementPage> listAnnouncements({bool? includeArchived, int? limit}) async {
+  Future<AdminAnnouncementPage> listAnnouncements({
+    bool? includeArchived,
+    int? limit,
+  }) async {
     return AdminAnnouncementPage(
       announcements: [
         Announcement(
@@ -88,7 +100,9 @@ class _FakeAdminRepository implements AdminRepository {
   }
 
   @override
-  Future<Announcement> archiveAnnouncement({required int announcementId}) async {
+  Future<Announcement> archiveAnnouncement({
+    required int announcementId,
+  }) async {
     return Announcement(
       id: announcementId,
       title: 'Archived',
@@ -107,7 +121,9 @@ class _FakeAdminRepository implements AdminRepository {
       logs: [
         AuditLog(
           id: 1,
-          actorUserId: UuidValue.fromString('00000000-0000-4000-8000-0000000000a1'),
+          actorUserId: UuidValue.fromString(
+            '00000000-0000-4000-8000-0000000000a1',
+          ),
           action: 'ADMIN_CREATE_STUDENT',
           resourceType: 'student_profile',
           resourceId: '1',
@@ -163,46 +179,45 @@ class _FakeAdminRepository implements AdminRepository {
 }
 
 void main() {
-  testWidgets('AdminDashboardScreen renders dashboard aggregates and navigation tabs', (tester) async {
-    final fakeRepo = _FakeAdminRepository();
+  testWidgets(
+    'AdminDashboardScreen renders dashboard aggregates and navigation tabs',
+    (tester) async {
+      final fakeRepo = _FakeAdminRepository();
 
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          adminRepositoryProvider.overrideWithValue(fakeRepo),
-        ],
-        child: const MaterialApp(
-          home: AdminDashboardScreen(),
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [adminRepositoryProvider.overrideWithValue(fakeRepo)],
+          child: const MaterialApp(home: AdminDashboardScreen()),
         ),
-      ),
-    );
+      );
 
-    // Initial loading
-    await tester.pump();
-    await tester.pumpAndSettle();
+      // Initial loading
+      await tester.pump();
+      await tester.pumpAndSettle();
 
-    // Verify screen title
-    expect(find.text('Bảng điều khiển Quản trị'), findsOneWidget);
+      // Verify screen title
+      expect(find.text('Bảng điều khiển Quản trị'), findsOneWidget);
 
-    // Verify metric badges
-    expect(find.text('Tổng SV'), findsOneWidget);
-    expect(find.text('120'), findsOneWidget);
-    expect(find.text('SV Hoạt động'), findsOneWidget);
-    expect(find.text('115'), findsOneWidget);
-    expect(find.text('Tổng Sách'), findsOneWidget);
-    expect(find.text('45'), findsOneWidget);
-    expect(find.text('Đang mượn'), findsOneWidget);
-    expect(find.text('12'), findsOneWidget);
-    expect(find.text('AI Hôm nay'), findsOneWidget);
-    expect(find.text('89'), findsOneWidget);
+      // Verify metric badges
+      expect(find.text('Tổng SV'), findsOneWidget);
+      expect(find.text('120'), findsOneWidget);
+      expect(find.text('SV Hoạt động'), findsOneWidget);
+      expect(find.text('115'), findsOneWidget);
+      expect(find.text('Tổng Sách'), findsOneWidget);
+      expect(find.text('45'), findsOneWidget);
+      expect(find.text('Đang mượn'), findsOneWidget);
+      expect(find.text('12'), findsOneWidget);
+      expect(find.text('AI Hôm nay'), findsOneWidget);
+      expect(find.text('89'), findsOneWidget);
 
-    // Verify tab labels
-    expect(find.text('Sinh viên'), findsOneWidget);
-    expect(find.text('Thư viện'), findsOneWidget);
-    expect(find.text('Thông báo'), findsOneWidget);
-    expect(find.text('Nhật ký kiểm toán'), findsOneWidget);
+      // Verify tab labels
+      expect(find.text('Sinh viên'), findsOneWidget);
+      expect(find.text('Thư viện'), findsOneWidget);
+      expect(find.text('Thông báo'), findsOneWidget);
+      expect(find.text('Nhật ký kiểm toán'), findsOneWidget);
 
-    // Verify student in the first tab
-    expect(find.text('Nguyễn Minh Anh (SV2026001)'), findsOneWidget);
-  });
+      // Verify student in the first tab
+      expect(find.text('Nguyễn Minh Anh (SV2026001)'), findsOneWidget);
+    },
+  );
 }

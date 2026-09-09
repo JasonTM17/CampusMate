@@ -6,10 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class _FakeReaderRepository implements ReaderRepository {
-  _FakeReaderRepository({
-    this.initialProgress,
-    this.shouldThrow = false,
-  });
+  _FakeReaderRepository({this.initialProgress, this.shouldThrow = false});
 
   ReaderAsset? asset;
   ReadingProgress? initialProgress;
@@ -25,7 +22,10 @@ class _FakeReaderRepository implements ReaderRepository {
     required String format,
   }) async {
     if (shouldThrow) {
-      throw ServerpodClientException('Bạn không có quyền đọc tài liệu này.', 403);
+      throw ServerpodClientException(
+        'Bạn không có quyền đọc tài liệu này.',
+        403,
+      );
     }
     return asset ??
         ReaderAsset(
@@ -59,7 +59,8 @@ class _FakeReaderRepository implements ReaderRepository {
   }
 
   @override
-  Future<List<ReaderBookmark>> getBookmarks({required int bookId}) async => const [];
+  Future<List<ReaderBookmark>> getBookmarks({required int bookId}) async =>
+      const [];
 
   @override
   Future<ReaderBookmark> addBookmark({
@@ -107,7 +108,8 @@ class _FakeReaderRepository implements ReaderRepository {
   Future<void> deleteNote({required int noteId}) async {}
 
   @override
-  Future<List<ReaderHighlight>> getHighlights({required int bookId}) async => const [];
+  Future<List<ReaderHighlight>> getHighlights({required int bookId}) async =>
+      const [];
 
   @override
   Future<ReaderHighlight> addHighlight({
@@ -137,11 +139,13 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          readerRepositoryProvider.overrideWithValue(repo),
-        ],
+        overrides: [readerRepositoryProvider.overrideWithValue(repo)],
         child: const MaterialApp(
-          home: ReaderScreen(bookId: 10, format: 'pdf', title: 'Giáo trình CSDL'),
+          home: ReaderScreen(
+            bookId: 10,
+            format: 'pdf',
+            title: 'Giáo trình CSDL',
+          ),
         ),
       ),
     );
@@ -172,11 +176,13 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          readerRepositoryProvider.overrideWithValue(repo),
-        ],
+        overrides: [readerRepositoryProvider.overrideWithValue(repo)],
         child: const MaterialApp(
-          home: ReaderScreen(bookId: 10, format: 'epub', title: 'Cơ sở dữ liệu'),
+          home: ReaderScreen(
+            bookId: 10,
+            format: 'epub',
+            title: 'Cơ sở dữ liệu',
+          ),
         ),
       ),
     );
@@ -192,17 +198,15 @@ void main() {
     expect(find.textContaining('Tiếp tục từ 65%'), findsNothing);
   });
 
-  testWidgets('shows error state when reader asset fails to load', (tester) async {
+  testWidgets('shows error state when reader asset fails to load', (
+    tester,
+  ) async {
     final repo = _FakeReaderRepository(shouldThrow: true);
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          readerRepositoryProvider.overrideWithValue(repo),
-        ],
-        child: const MaterialApp(
-          home: ReaderScreen(bookId: 10, format: 'pdf'),
-        ),
+        overrides: [readerRepositoryProvider.overrideWithValue(repo)],
+        child: const MaterialApp(home: ReaderScreen(bookId: 10, format: 'pdf')),
       ),
     );
     await tester.pumpAndSettle();
@@ -211,17 +215,15 @@ void main() {
     expect(find.text('Bạn không có quyền đọc tài liệu này.'), findsOneWidget);
   });
 
-  testWidgets('adds bookmark when bookmark action chip is tapped', (tester) async {
+  testWidgets('adds bookmark when bookmark action chip is tapped', (
+    tester,
+  ) async {
     final repo = _FakeReaderRepository();
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          readerRepositoryProvider.overrideWithValue(repo),
-        ],
-        child: const MaterialApp(
-          home: ReaderScreen(bookId: 10, format: 'pdf'),
-        ),
+        overrides: [readerRepositoryProvider.overrideWithValue(repo)],
+        child: const MaterialApp(home: ReaderScreen(bookId: 10, format: 'pdf')),
       ),
     );
     await tester.pumpAndSettle();

@@ -50,8 +50,7 @@ class ReaderService {
     final normalizedFormat = format.trim().toLowerCase();
     final file = await LibraryBookFile.db.findFirstRow(
       session,
-      where: (t) =>
-          t.bookId.equals(bookId) & t.format.equals(normalizedFormat),
+      where: (t) => t.bookId.equals(bookId) & t.format.equals(normalizedFormat),
     );
 
     if (file == null) {
@@ -64,7 +63,8 @@ class ReaderService {
     final now = CampusClock.nowUtc();
     final expiresAt = now.add(const Duration(minutes: 15));
     // Mint short-lived asset URL without exposing internal storage keys directly
-    final assetUrl = '/api/assets/$bookId/$normalizedFormat?expires=${expiresAt.millisecondsSinceEpoch}';
+    final assetUrl =
+        '/api/assets/$bookId/$normalizedFormat?expires=${expiresAt.millisecondsSinceEpoch}';
 
     return ReaderAsset(
       bookId: bookId,
@@ -241,7 +241,10 @@ class ReaderService {
     if (noteId != null) {
       final existing = await ReaderNote.db.findById(session, noteId);
       if (existing == null || existing.userId.toString() != userId.toString()) {
-        throw ServerpodClientException('Không tìm thấy ghi chú hoặc không có quyền sửa.', 403);
+        throw ServerpodClientException(
+          'Không tìm thấy ghi chú hoặc không có quyền sửa.',
+          403,
+        );
       }
       return ReaderNote.db.updateRow(
         session,

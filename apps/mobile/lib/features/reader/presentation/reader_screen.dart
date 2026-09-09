@@ -30,10 +30,9 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(readerControllerProvider.notifier).openBook(
-            bookId: widget.bookId,
-            format: widget.format,
-          );
+      ref
+          .read(readerControllerProvider.notifier)
+          .openBook(bookId: widget.bookId, format: widget.format);
     });
   }
 
@@ -48,14 +47,14 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
     final backgroundColor = isDark
         ? const Color(0xFF1E1E1E)
         : isSepia
-            ? const Color(0xFFFBF0D9)
-            : Colors.white;
+        ? const Color(0xFFFBF0D9)
+        : Colors.white;
 
     final textColor = isDark
         ? const Color(0xFFE0E0E0)
         : isSepia
-            ? const Color(0xFF5F4B32)
-            : const Color(0xFF212121);
+        ? const Color(0xFF5F4B32)
+        : const Color(0xFF212121);
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -72,7 +71,8 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
           IconButton(
             tooltip: 'Giao diện & Cỡ chữ',
             icon: const Icon(Icons.format_size),
-            onPressed: () => _showDisplaySettingsSheet(context, state, controller),
+            onPressed: () =>
+                _showDisplaySettingsSheet(context, state, controller),
           ),
           IconButton(
             tooltip: 'Đánh dấu & Ghi chú',
@@ -92,82 +92,90 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
       body: state.isLoading
           ? const Center(child: CircularProgressIndicator())
           : state.errorMessage != null
-              ? AppEmptyState(
-                  icon: Icons.error_outline,
-                  title: 'Không thể mở tài liệu',
-                  message: state.errorMessage!,
-                  actionLabel: 'Thử lại',
-                  onAction: () => controller.initialize(),
-                )
-              : Column(
-                  children: [
-                    if (state.showResumePrompt)
-                      _ResumeBanner(
-                        savedPercent: state.savedProgressPercent,
-                        savedLocation: state.savedLocation,
-                        onResume: controller.resumeFromSavedProgress,
-                        onDismiss: controller.dismissResumePrompt,
-                      ),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.all(AppSpacing.cardPadding),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+          ? AppEmptyState(
+              icon: Icons.error_outline,
+              title: 'Không thể mở tài liệu',
+              message: state.errorMessage!,
+              actionLabel: 'Thử lại',
+              onAction: () => controller.initialize(),
+            )
+          : Column(
+              children: [
+                if (state.showResumePrompt)
+                  _ResumeBanner(
+                    savedPercent: state.savedProgressPercent,
+                    savedLocation: state.savedLocation,
+                    onResume: controller.resumeFromSavedProgress,
+                    onDismiss: controller.dismissResumePrompt,
+                  ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(AppSpacing.cardPadding),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Đang đọc tại vị trí: ${state.currentLocation}',
+                          style: TextStyle(
+                            color: textColor.withAlpha(180),
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.m),
+                        Text(
+                          'Nội dung tài liệu đang được nạp thông qua trình đọc ${widget.format.toUpperCase()}.\n\n'
+                          'CampusMate hỗ trợ theo dõi tiến trình đọc theo thời gian thực (LWW conflict resolution), '
+                          'cho phép bạn lưu vị trí, đánh dấu trang và tạo ghi chú học tập ngay trên thiết bị.',
+                          style: TextStyle(
+                            color: textColor,
+                            fontSize: state.fontSize,
+                            height: 1.6,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.l),
+                        Wrap(
+                          spacing: AppSpacing.s,
                           children: [
-                            Text(
-                              'Đang đọc tại vị trí: ${state.currentLocation}',
-                              style: TextStyle(
-                                color: textColor.withAlpha(180),
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
+                            ActionChip(
+                              avatar: const Icon(
+                                Icons.bookmark_add_outlined,
+                                size: 18,
+                              ),
+                              label: const Text('Đánh dấu vị trí này'),
+                              onPressed: () => controller.addBookmark(
+                                title:
+                                    'Đánh dấu trang ${state.currentLocation}',
                               ),
                             ),
-                            const SizedBox(height: AppSpacing.m),
-                            Text(
-                              'Nội dung tài liệu đang được nạp thông qua trình đọc ${widget.format.toUpperCase()}.\n\n'
-                              'CampusMate hỗ trợ theo dõi tiến trình đọc theo thời gian thực (LWW conflict resolution), '
-                              'cho phép bạn lưu vị trí, đánh dấu trang và tạo ghi chú học tập ngay trên thiết bị.',
-                              style: TextStyle(
-                                color: textColor,
-                                fontSize: state.fontSize,
-                                height: 1.6,
+                            ActionChip(
+                              avatar: const Icon(
+                                Icons.note_add_outlined,
+                                size: 18,
                               ),
-                            ),
-                            const SizedBox(height: AppSpacing.l),
-                            Wrap(
-                              spacing: AppSpacing.s,
-                              children: [
-                                ActionChip(
-                                  avatar: const Icon(Icons.bookmark_add_outlined, size: 18),
-                                  label: const Text('Đánh dấu vị trí này'),
-                                  onPressed: () => controller.addBookmark(
-                                    title: 'Đánh dấu trang ${state.currentLocation}',
-                                  ),
-                                ),
-                                ActionChip(
-                                  avatar: const Icon(Icons.note_add_outlined, size: 18),
-                                  label: const Text('Thêm ghi chú'),
-                                  onPressed: () => _showAddNoteDialog(context, controller),
-                                ),
-                              ],
+                              label: const Text('Thêm ghi chú'),
+                              onPressed: () =>
+                                  _showAddNoteDialog(context, controller),
                             ),
                           ],
                         ),
-                      ),
+                      ],
                     ),
-                    _BottomProgressToolbar(
-                      state: state,
-                      textColor: textColor,
-                      onLocationChanged: (newLocation, newPercent) {
-                        controller.updateLocation(
-                          location: newLocation,
-                          progressPercent: newPercent,
-                        );
-                        unawaited(controller.syncProgressNow());
-                      },
-                    ),
-                  ],
+                  ),
                 ),
+                _BottomProgressToolbar(
+                  state: state,
+                  textColor: textColor,
+                  onLocationChanged: (newLocation, newPercent) {
+                    controller.updateLocation(
+                      location: newLocation,
+                      progressPercent: newPercent,
+                    );
+                    unawaited(controller.syncProgressNow());
+                  },
+                ),
+              ],
+            ),
     );
   }
 
@@ -188,15 +196,27 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Cài đặt hiển thị', style: Theme.of(context).textTheme.titleLarge),
+                    Text(
+                      'Cài đặt hiển thị',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
                     const SizedBox(height: AppSpacing.m),
                     const Text('Màu nền giao diện:'),
                     const SizedBox(height: AppSpacing.s),
                     SegmentedButton<ReaderThemeMode>(
                       segments: const [
-                        ButtonSegment(value: ReaderThemeMode.light, label: Text('Sáng')),
-                        ButtonSegment(value: ReaderThemeMode.sepia, label: Text('Sepia')),
-                        ButtonSegment(value: ReaderThemeMode.dark, label: Text('Tối')),
+                        ButtonSegment(
+                          value: ReaderThemeMode.light,
+                          label: Text('Sáng'),
+                        ),
+                        ButtonSegment(
+                          value: ReaderThemeMode.sepia,
+                          label: Text('Sepia'),
+                        ),
+                        ButtonSegment(
+                          value: ReaderThemeMode.dark,
+                          label: Text('Tối'),
+                        ),
                       ],
                       selected: {state.themeMode},
                       onSelectionChanged: (selection) {
@@ -257,7 +277,9 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                   child: TabBarView(
                     children: [
                       state.bookmarks.isEmpty
-                          ? const Center(child: Text('Chưa có trang đánh dấu nào.'))
+                          ? const Center(
+                              child: Text('Chưa có trang đánh dấu nào.'),
+                            )
                           : ListView.builder(
                               itemCount: state.bookmarks.length,
                               itemBuilder: (context, index) {
@@ -267,7 +289,8 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                                   subtitle: Text('Vị trí: ${item.location}'),
                                   trailing: IconButton(
                                     icon: const Icon(Icons.delete_outline),
-                                    onPressed: () => controller.removeBookmark(item.id!),
+                                    onPressed: () =>
+                                        controller.removeBookmark(item.id!),
                                   ),
                                   onTap: () {
                                     controller.updateLocation(
@@ -290,7 +313,8 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                                   subtitle: Text('Vị trí: ${note.location}'),
                                   trailing: IconButton(
                                     icon: const Icon(Icons.delete_outline),
-                                    onPressed: () => controller.deleteNote(note.id!),
+                                    onPressed: () =>
+                                        controller.deleteNote(note.id!),
                                   ),
                                 );
                               },
@@ -315,7 +339,9 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
         content: TextField(
           controller: noteController,
           autofocus: true,
-          decoration: const InputDecoration(hintText: 'Nhập nội dung ghi chú...'),
+          decoration: const InputDecoration(
+            hintText: 'Nhập nội dung ghi chú...',
+          ),
         ),
         actions: [
           TextButton(
@@ -373,10 +399,7 @@ class _ResumeBanner extends StatelessWidget {
               ),
             ),
           ),
-          TextButton(
-            onPressed: onDismiss,
-            child: const Text('Bỏ qua'),
-          ),
+          TextButton(onPressed: onDismiss, child: const Text('Bỏ qua')),
           FilledButton.tonal(
             onPressed: onResume,
             child: const Text('Tiếp tục'),
@@ -408,8 +431,12 @@ class _BottomProgressToolbar extends StatelessWidget {
         vertical: AppSpacing.s,
       ),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest.withAlpha(120),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.m)),
+        color: Theme.of(
+          context,
+        ).colorScheme.surfaceContainerHighest.withAlpha(120),
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(AppRadius.m),
+        ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -430,10 +457,7 @@ class _BottomProgressToolbar extends StatelessWidget {
               ),
               Text(
                 'Vị trí: ${state.currentLocation} (${state.progressPercent.toInt()}%)',
-                style: TextStyle(
-                  color: textColor,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: TextStyle(color: textColor, fontWeight: FontWeight.w500),
               ),
               IconButton(
                 icon: const Icon(Icons.skip_next),

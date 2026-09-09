@@ -173,8 +173,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 path: '/ai',
                 builder: (context, state) {
                   final bookIdStr = state.uri.queryParameters['bookId'];
-                  final bookId =
-                      bookIdStr != null ? int.tryParse(bookIdStr) : null;
+                  final bookId = bookIdStr != null
+                      ? int.tryParse(bookIdStr)
+                      : null;
                   final bookTitle = state.uri.queryParameters['title'];
                   final selectedText =
                       state.uri.queryParameters['selectedText'];

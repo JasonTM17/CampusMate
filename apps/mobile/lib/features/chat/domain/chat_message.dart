@@ -44,13 +44,13 @@ class ChatCitation {
   }
 
   Map<String, dynamic> toJson() => {
-        'title': title,
-        if (documentId != null) 'documentId': documentId,
-        if (bookId != null) 'bookId': bookId,
-        if (chapter != null) 'chapter': chapter,
-        if (page != null) 'page': page,
-        if (quote != null) 'quote': quote,
-      };
+    'title': title,
+    if (documentId != null) 'documentId': documentId,
+    if (bookId != null) 'bookId': bookId,
+    if (chapter != null) 'chapter': chapter,
+    if (page != null) 'page': page,
+    if (quote != null) 'quote': quote,
+  };
 }
 
 class ChatMessage {

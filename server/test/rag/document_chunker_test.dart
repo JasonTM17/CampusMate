@@ -11,7 +11,10 @@ void main() {
 
     test('returns empty list for empty or whitespace text', () {
       expect(chunker.chunk(fullText: '', defaultTitle: 'Test'), isEmpty);
-      expect(chunker.chunk(fullText: '   \n  \n  ', defaultTitle: 'Test'), isEmpty);
+      expect(
+        chunker.chunk(fullText: '   \n  \n  ', defaultTitle: 'Test'),
+        isEmpty,
+      );
     });
 
     test('chunks text preserving paragraphs and boundaries', () {
@@ -48,11 +51,15 @@ Thuật toán tìm kiếm nhị phân yêu cầu dãy đầu vào đã được 
       );
 
       expect(chunks.length, greaterThanOrEqualTo(2));
-      final ch1 = chunks.firstWhere((c) => c.chapter?.contains('Chương 1') ?? false);
+      final ch1 = chunks.firstWhere(
+        (c) => c.chapter?.contains('Chương 1') ?? false,
+      );
       expect(ch1.page, 5);
       expect(ch1.content, contains('tập hợp hữu hạn'));
 
-      final ch2 = chunks.firstWhere((c) => c.chapter?.contains('Chương 2') ?? false);
+      final ch2 = chunks.firstWhere(
+        (c) => c.chapter?.contains('Chương 2') ?? false,
+      );
       expect(ch2.page, 18);
       expect(ch2.content, contains('tìm kiếm nhị phân'));
     });
@@ -64,7 +71,11 @@ Thuật toán tìm kiếm nhị phân yêu cầu dãy đầu vào đã được 
         maxChunks: 3,
       );
 
-      final longText = List.generate(20, (i) => 'Đoạn văn mẫu số $i chứa dữ liệu text dài dài để test giới hạn chunks.').join('\n\n');
+      final longText = List.generate(
+        20,
+        (i) =>
+            'Đoạn văn mẫu số $i chứa dữ liệu text dài dài để test giới hạn chunks.',
+      ).join('\n\n');
 
       final chunks = smallLimitChunker.chunk(
         fullText: longText,

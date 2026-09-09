@@ -43,9 +43,7 @@ class AdminBookManagementView extends ConsumerWidget {
                 itemBuilder: (context, index) {
                   final book = page.items[index];
                   return ListTile(
-                    leading: const CircleAvatar(
-                      child: Icon(Icons.menu_book),
-                    ),
+                    leading: const CircleAvatar(child: Icon(Icons.menu_book)),
                     title: Text(book.title),
                     subtitle: Text(
                       'Tác giả: ${book.authors.join(', ')} • Năm: ${book.publishedYear}',
@@ -56,7 +54,12 @@ class AdminBookManagementView extends ConsumerWidget {
                         style: const TextStyle(fontSize: 12),
                       ),
                       avatar: const Icon(Icons.policy_outlined, size: 16),
-                      onPressed: () => _changePolicyDialog(context, ref, book.id, book.accessType),
+                      onPressed: () => _changePolicyDialog(
+                        context,
+                        ref,
+                        book.id,
+                        book.accessType,
+                      ),
                     ),
                   );
                 },
@@ -100,8 +103,12 @@ class AdminBookManagementView extends ConsumerWidget {
             child: Row(
               children: [
                 Icon(
-                  isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
-                  color: isSelected ? Theme.of(context).colorScheme.primary : null,
+                  isSelected
+                      ? Icons.radio_button_checked
+                      : Icons.radio_button_off,
+                  color: isSelected
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
                   size: 20,
                 ),
                 const SizedBox(width: 12),

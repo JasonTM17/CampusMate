@@ -61,7 +61,13 @@ class RagRetrievalService {
       try {
         normalizedUserId = UuidValue.withValidation(userId.trim()).uuid;
       } on FormatException {
-        final hex = userId.trim().hashCode.abs().toRadixString(16).padLeft(12, '0').substring(0, 12);
+        final hex = userId
+            .trim()
+            .hashCode
+            .abs()
+            .toRadixString(16)
+            .padLeft(12, '0')
+            .substring(0, 12);
         normalizedUserId = '00000000-0000-4000-8000-$hex';
       }
     }

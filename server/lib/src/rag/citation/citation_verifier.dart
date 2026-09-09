@@ -76,7 +76,10 @@ class CitationVerifier {
     final candidates = <RagCitation>[];
 
     // Pattern 1: [Nguồn 1], [Nguồn 2] indexed against retrieved chunks
-    final sourceRefPattern = RegExp(r'\[(?:Nguồn|Source)\s*(\d+)\]', caseSensitive: false);
+    final sourceRefPattern = RegExp(
+      r'\[(?:Nguồn|Source)\s*(\d+)\]',
+      caseSensitive: false,
+    );
     for (final match in sourceRefPattern.allMatches(responseText)) {
       final indexStr = match.group(1);
       if (indexStr != null) {
@@ -98,14 +101,18 @@ class CitationVerifier {
     }
 
     // Pattern 2: [Title - Chapter, tr. Page]
-    final citationPattern = RegExp(r'\[([^\]\-]+?)(?:\s*-\s*([^,\n\]]+?))?(?:,\s*(?:tr\.|trang|p\.)\s*(\d+))?\]');
+    final citationPattern = RegExp(
+      r'\[([^\]\-]+?)(?:\s*-\s*([^,\n\]]+?))?(?:,\s*(?:tr\.|trang|p\.)\s*(\d+))?\]',
+    );
     for (final match in citationPattern.allMatches(responseText)) {
       final title = match.group(1)?.trim();
       final chapter = match.group(2)?.trim();
       final pageStr = match.group(3)?.trim();
       final page = pageStr != null ? int.tryParse(pageStr) : null;
 
-      if (title != null && title.isNotEmpty && !title.toLowerCase().startsWith('nguồn')) {
+      if (title != null &&
+          title.isNotEmpty &&
+          !title.toLowerCase().startsWith('nguồn')) {
         candidates.add(
           RagCitation(
             documentId: 0,

@@ -25,17 +25,30 @@ class AdminAuditLogsView extends ConsumerWidget {
             final log = page.logs[index];
             return ListTile(
               leading: CircleAvatar(
-                backgroundColor: _actionColor(log.action).withValues(alpha: 0.15),
-                child: Icon(_actionIcon(log.action), color: _actionColor(log.action), size: 20),
+                backgroundColor: _actionColor(
+                  log.action,
+                ).withValues(alpha: 0.15),
+                child: Icon(
+                  _actionIcon(log.action),
+                  color: _actionColor(log.action),
+                  size: 20,
+                ),
               ),
-              title: Text(log.action, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+              title: Text(
+                log.action,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
               subtitle: Text(
                 'Tài nguyên: ${log.resourceType} #${log.resourceId}\nThời gian: ${log.createdAt.toLocal().toString().split('.').first}',
               ),
               isThreeLine: true,
               trailing: IconButton(
                 icon: const Icon(Icons.info_outline, size: 20),
-                onPressed: () => _showMetadataDialog(context, log.action, log.metadataJson),
+                onPressed: () =>
+                    _showMetadataDialog(context, log.action, log.metadataJson),
               ),
             );
           },
@@ -48,7 +61,9 @@ class AdminAuditLogsView extends ConsumerWidget {
     if (action.contains('DISABLE') || action.contains('ARCHIVE')) {
       return Colors.red;
     }
-    if (action.contains('CREATE') || action.contains('ACTIVATE') || action.contains('UPLOAD')) {
+    if (action.contains('CREATE') ||
+        action.contains('ACTIVATE') ||
+        action.contains('UPLOAD')) {
       return Colors.green;
     }
     return Colors.blue;
@@ -61,14 +76,16 @@ class AdminAuditLogsView extends ConsumerWidget {
     return Icons.security;
   }
 
-  void _showMetadataDialog(BuildContext context, String action, String metadataJson) {
+  void _showMetadataDialog(
+    BuildContext context,
+    String action,
+    String metadataJson,
+  ) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text('Chi tiết: $action'),
-        content: SingleChildScrollView(
-          child: SelectableText(metadataJson),
-        ),
+        content: SingleChildScrollView(child: SelectableText(metadataJson)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),

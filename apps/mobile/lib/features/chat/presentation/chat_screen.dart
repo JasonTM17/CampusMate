@@ -104,7 +104,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final text = _inputController.text.trim();
     if (text.isEmpty) return;
     _inputController.clear();
-    await ref.read(chatControllerProvider.notifier).sendMessage(
+    await ref
+        .read(chatControllerProvider.notifier)
+        .sendMessage(
           text,
           bookId: _attachedBookId,
           selectedText: _attachedSelectedText,

@@ -16,8 +16,8 @@ class AdminStudentsQueryNotifier extends Notifier<String?> {
 
 final adminStudentsQueryProvider =
     NotifierProvider<AdminStudentsQueryNotifier, String?>(
-  AdminStudentsQueryNotifier.new,
-);
+      AdminStudentsQueryNotifier.new,
+    );
 
 class AdminStudentsStatusNotifier extends Notifier<String?> {
   @override
@@ -27,8 +27,8 @@ class AdminStudentsStatusNotifier extends Notifier<String?> {
 
 final adminStudentsStatusProvider =
     NotifierProvider<AdminStudentsStatusNotifier, String?>(
-  AdminStudentsStatusNotifier.new,
-);
+      AdminStudentsStatusNotifier.new,
+    );
 
 final adminStudentsProvider = FutureProvider<AdminStudentPage>((ref) async {
   final repo = ref.watch(adminRepositoryProvider);
@@ -37,7 +37,9 @@ final adminStudentsProvider = FutureProvider<AdminStudentPage>((ref) async {
   return repo.listStudents(query: query, status: status);
 });
 
-final adminAnnouncementsProvider = FutureProvider<AdminAnnouncementPage>((ref) async {
+final adminAnnouncementsProvider = FutureProvider<AdminAnnouncementPage>((
+  ref,
+) async {
   final repo = ref.watch(adminRepositoryProvider);
   return repo.listAnnouncements();
 });
@@ -55,8 +57,8 @@ class AdminBooksQueryNotifier extends Notifier<String?> {
 
 final adminBooksQueryProvider =
     NotifierProvider<AdminBooksQueryNotifier, String?>(
-  AdminBooksQueryNotifier.new,
-);
+      AdminBooksQueryNotifier.new,
+    );
 
 final adminBooksProvider = FutureProvider<LibrarySearchPage>((ref) async {
   final repo = ref.watch(adminRepositoryProvider);
@@ -73,7 +75,10 @@ class AdminMutationsController extends AsyncNotifier<void> {
   Future<void> toggleStudentStatus(int profileId, bool currentIsActive) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      await _repo.setStudentStatus(profileId: profileId, isActive: !currentIsActive);
+      await _repo.setStudentStatus(
+        profileId: profileId,
+        isActive: !currentIsActive,
+      );
       ref.invalidate(adminStudentsProvider);
       ref.invalidate(adminStatsProvider);
     });
@@ -105,10 +110,16 @@ class AdminMutationsController extends AsyncNotifier<void> {
     });
   }
 
-  Future<void> updateBookAccessPolicy(int bookId, BookAccessType accessType) async {
+  Future<void> updateBookAccessPolicy(
+    int bookId,
+    BookAccessType accessType,
+  ) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      await _repo.updateBookAccessPolicy(bookId: bookId, accessType: accessType);
+      await _repo.updateBookAccessPolicy(
+        bookId: bookId,
+        accessType: accessType,
+      );
       ref.invalidate(adminBooksProvider);
     });
   }
@@ -116,5 +127,5 @@ class AdminMutationsController extends AsyncNotifier<void> {
 
 final adminMutationsControllerProvider =
     AsyncNotifierProvider<AdminMutationsController, void>(
-  AdminMutationsController.new,
-);
+      AdminMutationsController.new,
+    );

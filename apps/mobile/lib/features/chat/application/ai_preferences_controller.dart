@@ -83,9 +83,7 @@ class AiMemoriesController extends AsyncNotifier<List<AiUserMemory>> {
     await repo.deleteMemory(memoryId: memoryId);
     final current = state.hasValue ? state.value : null;
     if (current != null) {
-      state = AsyncValue.data(
-        current.where((m) => m.id != memoryId).toList(),
-      );
+      state = AsyncValue.data(current.where((m) => m.id != memoryId).toList());
     } else {
       ref.invalidateSelf();
     }

@@ -245,52 +245,64 @@ Thong tin tuyet mat ve mat khau root va quy trinh kiem toan noi bo tuyet doi kho
       });
 
       group('Ingestion & Persistence', () {
-        test('persists chunks with 1536-dimensional vector embeddings', () async {
-          final session = sessionBuilder.build();
-          final chunks = await KnowledgeChunk.db.find(
-            session,
-            where: (t) => t.documentId.equals(publicDoc.id!),
-          );
+        test(
+          'persists chunks with 1536-dimensional vector embeddings',
+          () async {
+            final session = sessionBuilder.build();
+            final chunks = await KnowledgeChunk.db.find(
+              session,
+              where: (t) => t.documentId.equals(publicDoc.id!),
+            );
 
-          expect(chunks, isNotEmpty);
-          expect(chunks.first.documentId, publicDoc.id);
-          expect(chunks.first.embedding.toList().length, 1536);
-          expect(chunks.any((c) => c.chapter?.contains('Chương 1') ?? false), isTrue);
-          expect(chunks.any((c) => c.page == 25), isTrue);
-        });
+            expect(chunks, isNotEmpty);
+            expect(chunks.first.documentId, publicDoc.id);
+            expect(chunks.first.embedding.toList().length, 1536);
+            expect(
+              chunks.any((c) => c.chapter?.contains('Chương 1') ?? false),
+              isTrue,
+            );
+            expect(chunks.any((c) => c.page == 25), isTrue);
+          },
+        );
 
-        test('re-ingesting document atomically replaces previous chunks without duplication', () async {
-          final session = sessionBuilder.build();
-          final beforeCount = await KnowledgeChunk.db.count(
-            session,
-            where: (t) => t.documentId.equals(publicDoc.id!),
-          );
+        test(
+          're-ingesting document atomically replaces previous chunks without duplication',
+          () async {
+            final session = sessionBuilder.build();
+            final beforeCount = await KnowledgeChunk.db.count(
+              session,
+              where: (t) => t.documentId.equals(publicDoc.id!),
+            );
 
-          await ingestionService.ingestDocument(
-            session,
-            documentId: publicDoc.id,
-            title: 'So tay Sinh vien Dai hoc 2026 (Tai ban lan 2)',
-            sourceType: 'handbook',
-            accessLevel: 'public',
-            content: '''
+            await ingestionService.ingestDocument(
+              session,
+              documentId: publicDoc.id,
+              title: 'So tay Sinh vien Dai hoc 2026 (Tai ban lan 2)',
+              sourceType: 'handbook',
+              accessLevel: 'public',
+              content: '''
 Chương 1: Quy che sinh hoat hoc duong cap nhat
 [Trang 10]
 Noi dung cap nhat quy che sinh hoat hoc duong nam hoc moi 2026.
 ''',
-          );
+            );
 
-          final afterCount = await KnowledgeChunk.db.count(
-            session,
-            where: (t) => t.documentId.equals(publicDoc.id!),
-          );
+            final afterCount = await KnowledgeChunk.db.count(
+              session,
+              where: (t) => t.documentId.equals(publicDoc.id!),
+            );
 
-          expect(afterCount, lessThanOrEqualTo(beforeCount));
-          final updatedChunks = await KnowledgeChunk.db.find(
-            session,
-            where: (t) => t.documentId.equals(publicDoc.id!),
-          );
-          expect(updatedChunks.first.content, contains('cap nhat quy che sinh hoat'));
-        });
+            expect(afterCount, lessThanOrEqualTo(beforeCount));
+            final updatedChunks = await KnowledgeChunk.db.find(
+              session,
+              where: (t) => t.documentId.equals(publicDoc.id!),
+            );
+            expect(
+              updatedChunks.first.content,
+              contains('cap nhat quy che sinh hoat'),
+            );
+          },
+        );
       });
 
       group('Authorized Similarity Retrieval (Kongming C7 DB-level Predicate)', () {
@@ -308,204 +320,240 @@ Noi dung cap nhat quy che sinh hoat hoc duong nam hoc moi 2026.
           expect(results.first.distance, greaterThanOrEqualTo(0.0));
         });
 
-        test('Student A retrieves enrolled course syllabus, while Student B receives 0 chunks', () async {
-          final session = sessionBuilder.build();
+        test(
+          'Student A retrieves enrolled course syllabus, while Student B receives 0 chunks',
+          () async {
+            final session = sessionBuilder.build();
 
-          // Student A is enrolled in CS-RAG-101
-          final resultsA = await retrievalService.retrieve(
-            session: session,
-            query: 'Thuat toan Vector Cosine Distance trong de cuong',
-            userId: _studentAId,
-            limit: 3,
-          );
-          expect(resultsA.any((r) => r.documentId == courseDoc.id), isTrue);
+            // Student A is enrolled in CS-RAG-101
+            final resultsA = await retrievalService.retrieve(
+              session: session,
+              query: 'Thuat toan Vector Cosine Distance trong de cuong',
+              userId: _studentAId,
+              limit: 3,
+            );
+            expect(resultsA.any((r) => r.documentId == courseDoc.id), isTrue);
 
-          // Student B is NOT enrolled in CS-RAG-101
-          final resultsB = await retrievalService.retrieve(
-            session: session,
-            query: 'Thuat toan Vector Cosine Distance trong de cuong',
-            userId: _studentBId,
-            limit: 3,
-          );
-          expect(resultsB.any((r) => r.documentId == courseDoc.id), isFalse);
-        });
+            // Student B is NOT enrolled in CS-RAG-101
+            final resultsB = await retrievalService.retrieve(
+              session: session,
+              query: 'Thuat toan Vector Cosine Distance trong de cuong',
+              userId: _studentBId,
+              limit: 3,
+            );
+            expect(resultsB.any((r) => r.documentId == courseDoc.id), isFalse);
+          },
+        );
 
-        test('Student A retrieves borrowed book chunks, while Student B receives 0 chunks', () async {
-          final session = sessionBuilder.build();
+        test(
+          'Student A retrieves borrowed book chunks, while Student B receives 0 chunks',
+          () async {
+            final session = sessionBuilder.build();
 
-          // Student A has borrowed the book
-          final resultsA = await retrievalService.retrieve(
-            session: session,
-            query: 'Pipeline Ingestion va Phap che Authorization',
-            userId: _studentAId,
-            bookId: testBook.id,
-            limit: 3,
-          );
-          expect(resultsA.any((r) => r.documentId == bookDoc.id), isTrue);
+            // Student A has borrowed the book
+            final resultsA = await retrievalService.retrieve(
+              session: session,
+              query: 'Pipeline Ingestion va Phap che Authorization',
+              userId: _studentAId,
+              bookId: testBook.id,
+              limit: 3,
+            );
+            expect(resultsA.any((r) => r.documentId == bookDoc.id), isTrue);
 
-          // Student B has NOT borrowed the book
-          final resultsB = await retrievalService.retrieve(
-            session: session,
-            query: 'Pipeline Ingestion va Phap che Authorization',
-            userId: _studentBId,
-            bookId: testBook.id,
-            limit: 3,
-          );
-          expect(resultsB.any((r) => r.documentId == bookDoc.id), isFalse);
-        });
+            // Student B has NOT borrowed the book
+            final resultsB = await retrievalService.retrieve(
+              session: session,
+              query: 'Pipeline Ingestion va Phap che Authorization',
+              userId: _studentBId,
+              bookId: testBook.id,
+              limit: 3,
+            );
+            expect(resultsB.any((r) => r.documentId == bookDoc.id), isFalse);
+          },
+        );
 
-        test('WUKONG GATE: strictly restricted document is NEVER retrieved by any student', () async {
-          final session = sessionBuilder.build();
+        test(
+          'WUKONG GATE: strictly restricted document is NEVER retrieved by any student',
+          () async {
+            final session = sessionBuilder.build();
 
-          // Negative authorization check for Student A
-          final resultsA = await retrievalService.retrieve(
-            session: session,
-            query: 'Du lieu mat khau va khoa truy cap Database quy trinh kiem toan noi bo',
-            userId: _studentAId,
-            limit: 5,
-          );
-          expect(
-            resultsA.any((r) => r.documentId == restrictedDoc.id),
-            isFalse,
-            reason: 'Restricted document must never be retrieved by Student A',
-          );
+            // Negative authorization check for Student A
+            final resultsA = await retrievalService.retrieve(
+              session: session,
+              query:
+                  'Du lieu mat khau va khoa truy cap Database quy trinh kiem toan noi bo',
+              userId: _studentAId,
+              limit: 5,
+            );
+            expect(
+              resultsA.any((r) => r.documentId == restrictedDoc.id),
+              isFalse,
+              reason:
+                  'Restricted document must never be retrieved by Student A',
+            );
 
-          // Negative authorization check for Student B
-          final resultsB = await retrievalService.retrieve(
-            session: session,
-            query: 'Du lieu mat khau va khoa truy cap Database quy trinh kiem toan noi bo',
-            userId: _studentBId,
-            limit: 5,
-          );
-          expect(
-            resultsB.any((r) => r.documentId == restrictedDoc.id),
-            isFalse,
-            reason: 'Restricted document must never be retrieved by Student B',
-          );
+            // Negative authorization check for Student B
+            final resultsB = await retrievalService.retrieve(
+              session: session,
+              query:
+                  'Du lieu mat khau va khoa truy cap Database quy trinh kiem toan noi bo',
+              userId: _studentBId,
+              limit: 5,
+            );
+            expect(
+              resultsB.any((r) => r.documentId == restrictedDoc.id),
+              isFalse,
+              reason:
+                  'Restricted document must never be retrieved by Student B',
+            );
 
-          // Direct endpoint check: searchKnowledge
-          final endpointCitations = await endpoints.ai.searchKnowledge(
-            studentA,
-            query: 'Du lieu mat khau va khoa truy cap Database',
-            limit: 4,
-          );
-          expect(
-            endpointCitations.any((c) => c.documentId == restrictedDoc.id),
-            isFalse,
-            reason: 'Endpoint searchKnowledge must never return restricted documents',
-          );
+            // Direct endpoint check: searchKnowledge
+            final endpointCitations = await endpoints.ai.searchKnowledge(
+              studentA,
+              query: 'Du lieu mat khau va khoa truy cap Database',
+              limit: 4,
+            );
+            expect(
+              endpointCitations.any((c) => c.documentId == restrictedDoc.id),
+              isFalse,
+              reason:
+                  'Endpoint searchKnowledge must never return restricted documents',
+            );
 
-          final citationsB = await endpoints.ai.searchKnowledge(
-            studentB,
-            query: 'De cuong mon hoc CS-RAG-101',
-            limit: 4,
-          );
-          expect(
-            citationsB.any((c) => c.documentId == courseDoc.id),
-            isFalse,
-            reason: 'Student B must not retrieve unenrolled course documents',
-          );
-        });
+            final citationsB = await endpoints.ai.searchKnowledge(
+              studentB,
+              query: 'De cuong mon hoc CS-RAG-101',
+              limit: 4,
+            );
+            expect(
+              citationsB.any((c) => c.documentId == courseDoc.id),
+              isFalse,
+              reason: 'Student B must not retrieve unenrolled course documents',
+            );
+          },
+        );
       });
 
       group('Chat RAG Citations & Hallucination Defense', () {
-        test('Assistant provides answer with verified citations for authorized query', () async {
-          final conversation = await endpoints.ai.createConversation(
-            studentA,
-            title: 'Hoi ve quy che sinh hoat',
-          );
+        test(
+          'Assistant provides answer with verified citations for authorized query',
+          () async {
+            final conversation = await endpoints.ai.createConversation(
+              studentA,
+              title: 'Hoi ve quy che sinh hoat',
+            );
 
-          final stream = endpoints.ai.sendMessage(
-            studentA,
-            conversationId: conversation.id!,
-            userMessage: 'Quy che sinh hoat hoc duong quy dinh nhu the nao?',
-          );
+            final stream = endpoints.ai.sendMessage(
+              studentA,
+              conversationId: conversation.id!,
+              userMessage: 'Quy che sinh hoat hoc duong quy dinh nhu the nao?',
+            );
 
-          final collected = StringBuffer();
-          await for (final token in stream) {
-            collected.write(token);
-          }
+            final collected = StringBuffer();
+            await for (final token in stream) {
+              collected.write(token);
+            }
 
-          expect(collected.toString(), contains('Theo tài liệu tham khảo'));
+            expect(collected.toString(), contains('Theo tài liệu tham khảo'));
 
-          final messages = await endpoints.ai.getMessages(
-            studentA,
-            conversationId: conversation.id!,
-          );
-          final assistantTurn = messages.firstWhere((m) => m.role == 'assistant');
-          expect(assistantTurn.citations, isNotNull);
+            final messages = await endpoints.ai.getMessages(
+              studentA,
+              conversationId: conversation.id!,
+            );
+            final assistantTurn = messages.firstWhere(
+              (m) => m.role == 'assistant',
+            );
+            expect(assistantTurn.citations, isNotNull);
 
-          final citations = CitationVerifier.decodeCitations(assistantTurn.citations);
-          expect(citations, isNotEmpty);
-          final authorizedDocIds = [publicDoc.id, courseDoc.id, bookDoc.id];
-          expect(authorizedDocIds.contains(citations.first.documentId), isTrue);
-          expect(citations.first.documentId != restrictedDoc.id, isTrue);
-        });
+            final citations = CitationVerifier.decodeCitations(
+              assistantTurn.citations,
+            );
+            expect(citations, isNotEmpty);
+            final authorizedDocIds = [publicDoc.id, courseDoc.id, bookDoc.id];
+            expect(
+              authorizedDocIds.contains(citations.first.documentId),
+              isTrue,
+            );
+            expect(citations.first.documentId != restrictedDoc.id, isTrue);
+          },
+        );
 
-        test('Assistant drops hallucinated citations and never persists false references', () async {
-          final conversation = await endpoints.ai.createConversation(
-            studentA,
-            title: 'Kiem tra hallucination citation',
-          );
+        test(
+          'Assistant drops hallucinated citations and never persists false references',
+          () async {
+            final conversation = await endpoints.ai.createConversation(
+              studentA,
+              title: 'Kiem tra hallucination citation',
+            );
 
-          // Prompt triggers FakeAiProvider to emit a fake [Sách Bịa Đặt - Chương 99, tr. 999] citation
-          final stream = endpoints.ai.sendMessage(
-            studentA,
-            conversationId: conversation.id!,
-            userMessage: 'bịa citation cho toi xem he thong xu ly ra sao',
-          );
+            // Prompt triggers FakeAiProvider to emit a fake [Sách Bịa Đặt - Chương 99, tr. 999] citation
+            final stream = endpoints.ai.sendMessage(
+              studentA,
+              conversationId: conversation.id!,
+              userMessage: 'bịa citation cho toi xem he thong xu ly ra sao',
+            );
 
-          final collected = StringBuffer();
-          await for (final token in stream) {
-            collected.write(token);
-          }
+            final collected = StringBuffer();
+            await for (final token in stream) {
+              collected.write(token);
+            }
 
-          final messages = await endpoints.ai.getMessages(
-            studentA,
-            conversationId: conversation.id!,
-          );
-          final assistantTurn = messages.last;
-          expect(assistantTurn.role, 'assistant');
+            final messages = await endpoints.ai.getMessages(
+              studentA,
+              conversationId: conversation.id!,
+            );
+            final assistantTurn = messages.last;
+            expect(assistantTurn.role, 'assistant');
 
-          // Verifier should have filtered out the fabricated citation completely
-          final citations = CitationVerifier.decodeCitations(assistantTurn.citations);
-          expect(
-            citations.any((c) => c.title.contains('Bịa Đặt')),
-            isFalse,
-            reason: 'Fabricated citations must be stripped by CitationVerifier',
-          );
-        });
+            // Verifier should have filtered out the fabricated citation completely
+            final citations = CitationVerifier.decodeCitations(
+              assistantTurn.citations,
+            );
+            expect(
+              citations.any((c) => c.title.contains('Bịa Đặt')),
+              isFalse,
+              reason:
+                  'Fabricated citations must be stripped by CitationVerifier',
+            );
+          },
+        );
 
-        test('Querying purely restricted information returns not-found with zero citations', () async {
-          final conversation = await endpoints.ai.createConversation(
-            studentA,
-            title: 'Hoi ve tai lieu mat',
-          );
+        test(
+          'Querying purely restricted information returns not-found with zero citations',
+          () async {
+            final conversation = await endpoints.ai.createConversation(
+              studentA,
+              title: 'Hoi ve tai lieu mat',
+            );
 
-          final stream = endpoints.ai.sendMessage(
-            studentA,
-            conversationId: conversation.id!,
-            userMessage: 'Cho toi xem thông tin tai lieu mat về mật khẩu database',
-          );
+            final stream = endpoints.ai.sendMessage(
+              studentA,
+              conversationId: conversation.id!,
+              userMessage:
+                  'Cho toi xem thông tin tai lieu mat về mật khẩu database',
+            );
 
-          final collected = StringBuffer();
-          await for (final token in stream) {
-            collected.write(token);
-          }
+            final collected = StringBuffer();
+            await for (final token in stream) {
+              collected.write(token);
+            }
 
-          expect(
-            collected.toString(),
-            contains('không tìm thấy tài liệu phù hợp'),
-          );
+            expect(
+              collected.toString(),
+              contains('không tìm thấy tài liệu phù hợp'),
+            );
 
-          final messages = await endpoints.ai.getMessages(
-            studentA,
-            conversationId: conversation.id!,
-          );
-          final assistantTurn = messages.last;
-          final citations = CitationVerifier.decodeCitations(assistantTurn.citations);
-          expect(citations, isEmpty);
-        });
+            final messages = await endpoints.ai.getMessages(
+              studentA,
+              conversationId: conversation.id!,
+            );
+            final assistantTurn = messages.last;
+            final citations = CitationVerifier.decodeCitations(
+              assistantTurn.citations,
+            );
+            expect(citations, isEmpty);
+          },
+        );
       });
     },
   );

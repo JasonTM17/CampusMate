@@ -101,9 +101,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          libraryRepositoryProvider.overrideWithValue(repository),
-        ],
+        overrides: [libraryRepositoryProvider.overrideWithValue(repository)],
         child: const MaterialApp(home: MyLoansScreen()),
       ),
     );
@@ -111,20 +109,17 @@ void main() {
 
     expect(find.text('Sách của tôi'), findsOneWidget);
     expect(find.text('Chưa mượn tài liệu'), findsOneWidget);
-    expect(
-      find.text('Các sách đang mượn sẽ xuất hiện ở đây.'),
-      findsOneWidget,
-    );
+    expect(find.text('Các sách đang mượn sẽ xuất hiện ở đây.'), findsOneWidget);
   });
 
-  testWidgets('renders error state and retries on action click', (tester) async {
+  testWidgets('renders error state and retries on action click', (
+    tester,
+  ) async {
     final repository = _FakeLibraryRepository(shouldThrowOnMyLoans: true);
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          libraryRepositoryProvider.overrideWithValue(repository),
-        ],
+        overrides: [libraryRepositoryProvider.overrideWithValue(repository)],
         child: const MaterialApp(home: MyLoansScreen()),
       ),
     );
@@ -205,9 +200,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          libraryRepositoryProvider.overrideWithValue(repository),
-        ],
+        overrides: [libraryRepositoryProvider.overrideWithValue(repository)],
         child: const MaterialApp(home: MyLoansScreen()),
       ),
     );
@@ -253,9 +246,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [
-          libraryRepositoryProvider.overrideWithValue(repository),
-        ],
+        overrides: [libraryRepositoryProvider.overrideWithValue(repository)],
         child: const MaterialApp(home: MyLoansScreen()),
       ),
     );
@@ -290,14 +281,15 @@ void main() {
           ],
           serverNow: now,
         ),
-        returnException: ServerpodClientException('Bạn không có quyền trả', 403),
+        returnException: ServerpodClientException(
+          'Bạn không có quyền trả',
+          403,
+        ),
       );
 
       await tester.pumpWidget(
         ProviderScope(
-          overrides: [
-            libraryRepositoryProvider.overrideWithValue(repository),
-          ],
+          overrides: [libraryRepositoryProvider.overrideWithValue(repository)],
           child: const MaterialApp(home: MyLoansScreen()),
         ),
       );

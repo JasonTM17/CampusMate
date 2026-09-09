@@ -16,7 +16,7 @@ import '../generated/protocol.dart';
 /// 3. Size cap: default max 50MB (52,428,800 bytes).
 class UploadValidationService {
   UploadValidationService({int? maxSizeBytes})
-      : maxSizeBytes = maxSizeBytes ?? 50 * 1024 * 1024;
+    : maxSizeBytes = maxSizeBytes ?? 50 * 1024 * 1024;
 
   final int maxSizeBytes;
 
@@ -42,7 +42,10 @@ class UploadValidationService {
     }
 
     if (byteSize <= 0) {
-      throw ServerpodClientException('File size must be greater than zero.', 400);
+      throw ServerpodClientException(
+        'File size must be greater than zero.',
+        400,
+      );
     }
     if (byteSize > maxSizeBytes) {
       throw ServerpodClientException(
@@ -93,18 +96,29 @@ class UploadValidationService {
       );
     }
 
-    final normalizedFormat = expectedFormat.trim().toLowerCase().replaceAll('.', '');
+    final normalizedFormat = expectedFormat.trim().toLowerCase().replaceAll(
+      '.',
+      '',
+    );
     if (!supportedFormats.contains(normalizedFormat)) {
-      throw ServerpodClientException('Unsupported format: $expectedFormat', 400);
+      throw ServerpodClientException(
+        'Unsupported format: $expectedFormat',
+        400,
+      );
     }
 
     if (clientFilename != null) {
       final lowerName = clientFilename.toLowerCase();
       // Check for path traversal attacks
-      if (lowerName.contains('..') || lowerName.contains('/') || lowerName.contains(r'\')) {
+      if (lowerName.contains('..') ||
+          lowerName.contains('/') ||
+          lowerName.contains(r'\')) {
         // Path traversal detected - client attempted to escape directory
         // Although server uses random storageKey, reject malicious payloads
-        throw ServerpodClientException('Invalid filename: path traversal characters detected.', 400);
+        throw ServerpodClientException(
+          'Invalid filename: path traversal characters detected.',
+          400,
+        );
       }
       // Check extension matches format
       if (!lowerName.endsWith('.$normalizedFormat')) {
@@ -151,7 +165,8 @@ class UploadValidationService {
     // Also verify that it contains epub indicator or mimetype within first 1KB
     final headerSlice = bytes.take(1024).toList();
     final headerAscii = String.fromCharCodes(headerSlice);
-    final hasEpubIndicator = headerAscii.contains('mimetype') ||
+    final hasEpubIndicator =
+        headerAscii.contains('mimetype') ||
         headerAscii.contains('epub') ||
         headerAscii.contains('META-INF');
     if (!hasEpubIndicator) {

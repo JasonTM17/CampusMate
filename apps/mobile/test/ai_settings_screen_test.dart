@@ -101,33 +101,31 @@ class _TestAiRepository implements AiRepository {
     required String content,
     int? bookId,
     String? selectedText,
-  }) =>
-      throw UnimplementedError();
+  }) => throw UnimplementedError();
 }
 
 Widget _buildScreen(_TestAiRepository repo) {
   return ProviderScope(
     overrides: [aiRepositoryProvider.overrideWithValue(repo)],
-    child: const MaterialApp(
-      home: AiSettingsScreen(),
-    ),
+    child: const MaterialApp(home: AiSettingsScreen()),
   );
 }
 
 void main() {
-  testWidgets('renders AI settings screen and displays preferences and memories', (
-    tester,
-  ) async {
-    final repo = _TestAiRepository();
-    await tester.pumpWidget(_buildScreen(repo));
-    await tester.pumpAndSettle();
+  testWidgets(
+    'renders AI settings screen and displays preferences and memories',
+    (tester) async {
+      final repo = _TestAiRepository();
+      await tester.pumpWidget(_buildScreen(repo));
+      await tester.pumpAndSettle();
 
-    expect(find.text('Cài đặt & Bộ nhớ AI'), findsOneWidget);
-    expect(find.text('Bật cá nhân hóa AI'), findsOneWidget);
-    expect(find.text('Bật bộ nhớ học tập dài hạn'), findsOneWidget);
-    expect(find.text('Thích học bằng mindmap'), findsOneWidget);
-    expect(find.text('Đang kích hoạt'), findsOneWidget);
-  });
+      expect(find.text('Cài đặt & Bộ nhớ AI'), findsOneWidget);
+      expect(find.text('Bật cá nhân hóa AI'), findsOneWidget);
+      expect(find.text('Bật bộ nhớ học tập dài hạn'), findsOneWidget);
+      expect(find.text('Thích học bằng mindmap'), findsOneWidget);
+      expect(find.text('Đang kích hoạt'), findsOneWidget);
+    },
+  );
 
   testWidgets('toggling switch updates preferences', (tester) async {
     final repo = _TestAiRepository();

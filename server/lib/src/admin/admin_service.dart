@@ -27,7 +27,8 @@ class AdminService {
 
     final activeLoans = await BookLoan.db.count(
       session,
-      where: (t) => t.status.inSet({BookLoanStatus.borrowed, BookLoanStatus.overdue}),
+      where: (t) =>
+          t.status.inSet({BookLoanStatus.borrowed, BookLoanStatus.overdue}),
     );
 
     final now = CampusClock.nowUtc();
@@ -92,9 +93,15 @@ class AdminService {
         if ((p.faculty ?? '').toLowerCase() != normalizedFaculty) return false;
       }
       if (normalizedQuery != null && normalizedQuery.isNotEmpty) {
-        final matchCode = (p.studentCode ?? '').toLowerCase().contains(normalizedQuery);
-        final matchName = (p.fullName ?? '').toLowerCase().contains(normalizedQuery);
-        final matchClass = (p.className ?? '').toLowerCase().contains(normalizedQuery);
+        final matchCode = (p.studentCode ?? '').toLowerCase().contains(
+          normalizedQuery,
+        );
+        final matchName = (p.fullName ?? '').toLowerCase().contains(
+          normalizedQuery,
+        );
+        final matchClass = (p.className ?? '').toLowerCase().contains(
+          normalizedQuery,
+        );
         if (!matchCode && !matchName && !matchClass) return false;
       }
       return true;
@@ -189,7 +196,10 @@ class AdminService {
     final trimmedClass = className.trim();
 
     if (trimmedCode.isEmpty || trimmedName.isEmpty || trimmedClass.isEmpty) {
-      throw ServerpodClientException('Student code, full name, and class name are required.', 400);
+      throw ServerpodClientException(
+        'Student code, full name, and class name are required.',
+        400,
+      );
     }
 
     final existing = await StudentProfile.db.findFirstRow(
@@ -197,7 +207,10 @@ class AdminService {
       where: (t) => t.studentCode.equals(trimmedCode),
     );
     if (existing != null) {
-      throw ServerpodClientException('Student with code $trimmedCode already exists.', 409);
+      throw ServerpodClientException(
+        'Student with code $trimmedCode already exists.',
+        409,
+      );
     }
 
     return session.db.transaction((transaction) async {
@@ -292,7 +305,11 @@ class AdminService {
         updatedAt: now,
       );
 
-      await StudentProfile.db.updateRow(session, updated, transaction: transaction);
+      await StudentProfile.db.updateRow(
+        session,
+        updated,
+        transaction: transaction,
+      );
 
       await _audit.record(
         session,
@@ -336,7 +353,11 @@ class AdminService {
       final newStatus = isActive ? 'active' : 'inactive';
       final now = CampusClock.nowUtc();
       final updated = profile.copyWith(status: newStatus, updatedAt: now);
-      await StudentProfile.db.updateRow(session, updated, transaction: transaction);
+      await StudentProfile.db.updateRow(
+        session,
+        updated,
+        transaction: transaction,
+      );
 
       // Block or unblock AuthUser if available
       try {
@@ -386,7 +407,8 @@ class AdminService {
     final safeLimit = limit.clamp(1, 100);
     final all = await Announcement.db.find(
       session,
-      where: (t) => includeArchived ? Constant.bool(true) : t.archived.equals(false),
+      where: (t) =>
+          includeArchived ? Constant.bool(true) : t.archived.equals(false),
       orderByList: (t) => [
         Order(column: t.createdAt, orderDescending: true),
         Order(column: t.id, orderDescending: true),
@@ -506,7 +528,11 @@ class AdminService {
         updatedAt: now,
       );
 
-      await Announcement.db.updateRow(session, updated, transaction: transaction);
+      await Announcement.db.updateRow(
+        session,
+        updated,
+        transaction: transaction,
+      );
 
       await _audit.record(
         session,
@@ -546,7 +572,11 @@ class AdminService {
 
       final now = CampusClock.nowUtc();
       final updated = item.copyWith(archived: true, updatedAt: now);
-      await Announcement.db.updateRow(session, updated, transaction: transaction);
+      await Announcement.db.updateRow(
+        session,
+        updated,
+        transaction: transaction,
+      );
 
       await _audit.record(
         session,

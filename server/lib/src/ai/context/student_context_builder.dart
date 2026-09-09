@@ -21,10 +21,10 @@ class StudentContextBuilder {
     AiMemoryService? memories,
     AcademicReadService? academic,
     LendingService? lending,
-  })  : _preferences = preferences ?? AiPreferenceService(),
-        _memories = memories ?? AiMemoryService(preferences: preferences),
-        _academic = academic ?? AcademicReadService(),
-        _lending = lending ?? LendingService();
+  }) : _preferences = preferences ?? AiPreferenceService(),
+       _memories = memories ?? AiMemoryService(preferences: preferences),
+       _academic = academic ?? AcademicReadService(),
+       _lending = lending ?? LendingService();
 
   final AiPreferenceService _preferences;
   final AiMemoryService _memories;
@@ -67,7 +67,9 @@ class StudentContextBuilder {
       if (name != null && name.isNotEmpty) parts.add('Họ tên: $name');
       if (code != null && code.isNotEmpty) parts.add('MSSV: $code');
       if (faculty != null && faculty.isNotEmpty) parts.add('Ngành: $faculty');
-      if (className != null && className.isNotEmpty) parts.add('Lớp: $className');
+      if (className != null && className.isNotEmpty) {
+        parts.add('Lớp: $className');
+      }
       if (parts.isNotEmpty) {
         buffer.writeln('[Hồ sơ sinh viên]');
         buffer.writeln(parts.join(' | '));
@@ -94,7 +96,9 @@ class StudentContextBuilder {
         academicParts.add('Môn đang học: $courseNames');
       }
 
-      academicParts.add('GPA kỳ: ${academicOverview.semesterGpa.toStringAsFixed(2)}');
+      academicParts.add(
+        'GPA kỳ: ${academicOverview.semesterGpa.toStringAsFixed(2)}',
+      );
 
       if (academicParts.isNotEmpty) {
         buffer.writeln('[Học tập hiện tại]');
@@ -109,7 +113,8 @@ class StudentContextBuilder {
           buffer.writeln('- ${exam.title}: ngày $dateStr (phòng ${exam.room})');
         }
       }
-      if (academicParts.isNotEmpty || academicOverview.upcomingExams.isNotEmpty) {
+      if (academicParts.isNotEmpty ||
+          academicOverview.upcomingExams.isNotEmpty) {
         buffer.writeln();
       }
     } catch (_) {
@@ -140,7 +145,11 @@ class StudentContextBuilder {
 
     // 5. Library loans layer (max ~200 chars)
     try {
-      final loanPage = await _lending.myLoans(session, limit: 3, activeOnly: true);
+      final loanPage = await _lending.myLoans(
+        session,
+        limit: 3,
+        activeOnly: true,
+      );
       if (loanPage.items.isNotEmpty) {
         buffer.writeln('[Mượn sách thư viện]');
         for (final loan in loanPage.items.take(3)) {
@@ -181,7 +190,8 @@ class StudentContextBuilder {
     }
 
     // 7. Book / Document Chat context layer (max ~400 chars)
-    if (bookId != null || (selectedText != null && selectedText.trim().isNotEmpty)) {
+    if (bookId != null ||
+        (selectedText != null && selectedText.trim().isNotEmpty)) {
       try {
         buffer.writeln('[Tài liệu đang đọc]');
         if (bookId != null) {

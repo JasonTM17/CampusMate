@@ -52,27 +52,31 @@ void main() {
       expect(verified.first.page, 45);
     });
 
-    test('strictly drops fabricated citations pointing to non-retrieved documents', () {
-      final candidates = [
-        RagCitation(
-          documentId: 999, // Fake document ID
-          chunkId: 9999,
-          title: 'Tài liệu bịa đặt về đề thi bí mật',
-          chapter: 'Chương 99',
-          page: 999,
-        ),
-      ];
+    test(
+      'strictly drops fabricated citations pointing to non-retrieved documents',
+      () {
+        final candidates = [
+          RagCitation(
+            documentId: 999, // Fake document ID
+            chunkId: 9999,
+            title: 'Tài liệu bịa đặt về đề thi bí mật',
+            chapter: 'Chương 99',
+            page: 999,
+          ),
+        ];
 
-      final verified = verifier.verify(
-        candidateCitations: candidates,
-        retrievedChunks: retrieved,
-      );
+        final verified = verifier.verify(
+          candidateCitations: candidates,
+          retrievedChunks: retrieved,
+        );
 
-      expect(verified, isEmpty);
-    });
+        expect(verified, isEmpty);
+      },
+    );
 
     test('extracts and verifies [Nguồn 1] from assistant response text', () {
-      const response = 'Theo quy định tại [Nguồn 2], sinh viên phải tham gia tối thiểu 80% số tiết học.';
+      const response =
+          'Theo quy định tại [Nguồn 2], sinh viên phải tham gia tối thiểu 80% số tiết học.';
 
       final verified = verifier.extractAndVerify(
         responseText: response,

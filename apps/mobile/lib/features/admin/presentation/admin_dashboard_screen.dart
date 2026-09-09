@@ -26,7 +26,10 @@ class AdminDashboardScreen extends ConsumerWidget {
               Tab(icon: Icon(Icons.people_outline), text: 'Sinh viên'),
               Tab(icon: Icon(Icons.library_books_outlined), text: 'Thư viện'),
               Tab(icon: Icon(Icons.campaign_outlined), text: 'Thông báo'),
-              Tab(icon: Icon(Icons.history_edu_outlined), text: 'Nhật ký kiểm toán'),
+              Tab(
+                icon: Icon(Icons.history_edu_outlined),
+                text: 'Nhật ký kiểm toán',
+              ),
             ],
           ),
         ),
@@ -37,7 +40,10 @@ class AdminDashboardScreen extends ConsumerWidget {
               loading: () => const LinearProgressIndicator(),
               error: (err, _) => Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text('Lỗi tải số liệu: $err', style: const TextStyle(color: Colors.red)),
+                child: Text(
+                  'Lỗi tải số liệu: $err',
+                  style: const TextStyle(color: Colors.red),
+                ),
               ),
               data: (stats) => _DashboardMetricsHeader(stats: stats),
             ),
@@ -69,7 +75,9 @@ class _DashboardMetricsHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+      color: Theme.of(
+        context,
+      ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(

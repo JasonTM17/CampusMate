@@ -16,8 +16,8 @@ List<shared.AiMessage> assembleChatMessages({
 }) {
   final systemContent =
       (studentContext != null && studentContext.trim().isNotEmpty)
-          ? '$campusmateSystemPrompt\n\n--- [Personalized Student Context] ---\n${studentContext.trim()}\n--- [End of Context] ---'
-          : campusmateSystemPrompt;
+      ? '$campusmateSystemPrompt\n\n--- [Personalized Student Context] ---\n${studentContext.trim()}\n--- [End of Context] ---'
+      : campusmateSystemPrompt;
 
   return [
     shared.AiMessage(role: 'system', content: systemContent),
@@ -26,4 +26,3 @@ List<shared.AiMessage> assembleChatMessages({
     shared.AiMessage(role: 'user', content: userMessage),
   ];
 }
-

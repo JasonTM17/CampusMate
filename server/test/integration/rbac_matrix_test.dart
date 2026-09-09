@@ -11,7 +11,10 @@ const _lecturerUuid = '00000000-0000-4000-8000-0000000000a3';
 const _studentUuid = '00000000-0000-4000-8000-0000000000a4';
 
 void main() {
-  withServerpod('Given CampusMate RBAC Matrix (Phase-11)', (sessionBuilder, endpoints) {
+  withServerpod('Given CampusMate RBAC Matrix (Phase-11)', (
+    sessionBuilder,
+    endpoints,
+  ) {
     final adminSession = sessionBuilder.copyWith(
       authentication: AuthenticationOverride.authenticationInfo(
         _adminUuid,
@@ -48,42 +51,60 @@ void main() {
       });
 
       test('admin can list students', () async {
-        final page = await endpoints.admin.listStudents(adminSession, limit: 20);
+        final page = await endpoints.admin.listStudents(
+          adminSession,
+          limit: 20,
+        );
         expect(page, isA<AdminStudentPage>());
       });
 
       test('admin can list audit logs', () async {
-        final logsPage = await endpoints.admin.listAuditLogs(adminSession, limit: 20);
+        final logsPage = await endpoints.admin.listAuditLogs(
+          adminSession,
+          limit: 20,
+        );
         expect(logsPage, isA<AdminAuditLogPage>());
       });
 
-      test('KONGMING C1: librarian is strictly rejected from admin dashboard (403)', () async {
-        await expectLater(
-          endpoints.admin.getDashboardStats(librarianSession),
-          throwsA(isA<ServerpodInsufficientAccessException>()),
-        );
-      });
+      test(
+        'KONGMING C1: librarian is strictly rejected from admin dashboard (403)',
+        () async {
+          await expectLater(
+            endpoints.admin.getDashboardStats(librarianSession),
+            throwsA(isA<ServerpodInsufficientAccessException>()),
+          );
+        },
+      );
 
-      test('KONGMING C1: lecturer is strictly rejected from admin dashboard (403)', () async {
-        await expectLater(
-          endpoints.admin.getDashboardStats(lecturerSession),
-          throwsA(isA<ServerpodInsufficientAccessException>()),
-        );
-      });
+      test(
+        'KONGMING C1: lecturer is strictly rejected from admin dashboard (403)',
+        () async {
+          await expectLater(
+            endpoints.admin.getDashboardStats(lecturerSession),
+            throwsA(isA<ServerpodInsufficientAccessException>()),
+          );
+        },
+      );
 
-      test('KONGMING C1: student is strictly rejected from admin dashboard (403)', () async {
-        await expectLater(
-          endpoints.admin.getDashboardStats(studentSession),
-          throwsA(isA<ServerpodInsufficientAccessException>()),
-        );
-      });
+      test(
+        'KONGMING C1: student is strictly rejected from admin dashboard (403)',
+        () async {
+          await expectLater(
+            endpoints.admin.getDashboardStats(studentSession),
+            throwsA(isA<ServerpodInsufficientAccessException>()),
+          );
+        },
+      );
 
-      test('unauthenticated caller is rejected with 401 unauthenticated', () async {
-        await expectLater(
-          endpoints.admin.getDashboardStats(sessionBuilder),
-          throwsA(isA<ServerpodUnauthenticatedException>()),
-        );
-      });
+      test(
+        'unauthenticated caller is rejected with 401 unauthenticated',
+        () async {
+          await expectLater(
+            endpoints.admin.getDashboardStats(sessionBuilder),
+            throwsA(isA<ServerpodUnauthenticatedException>()),
+          );
+        },
+      );
 
       test('KONGMING C1: librarian cannot list student records', () async {
         await expectLater(
@@ -141,19 +162,22 @@ void main() {
         expect(ticket, isA<BookUploadTicket>());
       });
 
-      test('KONGMING C1: student cannot call librarian endpoint (403)', () async {
-        await expectLater(
-          endpoints.librarian.createBook(
-            studentSession,
-            title: 'Unauthorized Student Book',
-            authorNames: ['Student Hacker'],
-            publishedYear: 2026,
-            language: 'vi',
-            accessType: BookAccessType.authenticatedFullText,
-          ),
-          throwsA(isA<ServerpodInsufficientAccessException>()),
-        );
-      });
+      test(
+        'KONGMING C1: student cannot call librarian endpoint (403)',
+        () async {
+          await expectLater(
+            endpoints.librarian.createBook(
+              studentSession,
+              title: 'Unauthorized Student Book',
+              authorNames: ['Student Hacker'],
+              publishedYear: 2026,
+              language: 'vi',
+              accessType: BookAccessType.authenticatedFullText,
+            ),
+            throwsA(isA<ServerpodInsufficientAccessException>()),
+          );
+        },
+      );
 
       test('unauthenticated caller to librarian is rejected (401)', () async {
         await expectLater(
@@ -171,46 +195,53 @@ void main() {
     });
 
     group('Student Deactivation Immediate Enforcement', () {
-      test('deactivating student blocks current and subsequent session calls immediately', () async {
-        // 1. Student initially gets profile
-        final initialProfile = await endpoints.studentProfile.getMyProfile(studentSession);
-        expect(initialProfile.status, isNot('inactive'));
-
-        // 2. Admin deactivates student
-        final updated = await endpoints.admin.setStudentStatus(
-          adminSession,
-          profileId: initialProfile.id!,
-          isActive: false,
-        );
-        expect(updated.status, 'inactive');
-
-        // 3. Student calls getMyProfile with their existing session -> immediately blocked!
-        await expectLater(
-          endpoints.studentProfile.getMyProfile(studentSession),
-          throwsA(isA<ServerpodClientForbidden>()),
-        );
-
-        // 4. Student calls updateMyProfile -> also immediately blocked!
-        await expectLater(
-          endpoints.studentProfile.updateMyProfile(
+      test(
+        'deactivating student blocks current and subsequent session calls immediately',
+        () async {
+          // 1. Student initially gets profile
+          final initialProfile = await endpoints.studentProfile.getMyProfile(
             studentSession,
-            fullName: 'Attempted Update',
-            className: 'K68PM01',
-          ),
-          throwsA(isA<ServerpodClientForbidden>()),
-        );
+          );
+          expect(initialProfile.status, isNot('inactive'));
 
-        // 5. Admin reactivates student
-        await endpoints.admin.setStudentStatus(
-          adminSession,
-          profileId: initialProfile.id!,
-          isActive: true,
-        );
+          // 2. Admin deactivates student
+          final updated = await endpoints.admin.setStudentStatus(
+            adminSession,
+            profileId: initialProfile.id!,
+            isActive: false,
+          );
+          expect(updated.status, 'inactive');
 
-        // 6. Access is immediately restored
-        final restoredProfile = await endpoints.studentProfile.getMyProfile(studentSession);
-        expect(restoredProfile.status, 'active');
-      });
+          // 3. Student calls getMyProfile with their existing session -> immediately blocked!
+          await expectLater(
+            endpoints.studentProfile.getMyProfile(studentSession),
+            throwsA(isA<ServerpodClientForbidden>()),
+          );
+
+          // 4. Student calls updateMyProfile -> also immediately blocked!
+          await expectLater(
+            endpoints.studentProfile.updateMyProfile(
+              studentSession,
+              fullName: 'Attempted Update',
+              className: 'K68PM01',
+            ),
+            throwsA(isA<ServerpodClientForbidden>()),
+          );
+
+          // 5. Admin reactivates student
+          await endpoints.admin.setStudentStatus(
+            adminSession,
+            profileId: initialProfile.id!,
+            isActive: true,
+          );
+
+          // 6. Access is immediately restored
+          final restoredProfile = await endpoints.studentProfile.getMyProfile(
+            studentSession,
+          );
+          expect(restoredProfile.status, 'active');
+        },
+      );
     });
   });
 }

@@ -91,7 +91,10 @@ class MessageBubble extends StatelessWidget {
                     children: [
                       for (final citation in message.citations)
                         ActionChip(
-                          avatar: const Icon(Icons.menu_book_outlined, size: 14),
+                          avatar: const Icon(
+                            Icons.menu_book_outlined,
+                            size: 14,
+                          ),
                           label: Text(
                             citation.displayText,
                             style: const TextStyle(fontSize: 11),
@@ -131,10 +134,7 @@ class MessageBubble extends StatelessWidget {
             const Icon(Icons.menu_book_outlined, size: 20),
             const SizedBox(width: 8),
             Expanded(
-              child: Text(
-                citation.title,
-                style: const TextStyle(fontSize: 16),
-              ),
+              child: Text(citation.title, style: const TextStyle(fontSize: 16)),
             ),
           ],
         ),
@@ -164,7 +164,9 @@ class MessageBubble extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 'Đoạn trích:',
-                style: Theme.of(ctx).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(
+                  ctx,
+                ).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 4),
               Container(
@@ -175,7 +177,10 @@ class MessageBubble extends StatelessWidget {
                 ),
                 child: Text(
                   citation.quote!,
-                  style: const TextStyle(fontStyle: FontStyle.italic, fontSize: 12),
+                  style: const TextStyle(
+                    fontStyle: FontStyle.italic,
+                    fontSize: 12,
+                  ),
                 ),
               ),
             ],

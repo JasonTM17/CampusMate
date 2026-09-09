@@ -6,7 +6,10 @@ void main() {
     test('instantiates with required fields and optional studentContext', () {
       final messages = [
         const AiMessage(role: 'user', content: 'Chào trợ lý!'),
-        const AiMessage(role: 'assistant', content: 'Chào bạn, mình giúp gì được?'),
+        const AiMessage(
+          role: 'assistant',
+          content: 'Chào bạn, mình giúp gì được?',
+        ),
       ];
 
       final request = AiRequest(
