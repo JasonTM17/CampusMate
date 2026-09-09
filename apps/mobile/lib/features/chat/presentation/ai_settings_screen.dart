@@ -16,9 +16,7 @@ class AiSettingsScreen extends ConsumerWidget {
     final memoriesState = ref.watch(aiMemoriesControllerProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Cài đặt & Bộ nhớ AI'),
-      ),
+      appBar: AppBar(title: const Text('Cài đặt & Bộ nhớ AI')),
       body: prefState.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, _) => Center(
@@ -128,6 +126,7 @@ class _PreferencesSection extends ConsumerWidget {
             DropdownButtonFormField<String>(
               key: const Key('explanation-style-dropdown'),
               initialValue: pref.explanationStyle,
+              isExpanded: true,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(AppRadius.m)),
@@ -325,7 +324,9 @@ class _MemoriesSection extends ConsumerWidget {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Không thể thêm ghi nhớ. Vui lòng thử lại.'),
+                      content: Text(
+                        'Không thể thêm ghi nhớ. Vui lòng thử lại.',
+                      ),
                       backgroundColor: AppColors.error,
                     ),
                   );
@@ -379,8 +380,7 @@ class _MemoryTile extends StatelessWidget {
                 Text(
                   memory.content,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    decoration:
-                        isDisabled ? TextDecoration.lineThrough : null,
+                    decoration: isDisabled ? TextDecoration.lineThrough : null,
                     color: isDisabled
                         ? theme.colorScheme.onSurfaceVariant
                         : null,

@@ -51,7 +51,7 @@ abstract final class AppTheme {
           foregroundColor: AppColors.onPrimary,
           padding: AppSpacing.mAll,
           shape: RoundedRectangleBorder(borderRadius: AppRadius.buttonRadius),
-          minimumSize: const Size.fromHeight(48),
+          minimumSize: const Size(0, 48),
           textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
         ),
       ),
