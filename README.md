@@ -70,10 +70,19 @@ erDiagram
   dashboard/notifications/library/lending derive user từ session.
 - **packages/campusmate_client** — generated client (không sửa tay; dùng `serverpod generate`).
 - **packages/campusmate_shared** — pure Dart domain logic dùng chung, ví dụ GPA calculation.
-- **docs/architecture.md** — sơ đồ hệ thống, trust boundary và runtime flow.
-- **docs/database.md** — ERD học vụ và quy tắc dữ liệu.
-- **docs/release-packages.md** — chính sách GitHub Releases/GitHub Packages.
-- **docs/adr/** — các quyết định kiến trúc quan trọng.
+- **docs/architecture.md** — Sơ đồ hệ thống, trust boundaries và runtime dataflow.
+- **docs/database.md** — ERD học vụ, lược đồ bảng và quy tắc toàn vẹn dữ liệu.
+- **docs/api.md** — Danh mục chi tiết các Serverpod API endpoints, parameters và DTOs.
+- **docs/authentication.md** — Cơ chế xác thực, token lifecycle và RBAC matrix 4 scopes.
+- **docs/ai-architecture.md** — Kiến trúc AI assistant, provider abstraction và streaming protocol.
+- **docs/rag.md** — Quy trình RAG, chunking, embedding, pgvector và DB-level authorization filter.
+- **docs/threat-model.md** — Phân tích STRIDE, mô hình bảo mật và kiểm chứng 11 rủi ro cốt lõi (§83).
+- **docs/offline-sync.md** — Kiến trúc offline pull-cache qua Drift SQLite và Last-Write-Wins progress sync.
+- **docs/testing.md** — Chiến lược kiểm thử tự động (Unit, Widget, Serverpod Integration, E2E journey).
+- **docs/deployment.md** — Hướng dẫn container hóa, Docker Compose, biến môi trường và migrations.
+- **docs/git-workflow.md** — Quy ước nhánh, Conventional Commits và pre-ship quality gates.
+- **docs/release-packages.md** — Chính sách GitHub Releases/GitHub Packages.
+- **docs/adr/** — Các quyết định kiến trúc quan trọng (ADR 001 - ADR 008).
 
 Quy tắc cứng: mobile không bao giờ giữ AI key hay kết nối DB trực tiếp; mọi authorization kiểm tra ở SERVER; identity chỉ lấy từ session (không tin `userId` từ payload). Library detail trả DTO metadata/action theo `BookAccessPolicyService`; lending dùng server time, transaction + row lock, và partial unique index để bảo đảm một copy chỉ có một active loan. File URL/storage key không thuộc catalog/lending API.
 
