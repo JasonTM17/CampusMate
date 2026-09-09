@@ -105,4 +105,21 @@ abstract final class AppColors {
   static const Color glassDark = Color(0xD90F172A);
   static const Color glassBorderLight = Color(0x33FFFFFF);
   static const Color glassBorderDark = Color(0x2694A3B8);
+
+  // ── Stitch Design Tokens: Semantic Category Tints ──────────────────
+  static const Color categoryExam = Color(0xFFDC2626);
+  static const Color categoryExamBgLight = Color(0xFFFFEBEE);
+  static const Color categoryExamBgDark = Color(0xFF3B1212);
+
+  static const Color categoryAcademic = Color(0xFF2563EB);
+  static const Color categoryAcademicBgLight = Color(0xFFEFF6FF);
+  static const Color categoryAcademicBgDark = Color(0xFF172554);
+
+  static const Color categoryLibrary = Color(0xFF059669);
+  static const Color categoryLibraryBgLight = Color(0xFFECFDF5);
+  static const Color categoryLibraryBgDark = Color(0xFF064E3B);
+
+  static const Color categorySystem = Color(0xFF7C3AED);
+  static const Color categorySystemBgLight = Color(0xFFF5F3FF);
+  static const Color categorySystemBgDark = Color(0xFF2E1065);
 }

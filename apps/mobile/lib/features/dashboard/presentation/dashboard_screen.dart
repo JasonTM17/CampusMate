@@ -158,6 +158,7 @@ class DashboardScreen extends ConsumerWidget {
                     )
                   : _AiSuggestionCard(suggestion: suggestion),
             ),
+            const _QuickActionsSection(),
           ],
         ),
       ),
@@ -313,6 +314,133 @@ class _GreetingSection extends StatelessWidget {
   }
 }
 
+class _QuickActionsSection extends StatelessWidget {
+  const _QuickActionsSection();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    final actions = [
+      (
+        icon: Icons.calendar_month_outlined,
+        label: 'Thời khóa biểu',
+        route: '/academic',
+        color: AppColors.categoryAcademic,
+        bgColor: isDark
+            ? AppColors.categoryAcademicBgDark
+            : AppColors.categoryAcademicBgLight,
+      ),
+      (
+        icon: Icons.assignment_outlined,
+        label: 'Lịch thi',
+        route: '/academic',
+        color: AppColors.categoryExam,
+        bgColor: isDark
+            ? AppColors.categoryExamBgDark
+            : AppColors.categoryExamBgLight,
+      ),
+      (
+        icon: Icons.local_library_outlined,
+        label: 'Tra cứu sách',
+        route: '/library',
+        color: AppColors.categoryLibrary,
+        bgColor: isDark
+            ? AppColors.categoryLibraryBgDark
+            : AppColors.categoryLibraryBgLight,
+      ),
+      (
+        icon: Icons.smart_toy_outlined,
+        label: 'Trợ lý học tập',
+        route: '/ai',
+        color: AppColors.categorySystem,
+        bgColor: isDark
+            ? AppColors.categorySystemBgDark
+            : AppColors.categorySystemBgLight,
+      ),
+    ];
+
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.l),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const _SectionHeading(
+            icon: Icons.grid_view_rounded,
+            title: 'Thao tác nhanh',
+          ),
+          Row(
+            children: [
+              for (var i = 0; i < actions.length; i++) ...[
+                if (i > 0) const SizedBox(width: AppSpacing.s),
+                Expanded(
+                  child: BouncingWidget(
+                    enableHaptic: true,
+                    onTap: () => context.go(actions[i].route),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: AppSpacing.m,
+                        horizontal: AppSpacing.xs,
+                      ),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surfaceContainerLowest,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: theme.colorScheme.outlineVariant.withValues(
+                            alpha: 0.5,
+                          ),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(
+                              alpha: isDark ? 0.2 : 0.03,
+                            ),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: actions[i].bgColor,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              actions[i].icon,
+                              color: actions[i].color,
+                              size: 22,
+                            ),
+                          ),
+                          const SizedBox(height: AppSpacing.s),
+                          Text(
+                            actions[i].label,
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _AsyncSection<T> extends StatelessWidget {
   const _AsyncSection({
     required this.title,
@@ -376,16 +504,43 @@ class _AcademicSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final progress = (summary.percentComplete / 100).clamp(0, 1).toDouble();
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.m),
+        padding: const EdgeInsets.all(AppSpacing.cardPadding),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              summary.semesterName,
-              style: Theme.of(context).textTheme.titleSmall,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  summary.semesterName,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primaryContainer.withValues(
+                      alpha: 0.6,
+                    ),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    '${summary.percentComplete.toStringAsFixed(0)}% hoàn thành',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.onPrimaryContainer,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: AppSpacing.m),
             GridView.count(
@@ -419,9 +574,24 @@ class _AcademicSummaryCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: AppSpacing.m),
-            LinearProgressIndicator(value: progress),
-            const SizedBox(height: AppSpacing.s),
-            Text('${summary.percentComplete.toStringAsFixed(0)}% chương trình'),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(999),
+              child: LinearProgressIndicator(
+                value: progress,
+                minHeight: 6,
+                backgroundColor: theme.colorScheme.surfaceContainerHighest,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                '${summary.percentComplete.toStringAsFixed(0)}% chương trình',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
           ],
         ),
       ),

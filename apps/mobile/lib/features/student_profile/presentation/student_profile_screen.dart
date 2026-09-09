@@ -149,6 +149,7 @@ class _ProfileForm extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final displayName = profile.fullName?.isNotEmpty == true
         ? profile.fullName!
         : loc.profileNotSet;
@@ -162,185 +163,373 @@ class _ProfileForm extends ConsumerWidget {
           AppSpacing.l,
         ),
         children: [
-          // Identity header: avatar initial + name/email so the screen reads
-          // as a profile instead of a bare form.
-          Row(
-            children: [
-              CircleAvatar(
-                radius: 28,
-                backgroundColor: theme.colorScheme.primaryContainer,
-                child: Text(
-                  displayName.characters.first.toUpperCase(),
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    color: theme.colorScheme.onPrimaryContainer,
-                  ),
-                ),
+          // ── Stitch Identity Hero Card ──────────────────────────────
+          Container(
+            padding: const EdgeInsets.all(AppSpacing.cardPadding),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surfaceContainerLowest,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
               ),
-              SizedBox(width: AppSpacing.m),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
                   children: [
-                    Text(displayName, style: theme.textTheme.titleMedium),
-                    Text(
-                      email ?? loc.profileNotSet,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
+                    Container(
+                      padding: const EdgeInsets.all(3),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: theme.colorScheme.primary.withValues(
+                            alpha: 0.4,
+                          ),
+                          width: 2,
+                        ),
+                      ),
+                      child: CircleAvatar(
+                        radius: 28,
+                        backgroundColor: theme.colorScheme.primaryContainer,
+                        child: Text(
+                          displayName.characters.first.toUpperCase(),
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            color: theme.colorScheme.onPrimaryContainer,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.m),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            displayName,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            email ?? loc.profileNotSet,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                          if (profile.studentCode != null &&
+                              profile.studentCode!.isNotEmpty) ...[
+                            const SizedBox(height: 6),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.secondaryContainer
+                                    .withValues(alpha: 0.7),
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                              child: Text(
+                                'MSSV: ${profile.studentCode!}',
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: theme.colorScheme.onSecondaryContainer,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                     ),
                   ],
                 ),
-              ),
-            ],
-          ),
-          SizedBox(height: AppSpacing.sectionGap),
-          TextFormField(
-            controller: fullNameController,
-            textInputAction: TextInputAction.next,
-            decoration: InputDecoration(labelText: loc.profileFullName),
-            enabled: !isSaving,
-            validator: (value) =>
-                _validateField(value, loc.profileFullNameRequired),
-          ),
-          SizedBox(height: AppSpacing.itemGap),
-          TextFormField(
-            controller: classNameController,
-            textInputAction: TextInputAction.done,
-            decoration: InputDecoration(labelText: loc.profileClassName),
-            enabled: !isSaving,
-            validator: (value) =>
-                _validateField(value, loc.profileClassNameRequired),
-          ),
-          SizedBox(height: AppSpacing.itemGap),
-          FilledButton.icon(
-            onPressed: isSaving ? null : onSave,
-            icon: isSaving
-                ? const SizedBox.square(
-                    dimension: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.save_outlined),
-            label: Text(loc.profileSave),
-          ),
-          SizedBox(height: AppSpacing.sectionGap),
-          const Divider(),
-          _ProfileDetail(
-            label: loc.profileStudentCode,
-            value: profile.studentCode,
-            loc: loc,
-          ),
-          _ProfileDetail(
-            label: loc.profileFaculty,
-            value: profile.faculty,
-            loc: loc,
-          ),
-          _ProfileDetail(
-            label: loc.profileMajor,
-            value: profile.major,
-            loc: loc,
-          ),
-          _ProfileDetail(
-            label: loc.profileGpa,
-            value: profile.gpa?.toStringAsFixed(2),
-            loc: loc,
-          ),
-          _ProfileDetail(
-            label: loc.profileCredits,
-            value: profile.credits?.toString(),
-            loc: loc,
-          ),
-          _ProfileDetail(
-            label: loc.profileConductScore,
-            value: profile.conductScore?.toStringAsFixed(2),
-            loc: loc,
-          ),
-          _ProfileDetail(label: loc.profileRole, value: profile.role, loc: loc),
-          const Divider(),
-          ListTile(
-            key: const Key('ai-settings-tile'),
-            contentPadding: EdgeInsets.zero,
-            leading: const Icon(
-              Icons.psychology_outlined,
-              color: AppColors.primary,
+                const SizedBox(height: AppSpacing.m),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: AppSpacing.s,
+                    horizontal: AppSpacing.m,
+                  ),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainerLow,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _QuickKpi(
+                        label: 'GPA',
+                        value: profile.gpa != null
+                            ? profile.gpa!.toStringAsFixed(2)
+                            : '--',
+                        color: AppColors.categoryAcademic,
+                      ),
+                      Container(
+                        height: 24,
+                        width: 1,
+                        color: theme.colorScheme.outlineVariant.withValues(
+                          alpha: 0.5,
+                        ),
+                      ),
+                      _QuickKpi(
+                        label: 'Tín chỉ',
+                        value: profile.credits != null
+                            ? '${profile.credits}'
+                            : '--',
+                        color: AppColors.categoryLibrary,
+                      ),
+                      Container(
+                        height: 24,
+                        width: 1,
+                        color: theme.colorScheme.outlineVariant.withValues(
+                          alpha: 0.5,
+                        ),
+                      ),
+                      _QuickKpi(
+                        label: 'Điểm rèn luyện',
+                        value: profile.conductScore != null
+                            ? profile.conductScore!.toStringAsFixed(0)
+                            : '--',
+                        color: AppColors.categorySystem,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            title: const Text('Cài đặt & Bộ nhớ AI'),
-            subtitle: const Text(
-              'Tùy chỉnh phong cách giải thích và quản lý bộ nhớ',
-            ),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.push('/ai/settings'),
-          ),
-          const Divider(),
-          const SizedBox(height: AppSpacing.s),
-          Text(
-            'Giao diện ứng dụng',
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.s),
-          SegmentedButton<ThemeMode>(
-            key: const Key('theme-mode-segmented-button'),
-            segments: const [
-              ButtonSegment(
-                value: ThemeMode.system,
-                icon: Icon(Icons.brightness_auto_outlined),
-                label: Text('Hệ thống'),
-              ),
-              ButtonSegment(
-                value: ThemeMode.light,
-                icon: Icon(Icons.light_mode_outlined),
-                label: Text('Sáng'),
-              ),
-              ButtonSegment(
-                value: ThemeMode.dark,
-                icon: Icon(Icons.dark_mode_outlined),
-                label: Text('Tối'),
-              ),
-            ],
-            selected: {ref.watch(appThemeModeProvider)},
-            onSelectionChanged: (selected) {
-              ref
-                  .read(appThemeModeProvider.notifier)
-                  .setThemeMode(selected.first);
-            },
           ),
           const SizedBox(height: AppSpacing.m),
-          Text(
-            'Ngôn ngữ / Language',
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.bold,
+
+          // ── Edit Info Card ─────────────────────────────────────────
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.cardPadding),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Chỉnh sửa thông tin',
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.m),
+                  TextFormField(
+                    controller: fullNameController,
+                    textInputAction: TextInputAction.next,
+                    decoration: InputDecoration(labelText: loc.profileFullName),
+                    enabled: !isSaving,
+                    validator: (value) =>
+                        _validateField(value, loc.profileFullNameRequired),
+                  ),
+                  const SizedBox(height: AppSpacing.itemGap),
+                  TextFormField(
+                    controller: classNameController,
+                    textInputAction: TextInputAction.done,
+                    decoration: InputDecoration(
+                      labelText: loc.profileClassName,
+                    ),
+                    enabled: !isSaving,
+                    validator: (value) =>
+                        _validateField(value, loc.profileClassNameRequired),
+                  ),
+                  const SizedBox(height: AppSpacing.m),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      onPressed: isSaving ? null : onSave,
+                      icon: isSaving
+                          ? const SizedBox.square(
+                              dimension: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.save_outlined),
+                      label: Text(loc.profileSave),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-          const SizedBox(height: AppSpacing.s),
-          SegmentedButton<String>(
-            key: const Key('language-segmented-button'),
-            segments: const [
-              ButtonSegment(
-                value: 'vi',
-                icon: Icon(Icons.language),
-                label: Text('Tiếng Việt'),
+          const SizedBox(height: AppSpacing.m),
+
+          // ── Academic Details Card ──────────────────────────────────
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.cardPadding),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Thông tin học vụ',
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.s),
+                  _ProfileDetail(
+                    label: loc.profileStudentCode,
+                    value: profile.studentCode,
+                    loc: loc,
+                  ),
+                  _ProfileDetail(
+                    label: loc.profileFaculty,
+                    value: profile.faculty,
+                    loc: loc,
+                  ),
+                  _ProfileDetail(
+                    label: loc.profileMajor,
+                    value: profile.major,
+                    loc: loc,
+                  ),
+                  _ProfileDetail(
+                    label: loc.profileGpa,
+                    value: profile.gpa?.toStringAsFixed(2),
+                    loc: loc,
+                  ),
+                  _ProfileDetail(
+                    label: loc.profileCredits,
+                    value: profile.credits?.toString(),
+                    loc: loc,
+                  ),
+                  _ProfileDetail(
+                    label: loc.profileConductScore,
+                    value: profile.conductScore?.toStringAsFixed(2),
+                    loc: loc,
+                  ),
+                  _ProfileDetail(
+                    label: loc.profileRole,
+                    value: profile.role,
+                    loc: loc,
+                  ),
+                ],
               ),
-              ButtonSegment(
-                value: 'en',
-                icon: Icon(Icons.translate),
-                label: Text('English'),
-              ),
-            ],
-            selected: {ref.watch(appLocaleProvider).languageCode},
-            onSelectionChanged: (selected) {
-              ref
-                  .read(appLocaleProvider.notifier)
-                  .setLocale(Locale(selected.first));
-            },
+            ),
           ),
-          SizedBox(height: AppSpacing.sectionGap),
-          if (canAccessPrivilegedArea)
+          const SizedBox(height: AppSpacing.m),
+
+          // ── Settings Card ──────────────────────────────────────────
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.cardPadding),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ListTile(
+                    key: const Key('ai-settings-tile'),
+                    contentPadding: EdgeInsets.zero,
+                    leading: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primaryContainer,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.psychology_outlined,
+                        color: theme.colorScheme.onPrimaryContainer,
+                        size: 20,
+                      ),
+                    ),
+                    title: const Text('Cài đặt & Bộ nhớ AI'),
+                    subtitle: const Text(
+                      'Tùy chỉnh phong cách giải thích và quản lý bộ nhớ',
+                    ),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => context.push('/ai/settings'),
+                  ),
+                  const Divider(),
+                  const SizedBox(height: AppSpacing.s),
+                  Text(
+                    'Giao diện ứng dụng',
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.s),
+                  SizedBox(
+                    width: double.infinity,
+                    child: SegmentedButton<ThemeMode>(
+                      key: const Key('theme-mode-segmented-button'),
+                      segments: const [
+                        ButtonSegment(
+                          value: ThemeMode.system,
+                          icon: Icon(Icons.brightness_auto_outlined),
+                          label: Text('Hệ thống'),
+                        ),
+                        ButtonSegment(
+                          value: ThemeMode.light,
+                          icon: Icon(Icons.light_mode_outlined),
+                          label: Text('Sáng'),
+                        ),
+                        ButtonSegment(
+                          value: ThemeMode.dark,
+                          icon: Icon(Icons.dark_mode_outlined),
+                          label: Text('Tối'),
+                        ),
+                      ],
+                      selected: {ref.watch(appThemeModeProvider)},
+                      onSelectionChanged: (selected) {
+                        ref
+                            .read(appThemeModeProvider.notifier)
+                            .setThemeMode(selected.first);
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.m),
+                  Text(
+                    'Ngôn ngữ / Language',
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.s),
+                  SizedBox(
+                    width: double.infinity,
+                    child: SegmentedButton<String>(
+                      key: const Key('language-segmented-button'),
+                      segments: const [
+                        ButtonSegment(
+                          value: 'vi',
+                          icon: Icon(Icons.language),
+                          label: Text('Tiếng Việt'),
+                        ),
+                        ButtonSegment(
+                          value: 'en',
+                          icon: Icon(Icons.translate),
+                          label: Text('English'),
+                        ),
+                      ],
+                      selected: {ref.watch(appLocaleProvider).languageCode},
+                      onSelectionChanged: (selected) {
+                        ref
+                            .read(appLocaleProvider.notifier)
+                            .setLocale(Locale(selected.first));
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.m),
+
+          if (canAccessPrivilegedArea) ...[
             OutlinedButton.icon(
               onPressed: onOpenPrivilegedArea,
               icon: const Icon(Icons.admin_panel_settings_outlined),
               label: Text(loc.profilePrivilegedArea),
             ),
+            const SizedBox(height: AppSpacing.s),
+          ],
           OutlinedButton.icon(
             onPressed: onSignOut,
             icon: const Icon(Icons.logout),
@@ -420,6 +609,42 @@ class _ProfileSkeleton extends StatelessWidget {
             child: AppShimmer(width: double.infinity, height: 24),
           ),
         ],
+      ],
+    );
+  }
+}
+
+class _QuickKpi extends StatelessWidget {
+  const _QuickKpi({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  final String label;
+  final String value;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          value,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
       ],
     );
   }

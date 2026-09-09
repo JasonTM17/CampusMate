@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_empty_state.dart';
 import '../../../core/widgets/app_shimmer.dart';
@@ -196,37 +197,111 @@ class _NotificationTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final unread = notification.readAt == null;
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final (iconColor, bgColor) = _colorsFor(notification.category, isDark);
+
     return BouncingWidget(
       onTap: () => _open(context, ref),
       enableHaptic: true,
       child: Card(
-        child: ListTile(
-          onTap: () => _open(context, ref),
-          leading: Badge(
-            isLabelVisible: unread,
-            smallSize: 9,
-            child: CircleAvatar(
-              backgroundColor: unread
-                  ? theme.colorScheme.primaryContainer
-                  : theme.colorScheme.surfaceContainerHighest,
-              child: Icon(
-                _iconFor(notification.category),
-                color: unread
-                    ? theme.colorScheme.onPrimaryContainer
-                    : theme.colorScheme.onSurfaceVariant,
+        margin: const EdgeInsets.only(bottom: AppSpacing.s),
+        color: unread && notification.category == 'exam'
+            ? (isDark
+                  ? AppColors.categoryExamBgDark.withValues(alpha: 0.25)
+                  : AppColors.categoryExamBgLight.withValues(alpha: 0.5))
+            : null,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(
+            color: unread
+                ? theme.colorScheme.primary.withValues(alpha: 0.3)
+                : theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.cardPadding),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: bgColor,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  _iconFor(notification.category),
+                  color: iconColor,
+                  size: 22,
+                ),
               ),
-            ),
+              const SizedBox(width: AppSpacing.m),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            notification.title,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: unread
+                                  ? FontWeight.bold
+                                  : FontWeight.w500,
+                              color: unread
+                                  ? theme.colorScheme.onSurface
+                                  : theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                        if (unread) ...[
+                          const SizedBox(width: AppSpacing.xs),
+                          Container(
+                            width: 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: theme.colorScheme.primary,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      notification.body,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: bgColor,
+                        borderRadius: BorderRadius.circular(999),
+                        border: Border.all(
+                          color: iconColor.withValues(alpha: 0.2),
+                        ),
+                      ),
+                      child: Text(
+                        _labelFor(notification.category),
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: iconColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-          title: Text(
-            notification.title,
-            style: unread
-                ? theme.textTheme.titleMedium
-                : theme.textTheme.titleMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-          ),
-          subtitle: Text(notification.body),
-          trailing: Text(_labelFor(notification.category)),
         ),
       ),
     );
@@ -271,6 +346,34 @@ String _labelFor(String category) => switch (category) {
   'course' => 'Môn học',
   'exam' => 'Lịch thi',
   _ => 'Khác',
+};
+
+(Color iconColor, Color bgColor) _colorsFor(
+  String category,
+  bool isDark,
+) => switch (category) {
+  'exam' => (
+    AppColors.categoryExam,
+    isDark ? AppColors.categoryExamBgDark : AppColors.categoryExamBgLight,
+  ),
+  'academic' || 'course' => (
+    AppColors.categoryAcademic,
+    isDark
+        ? AppColors.categoryAcademicBgDark
+        : AppColors.categoryAcademicBgLight,
+  ),
+  'library' => (
+    AppColors.categoryLibrary,
+    isDark ? AppColors.categoryLibraryBgDark : AppColors.categoryLibraryBgLight,
+  ),
+  'system' || 'ai' => (
+    AppColors.categorySystem,
+    isDark ? AppColors.categorySystemBgDark : AppColors.categorySystemBgLight,
+  ),
+  _ => (
+    isDark ? AppColors.neutral3 : AppColors.neutral6,
+    isDark ? AppColors.neutral8 : AppColors.neutral2,
+  ),
 };
 
 class _NotificationSkeleton extends StatelessWidget {

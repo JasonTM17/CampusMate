@@ -26,6 +26,7 @@ AGENTS.md
 .continue/
 .specstory/
 .prompt/
+.mcp.json
 
 # ------------------------------------------------------------------------------
 # 3. Secrets & Local Environment Credentials (NEVER COMMIT)
