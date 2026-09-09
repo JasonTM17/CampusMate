@@ -44,4 +44,12 @@ GitHub Packages/GHCR is reserved for ship-ready artifacts:
 - generated debug APKs only as CI artifacts, not package releases;
 - production mobile builds only after signing, store/distribution policy, and release gates are complete.
 
-Current status: GitHub About metadata is set. `latestRelease` is null and the latest-release REST endpoint returns 404, so no GitHub Release is published. No CampusMate package was found under this user's container, npm, or Maven package listings. That is intentional until the project reaches the release phase and has a package workflow.
+Current status:
+- **GitHub Packages (GHCR)**:
+  - `ghcr.io/jasontm17/campusmate-server:latest` (linked to `JasonTM17/CampusMate`)
+  - `ghcr.io/jasontm17/campusmate:latest` (linked to `JasonTM17/CampusMate`)
+  - Package listings: [https://github.com/users/JasonTM17/packages/container/package/campusmate-server](https://github.com/users/JasonTM17/packages/container/package/campusmate-server)
+- **Docker Hub**:
+  - `docker.io/nguyenson1710/campusmate-server:latest` & `1.0.0`
+  - `docker.io/nguyenson1710/campusmate:latest`
+  - Docker Hub listings: [https://hub.docker.com/r/nguyenson1710/campusmate-server](https://hub.docker.com/r/nguyenson1710/campusmate-server)
