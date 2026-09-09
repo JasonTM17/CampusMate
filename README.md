@@ -104,6 +104,8 @@ Các quy tắc dưới đây là bất biến (invariant) và được kiểm ch
 
 ## Tài liệu
 
+Toàn bộ tài liệu kỹ thuật được quản lý tập trung tại **[docs/README.md](docs/README.md)** theo chuẩn AgentKit (AK) workflow.
+
 **Kiến trúc & dữ liệu**
 
 | Tài liệu | Nội dung |
@@ -210,6 +212,7 @@ Credential PostgreSQL/Redis/JWT trong `server/config/passwords.yaml` và `server
 
 ## Đóng góp
 
+- Vui lòng xem hướng dẫn chi tiết tại **[CONTRIBUTING.md](CONTRIBUTING.md)**.
 - Mỗi feature/fix một nhánh, commit theo Conventional Commits, PR vào `main`.
 - Quality gates bắt buộc trước khi merge: `dart format` / `flutter analyze` / toàn bộ test ở [mục Kiểm thử](#kiểm-thử) phải xanh.
 - Quy ước nhánh chi tiết: [docs/git-workflow.md](docs/git-workflow.md). Chính sách phát hành (Releases/Packages): [docs/release-packages.md](docs/release-packages.md).
