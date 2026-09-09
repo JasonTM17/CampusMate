@@ -1,10 +1,18 @@
 # CampusMate
 
-**Study. Read. Grow.** — mobile app cho sinh viên đại học: quản lý học tập, thư viện sách điện tử online và trợ lý AI cá nhân hóa.
+**Study. Read. Grow.** — Ứng dụng di động dành cho sinh viên: quản lý học tập, thư viện sách điện tử và trợ lý AI cá nhân hóa, phát triển trên Flutter (frontend) và Serverpod (backend).
 
-> Đây KHÔNG phải ứng dụng chính thức của bất kỳ trường đại học nào. Không sử dụng logo, dữ liệu thật hay API của HCMUTE. Toàn bộ dữ liệu trong repo là **mock/seed data giả lập**, sách mẫu là **public-domain hoặc tự tạo** — chỉ phục vụ development/demo.
+> Đây không phải ứng dụng chính thức của bất kỳ trường đại học nào. Không sử dụng logo, dữ liệu thật hay API của HCMUTE. Toàn bộ dữ liệu trong repository là mock/seed data giả lập; sách mẫu là tài liệu public domain hoặc tự tạo, chỉ phục vụ mục đích development/demo.
 
-## Kiến trúc
+## Tổng quan
+
+- **Quản lý học tập** — thời khóa biểu, điểm số, lịch thi và tiến độ theo học kỳ; hoạt động offline-first nhờ cache Drift trên máy.
+- **Thư viện điện tử** — catalog sách, yêu thích, mượn/trả bản copy có kiểm soát (transaction + audit log) và trình đọc EPUB.
+- **Trợ lý AI cá nhân hóa** — chat có RAG trên ngữ cảnh học vụ, hạn mức tin nhắn theo ngày, bảo vệ prompt-injection ở server.
+- **Dashboard & thông báo** — lời chào, announcement, trung tâm chưa đọc cho từng sinh viên.
+- **Phân quyền 4 scopes** — RBAC kiểm chứng hoàn toàn ở server; client không bao giờ giữ secret hay tự quyết định quyền.
+
+## Kiến trúc hệ thống
 
 ```mermaid
 flowchart TB
@@ -65,146 +73,147 @@ erDiagram
     AUDIT_LOGS }o--|| BOOKS : records_policy_change
 ```
 
-- **apps/mobile** — Flutter + Material 3 + Riverpod + go_router + Drift offline pull-cache.
-- **server** — Serverpod 3.4.x (Dart), migrations, RBAC kiểm quyền ở server,
-  dashboard/notifications/library/lending derive user từ session.
-- **packages/campusmate_client** — generated client (không sửa tay; dùng `serverpod generate`).
-- **packages/campusmate_shared** — pure Dart domain logic dùng chung, ví dụ GPA calculation.
-- **docs/architecture.md** — Sơ đồ hệ thống, trust boundaries và runtime dataflow.
-- **docs/database.md** — ERD học vụ, lược đồ bảng và quy tắc toàn vẹn dữ liệu.
-- **docs/api.md** — Danh mục chi tiết các Serverpod API endpoints, parameters và DTOs.
-- **docs/authentication.md** — Cơ chế xác thực, token lifecycle và RBAC matrix 4 scopes.
-- **docs/ai-architecture.md** — Kiến trúc AI assistant, provider abstraction và streaming protocol.
-- **docs/rag.md** — Quy trình RAG, chunking, embedding, pgvector và DB-level authorization filter.
-- **docs/threat-model.md** — Phân tích STRIDE, mô hình bảo mật và kiểm chứng 11 rủi ro cốt lõi (§83).
-- **docs/offline-sync.md** — Kiến trúc offline pull-cache qua Drift SQLite và Last-Write-Wins progress sync.
-- **docs/testing.md** — Chiến lược kiểm thử tự động (Unit, Widget, Serverpod Integration, E2E journey).
-- **docs/deployment.md** — Hướng dẫn container hóa, Docker Compose, biến môi trường và migrations.
-- **docs/git-workflow.md** — Quy ước nhánh, Conventional Commits và pre-ship quality gates.
-- **docs/release-packages.md** — Chính sách GitHub Releases/GitHub Packages.
-- **docs/adr/** — Các quyết định kiến trúc quan trọng (ADR 001 - ADR 008).
+## Nguyên tắc kiến trúc
 
-Quy tắc cứng: mobile không bao giờ giữ AI key hay kết nối DB trực tiếp; mọi authorization kiểm tra ở SERVER; identity chỉ lấy từ session (không tin `userId` từ payload). Library detail trả DTO metadata/action theo `BookAccessPolicyService`; lending dùng server time, transaction + row lock, và partial unique index để bảo đảm một copy chỉ có một active loan. File URL/storage key không thuộc catalog/lending API.
+Các quy tắc dưới đây là bất biến (invariant) và được kiểm chứng ở tầng server:
 
-## GitHub repository surface
+1. **Authorization tập trung ở server.** Mọi quyết định phân quyền được thực thi tại backend; client không bao giờ là nơi chốt quyền truy cập.
+2. **Identity chỉ lấy từ session.** Server không tin `userId` hay bất kỳ trường định danh nào gửi lên từ payload.
+3. **Mobile không giữ secret.** AI key (`AI_API_KEY`) và kết nối trực tiếp cơ sở dữ liệu chỉ tồn tại ở phía server; client chỉ nhận URL server qua `--dart-define`.
+4. **Metadata và hành động do server quyết.** Chi tiết sách trả về theo `BookAccessPolicyService` (DTO metadata/action); cho mượn dùng server time, transaction kèm row lock và partial unique index để bảo đảm một copy chỉ có một active loan đang hoạt động.
+5. **Không lộ chi tiết lưu trữ.** File URL và storage key không xuất hiện trong catalog API hay lending API.
 
-Suggested About:
+## Cấu trúc repository
 
 ```text
-CampusMate — Flutter + Serverpod student management, e-library, offline academic dashboard, and personalized AI assistant.
+.
+├── apps/
+│   └── mobile/                  # Flutter app — Material 3, Riverpod, go_router, Drift
+├── packages/
+│   ├── campusmate_client/       # Serverpod client (generated — không sửa tay)
+│   └── campusmate_shared/       # Pure Dart domain logic dùng chung (vd: tính GPA)
+├── server/                      # Serverpod 3.4.x — endpoints, migrations, RBAC, seed
+│   ├── bin/                     # main.dart (server), gateway_server.dart (admin)
+│   ├── config/                  # development.yaml, passwords.yaml, docker-compose.yaml
+│   ├── lib/                     # Domain code: future/ + current/
+│   ├── migrations/              # Migration history
+│   └── test/                    # Unit + integration tests
+├── docs/                        # Tài liệu kỹ thuật (xem bảng Tài liệu)
+└── pubspec.yaml                 # Dart workspace root (server + packages)
 ```
 
-Suggested topics: `flutter`, `dart`, `serverpod`, `postgresql`, `pgvector`, `riverpod`, `drift`, `student-management`, `e-library`, `ai-assistant`.
+## Tài liệu
 
-Release/package policy:
+**Kiến trúc & dữ liệu**
 
-- **GitHub Releases**: publish only tagged, evidence-backed builds after the matching local gates and GitHub Actions pass. Attach release notes from the plan ledger, not ad-hoc claims.
-- **GitHub Packages**: use GitHub Packages/GHCR only for ship-ready server images or generated deliverables once a package workflow exists. Current CI builds a debug APK for verification, but does not publish packages yet.
-- **Current state**: GitHub About description/topics have been set and verified for `JasonTM17/CampusMate`; no production release/package is claimed until phases, CI, review, and live evidence are complete.
+| Tài liệu | Nội dung |
+|---|---|
+| [docs/architecture.md](docs/architecture.md) | Sơ đồ hệ thống, trust boundaries, runtime dataflow |
+| [docs/database.md](docs/database.md) | ERD học vụ, lược đồ bảng, quy tắc toàn vẹn dữ liệu |
+| [docs/api.md](docs/api.md) | Danh mục Serverpod endpoints, parameters, DTOs |
+| [docs/offline-sync.md](docs/offline-sync.md) | Offline pull-cache qua Drift SQLite, Last-Write-Wins progress sync |
+| [docs/ai-architecture.md](docs/ai-architecture.md) | Kiến trúc AI assistant, provider abstraction, streaming protocol |
+| [docs/rag.md](docs/rag.md) | RAG: chunking, embedding, pgvector, DB-level authorization filter |
 
-See [docs/release-packages.md](docs/release-packages.md) for the release and package contract.
+**Bảo mật**
 
-## Prerequisites
+| Tài liệu | Nội dung |
+|---|---|
+| [docs/authentication.md](docs/authentication.md) | Cơ chế xác thực, token lifecycle, RBAC matrix 4 scopes |
+| [docs/threat-model.md](docs/threat-model.md) | Phân tích STRIDE, mô hình bảo mật, kiểm chứng rủi ro cốt lõi |
 
-- Flutter stable **3.44.x** + Dart 3.12 (khớp `sdk: ^3.12.0` của app).
-- Docker Desktop (Linux engine) đang chạy.
-- Windows: bật **Developer Mode** (`start ms-settings:developers`) — bắt buộc cho plugin symlinks khi build Windows desktop (Flutter yêu cầu). Mobile app hiện target Android/iOS; platform `windows/` sẽ thêm lại bằng `flutter create --platforms windows .` khi Dev Mode bật.
-- Serverpod CLI (pin 3.4.x):
-  ```bash
-  dart pub global activate serverpod_cli
-  serverpod --version   # kỳ vọng 3.4.x — KHÔNG dùng 4.0.0-rc
-  ```
-  Nếu `serverpod` không có trên PATH, executable nằm ở
-  `%LOCALAPPDATA%\Pub\Cache\bin\serverpod.bat`.
+**Phát triển & vận hành**
 
-## Quickstart
+| Tài liệu | Nội dung |
+|---|---|
+| [docs/testing.md](docs/testing.md) | Chiến lược kiểm thử: Unit, Widget, Integration, E2E journey |
+| [docs/deployment.md](docs/deployment.md) | Container hóa, Docker Compose, biến môi trường, migrations |
+| [docs/git-workflow.md](docs/git-workflow.md) | Quy ước nhánh, Conventional Commits, quality gates |
+| [docs/release-packages.md](docs/release-packages.md) | Chính sách GitHub Releases / GitHub Packages |
+| [docs/adr/](docs/adr/) | Architecture Decision Records (ADR-001 đến ADR-008) |
+
+## Yêu cầu kỹ thuật
+
+| Thành phần | Phiên bản / điều kiện |
+|---|---|
+| Flutter | stable 3.44.x (khớp Dart SDK `^3.12.0` của app) |
+| Docker Desktop | đang chạy, Linux engine |
+| Serverpod CLI | pin 3.4.x (`dart pub global activate serverpod_cli`; không dùng 4.0.0-rc) |
+| Windows | bật Developer Mode (`start ms-settings:developers`) — bắt buộc cho plugin symlinks khi build desktop |
+
+Target di động hiện tại là Android/iOS. Platform `windows/` được thêm lại bằng `flutter create --platforms windows .` khi cần build desktop.
+
+## Cài đặt và khởi động
 
 ```bash
-# 1. Hạ tầng dev (Postgres+pgvector, Redis, MinIO)
+# 1. Hạ tầng phát triển (PostgreSQL + pgvector, Redis, MinIO)
 cd server
 docker compose up -d
-docker compose ps        # cả 5 service phải healthy
+docker compose ps        # toàn bộ service phải ở trạng thái healthy
 
-# 2. Backend (workspace root)
+# 2. Backend (từ repository root)
 cd ..
 dart pub get
 cd server
 dart run bin/main.dart --apply-migrations   # giữ terminal này chạy
 
-# 2b. Seed demo accounts (chạy ở terminal riêng; dừng backend trước để tránh
-#     trùng port, rồi khởi động lại backend sau khi seed xong)
-$env:CAMPUSMATE_SEED_PASSWORD = '<mật-khẩu-local-it-nhất-12-ký-tự>'
+# 2b. Seed tài khoản demo (terminal riêng; dừng backend trước để tránh
+#     trùng port, khởi động lại backend sau khi seed xong)
+$env:CAMPUSMATE_SEED_PASSWORD = '<mật-khẩu-local, tối thiểu 12 ký tự>'
 dart run bin/seed.dart --apply-migrations
 
-# Redis hiện đang tắt trong config (redis.enabled: false) — container vẫn chạy
-# sẵn để bật cache ở phase sau mà không cần đổi hạ tầng.
-
-# 3. Mobile app
+# 3. Ứng dụng di động
 cd ../apps/mobile
 flutter pub get
-flutter run -d <device>   # Android emulator sẽ tự dùng 10.0.2.2 nếu chưa có dart-define;
-                          # Android máy thật nên truyền CAMPUSMATE_SERVER_URL riêng
+flutter run -d <device>
 ```
 
-## Tests
+Ghi chú:
+
+- Seed tạo ba tài khoản local — `student001@`, `librarian@`, `admin@campusmate.local` — với password đặt qua `CAMPUSMATE_SEED_PASSWORD`. Chỉ dùng cho development; script seed idempotent, chạy lại được để cập nhật mà không tạo bản ghi trùng.
+- Android emulator tự dùng `10.0.2.2` khi chưa truyền `--dart-define`; Android máy thật nên truyền `CAMPUSMATE_SERVER_URL` riêng trỏ tới địa chỉ LAN của server.
+- Redis đang tắt trong config (`redis.enabled: false`); container vẫn chạy sẵn để bật cache ở phase sau mà không đổi hạ tầng.
+
+## Kiểm thử
 
 ```bash
-# Server unit/offline tests (không cần Docker)
+# Server — unit/offline tests (không cần Docker)
 cd server && dart test --exclude-tags integration
 
-# Server full tests (cần docker compose test services đang chạy)
+# Server — full tests (cần Docker test services đang chạy)
 cd server && dart test
 
-# Mobile
+# Mobile — phân tích, unit/widget test, build debug APK
 cd apps/mobile && flutter analyze && flutter test
 cd apps/mobile && flutter build apk --debug
 
-# Spike gọi server thật (tùy chọn, cần server đang chạy)
+# Spike gọi server thật (tùy chọn, cần backend đang chạy)
 CAMPUSMATE_LIVE_SPIKE=1 flutter test test/client_spike_test.dart
 ```
 
-## CI
+CI/CD: GitHub Actions (`.github/workflows/mobile.yml` và `server.yml`) chạy đúng các bước format/analyze/test ở trên — Flutter 3.44 cho mobile, kèm containers PostgreSQL + pgvector và Redis cho server — trên mỗi push/PR vào `main`. Kết quả CI được đọc từ GitHub Actions, không suy ra từ kiểm tra local.
 
-GitHub Actions: `.github/workflows/mobile.yml` (format/analyze/test Flutter 3.44 + debug APK) và `.github/workflows/server.yml` (workspace pub get, format, analyze, `dart test` với service containers Postgres+pgvector/Redis). CI chạy trên push/PR vào `main`; kết quả CI phải được đọc từ GitHub Actions, không suy ra từ local checks.
+## Biến môi trường và AI runtime
 
-## Demo accounts (phase 02+)
+Khai báo biến bắt buộc (không kèm giá trị secret) trong [.env.example](.env.example).
 
-Tài khoản seed chỉ dành cho **local development** (tạo bởi seed script, không dùng production):
+| Biến | Mô tả |
+|---|---|
+| `AI_PROVIDER` | `fake` (mặc định local) / `openai-compatible` / `glm`. `openai_compatible` được chấp nhận như alias tương thích. |
+| `AI_BASE_URL`, `AI_CHAT_MODEL` | Bắt buộc khi dùng provider thật; thêm `AI_API_KEY` nếu gateway yêu cầu khóa. |
+| `AI_DAILY_MESSAGE_QUOTA` | Hạn mức tin nhắn/ngày/người dùng, server-enforced, mặc định `50`. |
+| `CAMPUSMATE_SERVER_URL` | URL backend, truyền cho app qua `--dart-define`. |
 
-```text
-student001@campusmate.local   — sinh viên demo
-librarian@campusmate.local    — thủ thư
-admin@campusmate.local        — quản trị
-```
+Bảo vệ prompt: server luôn chèn system prompt cố định và loại bỏ mọi `system` row trong history của client để giảm nguy cơ prompt-injection.
 
-`CAMPUSMATE_SEED_PASSWORD` chỉ tồn tại trong môi trường local và không được
-commit vào repo, CI, staging hoặc production. Script seed có thể chạy lại để
-cập nhật password/profile mà không tạo bản ghi trùng.
+Credential PostgreSQL/Redis/JWT trong `server/config/passwords.yaml` và `server/docker-compose.yaml` là dev credential do template sinh, chỉ dùng machine-local; production nhận secret qua biến môi trường.
 
-## Environment variables
+## Đóng góp
 
-Xem `.env.example` (tên biến bắt buộc, không chứa secret). AI key chỉ nằm ở server (`AI_API_KEY`), mobile nhận URL qua `--dart-define=CAMPUSMATE_SERVER_URL`.
+- Mỗi feature/fix một nhánh, commit theo Conventional Commits, PR vào `main`.
+- Quality gates bắt buộc trước khi merge: `dart format` / `flutter analyze` / toàn bộ test ở [mục Kiểm thử](#kiểm-thử) phải xanh.
+- Quy ước nhánh chi tiết: [docs/git-workflow.md](docs/git-workflow.md). Chính sách phát hành (Releases/Packages): [docs/release-packages.md](docs/release-packages.md).
 
-## AI runtime
+## License
 
-- `AI_PROVIDER=fake` là mặc định cho local dev; đổi sang `openai-compatible` hoặc `glm` khi có `AI_BASE_URL`, `AI_CHAT_MODEL`, và khóa provider nếu gateway yêu cầu `AI_API_KEY`. `openai_compatible` vẫn được chấp nhận như alias tương thích.
-- `AI_DAILY_MESSAGE_QUOTA` là hạn mức tin nhắn/ngày/người dùng, server-enforced, mặc định `50`.
-- Server luôn chèn system prompt cố định và bỏ qua mọi `system` row nằm trong history để giảm prompt-injection.
-- `server/test/integration/ai_endpoint_test.dart` cần Docker engine đang chạy; nếu không có Docker, gate này là `NOT_RUN`.
-
-## Cảnh báo bảo mật dev
-
-Password Postgres/Redis/JWT trong `server/config/passwords.yaml`, `server/docker-compose.yaml` là **credential dev do template sinh, machine-local** — không bao giờ tái sử dụng cho staging/production (production inject qua environment).
-
-## Troubleshooting
-
-- `Failed to bind socket, port 8080` → server cũ còn chạy: `netstat -ano | findstr :8080` → `taskkill /F /PID <pid>`.
-- **Cổng 8080 bị dự án Docker khác chiếm** (vd một compose stack `infrastructure` chạy sẵn): đổi `port` trong `server/config/development.yaml` sang cổng khác (vd 8083), rồi truyền URL tương ứng cho app — `flutter run --dart-define=CAMPUSMATE_SERVER_URL=http://localhost:8083/` (Android emulator: `http://10.0.2.2:8083/`). Không commit phần đổi cổng này — nó là cấu hình machine-local.
-- App trắng/không gọi được server khi `flutter run` → kiểm tra app đang trỏ tới đâu: mặc định không có `--dart-define` là `localhost:8080` (Android emulator `10.0.2.2:8080`); đảm bảo backend đang chạy đúng cổng đó (`curl http://localhost:<port>/` phải trả HTTP bất kỳ, không timeout).
-- Docker daemon down sau khi máy sleep → mở Docker Desktop, chờ engine lên, `docker compose up -d` lại trong `server/`.
-- `flutter pub get` báo Developer Mode trên Windows → bật Dev Mode hoặc xóa platform `windows/` (chỉ build Android/iOS).
-- Page/server lỗi 503 khi GET root `/` trên port 8080 là hành vi bình thường (protocol endpoint); test thật bằng client call (spike test).
-
-## Roadmap
-
-Xem `plans/260830-1629-campusmate-student-management-e-library-ai/` — 12 phase, mỗi phase có exit criteria + verification commands.
+[MIT](LICENSE)
