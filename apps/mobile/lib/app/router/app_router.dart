@@ -70,11 +70,19 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/notifications',
-        builder: (context, state) => const NotificationScreen(),
+        pageBuilder: (context, state) => _buildPageWithTransition(
+          context: context,
+          state: state,
+          child: const NotificationScreen(),
+        ),
       ),
       GoRoute(
         path: '/ai/settings',
-        builder: (context, state) => const AiSettingsScreen(),
+        pageBuilder: (context, state) => _buildPageWithTransition(
+          context: context,
+          state: state,
+          child: const AiSettingsScreen(),
+        ),
       ),
       GoRoute(
         path: '/admin',
@@ -82,7 +90,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           final role = authStateNotifier.value.user?.role;
           return role != null && canAccessPrivilegedArea(role) ? null : '/home';
         },
-        builder: (context, state) => const AdminDashboardScreen(),
+        pageBuilder: (context, state) => _buildPageWithTransition(
+          context: context,
+          state: state,
+          child: const AdminDashboardScreen(),
+        ),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
@@ -104,16 +116,25 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 routes: [
                   GoRoute(
                     path: 'exams/:examId',
-                    builder: (context, state) {
+                    pageBuilder: (context, state) {
                       final examId = int.tryParse(
                         state.pathParameters['examId'] ?? '',
                       );
                       if (examId == null) {
-                        return const _InvalidDeepLinkScreen(
-                          message: 'Mã lịch thi không hợp lệ hoặc đã kết thúc.',
+                        return _buildPageWithTransition(
+                          context: context,
+                          state: state,
+                          child: const _InvalidDeepLinkScreen(
+                            message:
+                                'Mã lịch thi không hợp lệ hoặc đã kết thúc.',
+                          ),
                         );
                       }
-                      return ExamDetailScreen(examId: examId);
+                      return _buildPageWithTransition(
+                        context: context,
+                        state: state,
+                        child: ExamDetailScreen(examId: examId),
+                      );
                     },
                   ),
                 ],
@@ -128,31 +149,49 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 routes: [
                   GoRoute(
                     path: 'loans',
-                    builder: (context, state) => const MyLoansScreen(),
+                    pageBuilder: (context, state) => _buildPageWithTransition(
+                      context: context,
+                      state: state,
+                      child: const MyLoansScreen(),
+                    ),
                   ),
                   GoRoute(
                     path: 'books/:bookId',
-                    builder: (context, state) {
+                    pageBuilder: (context, state) {
                       final bookId = int.tryParse(
                         state.pathParameters['bookId'] ?? '',
                       );
                       if (bookId == null) {
-                        return const _InvalidDeepLinkScreen(
-                          message: 'Mã sách không hợp lệ hoặc tài liệu không tồn tại.',
+                        return _buildPageWithTransition(
+                          context: context,
+                          state: state,
+                          child: const _InvalidDeepLinkScreen(
+                            message:
+                                'Mã sách không hợp lệ hoặc tài liệu không tồn tại.',
+                          ),
                         );
                       }
-                      return BookDetailScreen(bookId: bookId);
+                      return _buildPageWithTransition(
+                        context: context,
+                        state: state,
+                        child: BookDetailScreen(bookId: bookId),
+                      );
                     },
                     routes: [
                       GoRoute(
                         path: 'read',
-                        builder: (context, state) {
+                        pageBuilder: (context, state) {
                           final bookId = int.tryParse(
                             state.pathParameters['bookId'] ?? '',
                           );
                           if (bookId == null) {
-                            return const _InvalidDeepLinkScreen(
-                              message: 'Không thể mở trình đọc với mã sách này.',
+                            return _buildPageWithTransition(
+                              context: context,
+                              state: state,
+                              child: const _InvalidDeepLinkScreen(
+                                message:
+                                    'Không thể mở trình đọc với mã sách này.',
+                              ),
                             );
                           }
                           final format =
@@ -160,10 +199,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                           final title =
                               state.uri.queryParameters['title'] ??
                               'Tài liệu học tập';
-                          return ReaderScreen(
-                            bookId: bookId,
-                            format: format,
-                            title: title,
+                          return _buildPageWithTransition(
+                            context: context,
+                            state: state,
+                            child: ReaderScreen(
+                              bookId: bookId,
+                              format: format,
+                              title: title,
+                            ),
                           );
                         },
                       ),
@@ -258,4 +301,32 @@ class _InvalidDeepLinkScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+Page<dynamic> _buildPageWithTransition({
+  required BuildContext context,
+  required GoRouterState state,
+  required Widget child,
+}) {
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    child: child,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      final curvedAnimation = CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeOutCubic,
+        reverseCurve: Curves.easeInCubic,
+      );
+      return FadeTransition(
+        opacity: curvedAnimation,
+        child: SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0.04, 0),
+            end: Offset.zero,
+          ).animate(curvedAnimation),
+          child: child,
+        ),
+      );
+    },
+  );
 }

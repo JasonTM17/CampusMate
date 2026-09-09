@@ -45,7 +45,7 @@ class AppSearchBar extends StatelessWidget {
             );
           },
         ),
-        border: const OutlineInputBorder(borderRadius: AppRadius.sRadius),
+        border: const OutlineInputBorder(borderRadius: AppRadius.mRadius),
       ),
     );
   }

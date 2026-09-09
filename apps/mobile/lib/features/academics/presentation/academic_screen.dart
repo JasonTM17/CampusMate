@@ -1,11 +1,14 @@
 import 'package:campusmate_client/campusmate_client.dart';
 import 'package:campusmate_shared/campusmate_shared.dart' show CampusClock;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_empty_state.dart';
+import '../../../core/widgets/app_shimmer.dart';
+import '../../../core/widgets/bouncing_widget.dart';
 import '../application/academic_controller.dart';
 import '../domain/academic_repository.dart';
 
@@ -88,9 +91,15 @@ class _AcademicScreenState extends ConsumerState<AcademicScreen> {
     );
   }
 
-  Future<void> _loadSelection() => ref
-      .read(academicControllerProvider.notifier)
-      .loadFor(weekStart: _selectedWeekStart, semesterId: _selectedSemesterId);
+  Future<void> _loadSelection() {
+    HapticFeedback.lightImpact();
+    return ref
+        .read(academicControllerProvider.notifier)
+        .loadFor(
+          weekStart: _selectedWeekStart,
+          semesterId: _selectedSemesterId,
+        );
+  }
 
   Future<void> _moveWeek(int delta) async {
     setState(() {
@@ -477,24 +486,33 @@ class _CourseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Card(
-      child: ListTile(
-        onTap: onTap,
-        leading: CircleAvatar(child: Text(course.courseCode.characters.first)),
-        title: Text('${course.courseCode} · ${course.title}'),
-        subtitle: Text(
-          '${course.lecturerName} · ${course.credits} tín chỉ · ${course.section}',
-        ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              course.finalScore?.toStringAsFixed(1) ?? '--',
-              style: theme.textTheme.titleMedium,
-            ),
-            Text(course.letter ?? 'Đang học', style: theme.textTheme.bodySmall),
-          ],
+    return BouncingWidget(
+      onTap: onTap,
+      enableHaptic: true,
+      child: Card(
+        child: ListTile(
+          onTap: onTap,
+          leading: CircleAvatar(
+            child: Text(course.courseCode.characters.first),
+          ),
+          title: Text('${course.courseCode} · ${course.title}'),
+          subtitle: Text(
+            '${course.lecturerName} · ${course.credits} tín chỉ · ${course.section}',
+          ),
+          trailing: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                course.finalScore?.toStringAsFixed(1) ?? '--',
+                style: theme.textTheme.titleMedium,
+              ),
+              Text(
+                course.letter ?? 'Đang học',
+                style: theme.textTheme.bodySmall,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -510,20 +528,23 @@ class _TimetableCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    return Card(
-      color: entry.isCurrent ? colorScheme.primaryContainer : null,
-      child: ListTile(
-        leading: const Icon(Icons.schedule),
-        title: Text('${_weekdayText(entry.weekday)} · ${entry.courseCode}'),
-        subtitle: Text(
-          '${_minuteText(entry.startMinute)}-${_minuteText(entry.endMinute)} · ${entry.room} · ${entry.campus}',
-        ),
-        trailing: Wrap(
-          spacing: AppSpacing.xs,
-          children: [
-            if (entry.isCurrent) const _SmallChip(label: 'Đang học'),
-            if (hasConflict) const _SmallChip(label: 'Trùng lịch'),
-          ],
+    return BouncingWidget(
+      enableHaptic: true,
+      child: Card(
+        color: entry.isCurrent ? colorScheme.primaryContainer : null,
+        child: ListTile(
+          leading: const Icon(Icons.schedule),
+          title: Text('${_weekdayText(entry.weekday)} · ${entry.courseCode}'),
+          subtitle: Text(
+            '${_minuteText(entry.startMinute)}-${_minuteText(entry.endMinute)} · ${entry.room} · ${entry.campus}',
+          ),
+          trailing: Wrap(
+            spacing: AppSpacing.xs,
+            children: [
+              if (entry.isCurrent) const _SmallChip(label: 'Đang học'),
+              if (hasConflict) const _SmallChip(label: 'Trùng lịch'),
+            ],
+          ),
         ),
       ),
     );
@@ -537,14 +558,19 @@ class _ExamCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        leading: const Icon(Icons.assignment_outlined),
-        title: Text('${exam.courseCode} · ${exam.examType}'),
-        subtitle: Text(
-          '${_dateText(exam.startsAt)} · ${_minuteText(CampusClock.campusMinuteOfDay(exam.startsAt))} · ${exam.room}',
+    return BouncingWidget(
+      onTap: () => context.go('/academic/exams/${exam.examId}'),
+      enableHaptic: true,
+      child: Card(
+        child: ListTile(
+          onTap: () => context.go('/academic/exams/${exam.examId}'),
+          leading: const Icon(Icons.assignment_outlined),
+          title: Text('${exam.courseCode} · ${exam.examType}'),
+          subtitle: Text(
+            '${_dateText(exam.startsAt)} · ${_minuteText(CampusClock.campusMinuteOfDay(exam.startsAt))} · ${exam.room}',
+          ),
+          trailing: Text('${exam.daysUntil} ngày'),
         ),
-        trailing: Text('${exam.daysUntil} ngày'),
       ),
     );
   }
@@ -624,10 +650,36 @@ class _AcademicSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(AppSpacing.cardPadding),
-      itemCount: 5,
-      itemBuilder: (context, index) => const Card(child: SizedBox(height: 86)),
+    return ListView(
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.cardPadding,
+        AppSpacing.m,
+        AppSpacing.cardPadding,
+        AppSpacing.xl,
+      ),
+      children: [
+        GridView.count(
+          crossAxisCount: 2,
+          mainAxisSpacing: AppSpacing.s,
+          crossAxisSpacing: AppSpacing.s,
+          childAspectRatio: 2.1,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          children: List.generate(
+            4,
+            (_) => const AppShimmer(width: double.infinity, height: 80),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.l),
+        const AppShimmer(width: 160, height: 24),
+        const SizedBox(height: AppSpacing.s),
+        for (var i = 0; i < 3; i++)
+          const Padding(
+            padding: EdgeInsets.only(bottom: AppSpacing.s),
+            child: AppShimmer(width: double.infinity, height: 86),
+          ),
+      ],
     );
   }
 }
@@ -711,9 +763,9 @@ class _CourseDetailSheet extends ConsumerWidget {
             const _SectionHeading('Liên kết học tập & AI'),
             Card(
               elevation: 0,
-              color: Theme.of(context).colorScheme.primaryContainer.withValues(
-                alpha: 0.35,
-              ),
+              color: Theme.of(
+                context,
+              ).colorScheme.primaryContainer.withValues(alpha: 0.35),
               child: ListTile(
                 leading: Icon(
                   Icons.auto_awesome,

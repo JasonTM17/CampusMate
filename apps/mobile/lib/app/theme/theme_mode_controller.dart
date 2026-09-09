@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Manages the application-wide theme mode (System, Light, Dark).
-final appThemeModeProvider =
-    NotifierProvider<ThemeModeNotifier, ThemeMode>(ThemeModeNotifier.new);
+final appThemeModeProvider = NotifierProvider<ThemeModeNotifier, ThemeMode>(
+  ThemeModeNotifier.new,
+);
 
 class ThemeModeNotifier extends Notifier<ThemeMode> {
   @override
@@ -15,8 +16,9 @@ class ThemeModeNotifier extends Notifier<ThemeMode> {
 }
 
 /// Manages the application-wide locale (defaults to Vietnamese 'vi').
-final appLocaleProvider =
-    NotifierProvider<LocaleNotifier, Locale>(LocaleNotifier.new);
+final appLocaleProvider = NotifierProvider<LocaleNotifier, Locale>(
+  LocaleNotifier.new,
+);
 
 class LocaleNotifier extends Notifier<Locale> {
   @override

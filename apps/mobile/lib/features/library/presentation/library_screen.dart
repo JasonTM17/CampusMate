@@ -2,13 +2,15 @@ import 'dart:async';
 
 import 'package:campusmate_client/campusmate_client.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../app/theme/app_radius.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_empty_state.dart';
 import '../../../core/widgets/app_search_bar.dart';
+import '../../../core/widgets/app_shimmer.dart';
+import '../../../core/widgets/bouncing_widget.dart';
 import '../application/library_controller.dart';
 import '../domain/library_repository.dart';
 import 'book_cover.dart';
@@ -77,7 +79,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
         ],
       ),
       body: state.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const _LibrarySkeleton(),
         error: (error, stackTrace) => AppEmptyState(
           icon: Icons.cloud_off_outlined,
           title: 'Không tải được thư viện',
@@ -87,8 +89,10 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
               ref.read(libraryControllerProvider.notifier).refresh(),
         ),
         data: (data) => RefreshIndicator(
-          onRefresh: () =>
-              ref.read(libraryControllerProvider.notifier).refresh(),
+          onRefresh: () async {
+            unawaited(HapticFeedback.lightImpact());
+            await ref.read(libraryControllerProvider.notifier).refresh();
+          },
           child: ListView(
             key: const Key('library-scroll-view'),
             controller: _scrollController,
@@ -127,11 +131,13 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                   icon: Icons.manage_search_outlined,
                   title: 'Không tìm thấy tài liệu',
                   message: 'Thử đổi từ khóa hoặc bỏ bớt bộ lọc.',
-                  actionLabel: (data.filters.activeCount > 0 ||
+                  actionLabel:
+                      (data.filters.activeCount > 0 ||
                           _queryController.text.isNotEmpty)
                       ? 'Đặt lại tìm kiếm'
                       : null,
-                  onAction: (data.filters.activeCount > 0 ||
+                  onAction:
+                      (data.filters.activeCount > 0 ||
                           _queryController.text.isNotEmpty)
                       ? () {
                           _queryController.clear();
@@ -434,10 +440,11 @@ class _ExploreBookCard extends ConsumerWidget {
     final theme = Theme.of(context);
     return SizedBox(
       width: 148,
-      child: Card(
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: () => context.push('/library/books/${book.id}'),
+      child: BouncingWidget(
+        onTap: () => context.push('/library/books/${book.id}'),
+        enableHaptic: true,
+        child: Card(
+          clipBehavior: Clip.antiAlias,
           child: Padding(
             padding: const EdgeInsets.all(AppSpacing.s),
             child: Column(
@@ -507,11 +514,11 @@ class _BookSummaryTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    return Card(
-      margin: const EdgeInsets.only(bottom: AppSpacing.s),
-      child: InkWell(
-        borderRadius: AppRadius.cardRadius,
-        onTap: () => context.push('/library/books/${book.id}'),
+    return BouncingWidget(
+      onTap: () => context.push('/library/books/${book.id}'),
+      enableHaptic: true,
+      child: Card(
+        margin: const EdgeInsets.only(bottom: AppSpacing.s),
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.s),
           child: Row(
@@ -561,6 +568,7 @@ class _BookSummaryTile extends ConsumerWidget {
               IconButton(
                 tooltip: book.isFavorite ? 'Bỏ yêu thích' : 'Yêu thích',
                 onPressed: () async {
+                  unawaited(HapticFeedback.lightImpact());
                   final status = await ref
                       .read(libraryRepositoryProvider)
                       .toggleFavorite(bookId: book.id);
@@ -638,3 +646,46 @@ String _languageLabel(String language) => switch (language.toLowerCase()) {
   'en' => 'English',
   _ => language.toUpperCase(),
 };
+
+class _LibrarySkeleton extends StatelessWidget {
+  const _LibrarySkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.cardPadding,
+        AppSpacing.m,
+        AppSpacing.cardPadding,
+        AppSpacing.xl,
+      ),
+      children: [
+        const AppShimmer(width: double.infinity, height: 52),
+        const SizedBox(height: AppSpacing.s),
+        const AppShimmer(width: 120, height: 40),
+        const SizedBox(height: AppSpacing.l),
+        const AppShimmer(width: 180, height: 24),
+        const SizedBox(height: AppSpacing.s),
+        SizedBox(
+          height: 240,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: 3,
+            separatorBuilder: (_, _) => const SizedBox(width: AppSpacing.s),
+            itemBuilder: (_, _) => const AppShimmer(width: 148, height: 240),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.l),
+        const AppShimmer(width: 140, height: 24),
+        const SizedBox(height: AppSpacing.s),
+        for (var i = 0; i < 3; i++)
+          const Padding(
+            padding: EdgeInsets.only(bottom: AppSpacing.s),
+            child: AppShimmer(width: double.infinity, height: 110),
+          ),
+      ],
+    );
+  }
+}

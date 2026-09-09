@@ -2,11 +2,14 @@ import 'dart:async';
 
 import 'package:campusmate_client/campusmate_client.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_empty_state.dart';
+import '../../../core/widgets/app_shimmer.dart';
+import '../../../core/widgets/bouncing_widget.dart';
 import '../application/notification_controller.dart';
 
 class NotificationScreen extends ConsumerStatefulWidget {
@@ -54,24 +57,28 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
             tooltip: 'Làm mới',
             onPressed: state.isLoading
                 ? null
-                : () => ref
-                      .read(notificationControllerProvider.notifier)
-                      .refresh(),
+                : () {
+                    unawaited(HapticFeedback.lightImpact());
+                    ref.read(notificationControllerProvider.notifier).refresh();
+                  },
             icon: const Icon(Icons.refresh),
           ),
           IconButton(
             tooltip: 'Đánh dấu tất cả đã đọc',
             onPressed: unread == 0 || state.isLoading
                 ? null
-                : () => ref
-                      .read(notificationControllerProvider.notifier)
-                      .markAllRead(),
+                : () {
+                    unawaited(HapticFeedback.lightImpact());
+                    ref
+                        .read(notificationControllerProvider.notifier)
+                        .markAllRead();
+                  },
             icon: const Icon(Icons.mark_email_read_outlined),
           ),
         ],
       ),
       body: state.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const _NotificationSkeleton(),
         error: (error, stackTrace) => AppEmptyState(
           icon: Icons.cloud_off_outlined,
           title: 'Không tải được thông báo',
@@ -81,8 +88,10 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
               ref.read(notificationControllerProvider.notifier).refresh(),
         ),
         data: (data) => RefreshIndicator(
-          onRefresh: () =>
-              ref.read(notificationControllerProvider.notifier).refresh(),
+          onRefresh: () async {
+            unawaited(HapticFeedback.lightImpact());
+            await ref.read(notificationControllerProvider.notifier).refresh();
+          },
           child: ListView(
             controller: _scrollController,
             physics: const AlwaysScrollableScrollPhysics(),
@@ -187,34 +196,38 @@ class _NotificationTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final unread = notification.readAt == null;
     final theme = Theme.of(context);
-    return Card(
-      child: ListTile(
-        onTap: () => _open(context, ref),
-        leading: Badge(
-          isLabelVisible: unread,
-          smallSize: 9,
-          child: CircleAvatar(
-            backgroundColor: unread
-                ? theme.colorScheme.primaryContainer
-                : theme.colorScheme.surfaceContainerHighest,
-            child: Icon(
-              _iconFor(notification.category),
-              color: unread
-                  ? theme.colorScheme.onPrimaryContainer
-                  : theme.colorScheme.onSurfaceVariant,
+    return BouncingWidget(
+      onTap: () => _open(context, ref),
+      enableHaptic: true,
+      child: Card(
+        child: ListTile(
+          onTap: () => _open(context, ref),
+          leading: Badge(
+            isLabelVisible: unread,
+            smallSize: 9,
+            child: CircleAvatar(
+              backgroundColor: unread
+                  ? theme.colorScheme.primaryContainer
+                  : theme.colorScheme.surfaceContainerHighest,
+              child: Icon(
+                _iconFor(notification.category),
+                color: unread
+                    ? theme.colorScheme.onPrimaryContainer
+                    : theme.colorScheme.onSurfaceVariant,
+              ),
             ),
           ),
+          title: Text(
+            notification.title,
+            style: unread
+                ? theme.textTheme.titleMedium
+                : theme.textTheme.titleMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+          ),
+          subtitle: Text(notification.body),
+          trailing: Text(_labelFor(notification.category)),
         ),
-        title: Text(
-          notification.title,
-          style: unread
-              ? theme.textTheme.titleMedium
-              : theme.textTheme.titleMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-        ),
-        subtitle: Text(notification.body),
-        trailing: Text(_labelFor(notification.category)),
       ),
     );
   }
@@ -259,3 +272,43 @@ String _labelFor(String category) => switch (category) {
   'exam' => 'Lịch thi',
   _ => 'Khác',
 };
+
+class _NotificationSkeleton extends StatelessWidget {
+  const _NotificationSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.cardPadding,
+        AppSpacing.m,
+        AppSpacing.cardPadding,
+        AppSpacing.xl,
+      ),
+      children: [
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const NeverScrollableScrollPhysics(),
+          child: Row(
+            children: List.generate(
+              5,
+              (_) => const Padding(
+                padding: EdgeInsets.only(right: AppSpacing.xs),
+                child: AppShimmer(width: 80, height: 32),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.m),
+        const AppShimmer(width: 100, height: 18),
+        const SizedBox(height: AppSpacing.s),
+        for (var i = 0; i < 4; i++)
+          const Padding(
+            padding: EdgeInsets.only(bottom: AppSpacing.s),
+            child: AppShimmer(width: double.infinity, height: 80),
+          ),
+      ],
+    );
+  }
+}

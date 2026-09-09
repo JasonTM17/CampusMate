@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:campusmate_client/campusmate_client.dart';
 import 'package:campusmate_shared/campusmate_shared.dart' show CampusClock;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -163,6 +166,7 @@ class DashboardScreen extends ConsumerWidget {
 }
 
 Future<void> _refresh(WidgetRef ref) async {
+  unawaited(HapticFeedback.lightImpact());
   refreshDashboardSections(ref);
   ref.invalidate(notificationUnreadCountProvider);
   ref.invalidate(studySuggestionProvider);
@@ -534,15 +538,19 @@ class _ExamCountdownCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        onTap: () => context.go('/academic/exams/${exam.examId}'),
-        leading: const Icon(Icons.assignment_outlined),
-        title: Text('${exam.courseCode} · ${exam.examType}'),
-        subtitle: Text(
-          '${_dateText(exam.startsAt)} · ${_minuteText(CampusClock.campusMinuteOfDay(exam.startsAt))} · ${exam.room}',
+    return BouncingWidget(
+      onTap: () => context.go('/academic/exams/${exam.examId}'),
+      enableHaptic: true,
+      child: Card(
+        child: ListTile(
+          onTap: () => context.go('/academic/exams/${exam.examId}'),
+          leading: const Icon(Icons.assignment_outlined),
+          title: Text('${exam.courseCode} · ${exam.examType}'),
+          subtitle: Text(
+            '${_dateText(exam.startsAt)} · ${_minuteText(CampusClock.campusMinuteOfDay(exam.startsAt))} · ${exam.room}',
+          ),
+          trailing: Text('${exam.daysUntil} ngày'),
         ),
-        trailing: Text('${exam.daysUntil} ngày'),
       ),
     );
   }
@@ -696,10 +704,7 @@ class _LoadingCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: AppSpacing.xs),
-      child: AppShimmer(
-        width: double.infinity,
-        height: height,
-      ),
+      child: AppShimmer(width: double.infinity, height: height),
     );
   }
 }

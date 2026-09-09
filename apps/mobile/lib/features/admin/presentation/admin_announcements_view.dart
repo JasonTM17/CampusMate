@@ -38,11 +38,8 @@ class AdminAnnouncementsView extends ConsumerWidget {
               return Card(
                 elevation: item.archived ? 0 : 1,
                 color: item.archived
-                    ? Theme.of(
-                        context,
-                      ).colorScheme.surfaceContainerHighest.withValues(
-                        alpha: 0.3,
-                      )
+                    ? Theme.of(context).colorScheme.surfaceContainerHighest
+                          .withValues(alpha: 0.3)
                     : null,
                 child: Padding(
                   padding: const EdgeInsets.all(12),

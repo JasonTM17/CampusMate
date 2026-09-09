@@ -2,12 +2,14 @@ import 'dart:async';
 
 import 'package:campusmate_client/campusmate_client.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/theme/app_radius.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_empty_state.dart';
+import '../../../core/widgets/app_shimmer.dart';
 import '../../auth/application/auth_controller.dart';
 import '../../auth/domain/auth_user.dart';
 import '../application/library_controller.dart';
@@ -39,7 +41,7 @@ class BookDetailScreen extends ConsumerWidget {
         ],
       ),
       body: state.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const _BookDetailSkeleton(),
         error: (error, stackTrace) => AppEmptyState(
           icon: Icons.cloud_off_outlined,
           title: 'Không tải được tài liệu',
@@ -130,6 +132,7 @@ class BookDetailScreen extends ConsumerWidget {
     WidgetRef ref,
     BookDetail book,
   ) async {
+    unawaited(HapticFeedback.lightImpact());
     final status = await ref
         .read(libraryRepositoryProvider)
         .toggleFavorite(bookId: book.id);
@@ -590,4 +593,48 @@ String _loanStatusText(BookLoanSummary loan) {
   }
   if (loan.isOverdue) return 'Đã quá hạn từ ${_dateText(loan.dueAt)}';
   return 'Còn ${loan.daysRemaining} ngày, hạn ${_dateText(loan.dueAt)}';
+}
+
+class _BookDetailSkeleton extends StatelessWidget {
+  const _BookDetailSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.cardPadding,
+        AppSpacing.m,
+        AppSpacing.cardPadding,
+        AppSpacing.xl,
+      ),
+      children: [
+        const Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AppShimmer(width: 112, height: 160),
+            SizedBox(width: AppSpacing.m),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AppShimmer(width: double.infinity, height: 28),
+                  SizedBox(height: AppSpacing.s),
+                  AppShimmer(width: 140, height: 18),
+                  SizedBox(height: AppSpacing.m),
+                  AppShimmer(width: 100, height: 32),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.l),
+        const AppShimmer(width: double.infinity, height: 120),
+        const SizedBox(height: AppSpacing.l),
+        const AppShimmer(width: 100, height: 22),
+        const SizedBox(height: AppSpacing.s),
+        const AppShimmer(width: double.infinity, height: 80),
+      ],
+    );
+  }
 }

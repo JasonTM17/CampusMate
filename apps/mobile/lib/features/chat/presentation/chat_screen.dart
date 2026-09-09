@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:go_router/go_router.dart';
@@ -103,6 +106,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   Future<void> _send() async {
     final text = _inputController.text.trim();
     if (text.isEmpty) return;
+    unawaited(HapticFeedback.selectionClick());
     _inputController.clear();
     await ref
         .read(chatControllerProvider.notifier)

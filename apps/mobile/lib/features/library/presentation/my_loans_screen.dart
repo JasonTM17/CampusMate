@@ -2,12 +2,14 @@ import 'dart:async';
 
 import 'package:campusmate_client/campusmate_client.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../app/theme/app_radius.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_empty_state.dart';
+import '../../../core/widgets/app_shimmer.dart';
+import '../../../core/widgets/bouncing_widget.dart';
 import '../application/library_controller.dart';
 import 'book_cover.dart';
 
@@ -29,7 +31,7 @@ class MyLoansScreen extends ConsumerWidget {
         ],
       ),
       body: state.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const _MyLoansSkeleton(),
         error: (error, stackTrace) => AppEmptyState(
           icon: Icons.cloud_off_outlined,
           title: 'Không tải được sách đang mượn',
@@ -38,7 +40,10 @@ class MyLoansScreen extends ConsumerWidget {
           onAction: () => ref.invalidate(myLoansProvider),
         ),
         data: (page) => RefreshIndicator(
-          onRefresh: () async => ref.invalidate(myLoansProvider),
+          onRefresh: () async {
+            unawaited(HapticFeedback.lightImpact());
+            ref.invalidate(myLoansProvider);
+          },
           child: page.items.isEmpty
               ? ListView(
                   physics: const AlwaysScrollableScrollPhysics(),
@@ -87,11 +92,11 @@ class _LoanCardState extends ConsumerState<_LoanCard> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final loan = widget.loan;
-    return Card(
-      margin: const EdgeInsets.only(bottom: AppSpacing.s),
-      child: InkWell(
-        borderRadius: AppRadius.cardRadius,
-        onTap: () => context.push('/library/books/${loan.bookId}'),
+    return BouncingWidget(
+      onTap: () => context.push('/library/books/${loan.bookId}'),
+      enableHaptic: true,
+      child: Card(
+        margin: const EdgeInsets.only(bottom: AppSpacing.s),
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.s),
           child: Row(
@@ -209,3 +214,27 @@ IconData _statusIcon(BookLoanSummary loan) {
 
 String _dateText(DateTime date) =>
     '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+
+class _MyLoansSkeleton extends StatelessWidget {
+  const _MyLoansSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.cardPadding,
+        AppSpacing.m,
+        AppSpacing.cardPadding,
+        AppSpacing.xl,
+      ),
+      children: [
+        for (var i = 0; i < 3; i++)
+          const Padding(
+            padding: EdgeInsets.only(bottom: AppSpacing.s),
+            child: AppShimmer(width: double.infinity, height: 110),
+          ),
+      ],
+    );
+  }
+}

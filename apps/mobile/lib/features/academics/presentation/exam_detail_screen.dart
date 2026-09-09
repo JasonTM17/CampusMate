@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_empty_state.dart';
+import '../../../core/widgets/app_shimmer.dart';
 import '../application/academic_controller.dart';
 
 final examDetailProvider = FutureProvider.autoDispose.family<ExamSummary, int>((
@@ -26,7 +27,7 @@ class ExamDetailScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Chi tiết lịch thi')),
       body: state.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const _ExamDetailSkeleton(),
         error: (error, stackTrace) => AppEmptyState(
           icon: Icons.assignment_late_outlined,
           title: 'Không mở được lịch thi',
@@ -141,4 +142,26 @@ String _minuteText(int minuteOfDay) {
   final hour = (minuteOfDay ~/ 60).toString().padLeft(2, '0');
   final minute = (minuteOfDay % 60).toString().padLeft(2, '0');
   return '$hour:$minute';
+}
+
+class _ExamDetailSkeleton extends StatelessWidget {
+  const _ExamDetailSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.cardPadding,
+        AppSpacing.m,
+        AppSpacing.cardPadding,
+        AppSpacing.xl,
+      ),
+      children: const [
+        AppShimmer(width: double.infinity, height: 260),
+        SizedBox(height: AppSpacing.m),
+        AppShimmer(width: double.infinity, height: 48),
+      ],
+    );
+  }
 }

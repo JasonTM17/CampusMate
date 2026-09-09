@@ -182,10 +182,19 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                                 size: 18,
                               ),
                               label: const Text('Đánh dấu vị trí này'),
-                              onPressed: () => controller.addBookmark(
-                                title:
-                                    'Đánh dấu trang ${state.currentLocation}',
-                              ),
+                              onPressed: () {
+                                unawaited(HapticFeedback.lightImpact());
+                                controller.addBookmark(
+                                  title:
+                                      'Đánh dấu trang ${state.currentLocation}',
+                                );
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Đã đánh dấu vị trí đọc này'),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              },
                             ),
                             ActionChip(
                               avatar: const Icon(

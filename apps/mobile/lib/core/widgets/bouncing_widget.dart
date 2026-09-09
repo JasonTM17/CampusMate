@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// Wraps any widget to add a spring physics micro-interaction on tap.
 class BouncingWidget extends StatefulWidget {
@@ -7,11 +8,13 @@ class BouncingWidget extends StatefulWidget {
     required this.child,
     this.onTap,
     this.scaleFactor = 0.97,
+    this.enableHaptic = false,
   });
 
   final Widget child;
   final VoidCallback? onTap;
   final double scaleFactor;
+  final bool enableHaptic;
 
   @override
   State<BouncingWidget> createState() => _BouncingWidgetState();
@@ -43,7 +46,12 @@ class _BouncingWidgetState extends State<BouncingWidget>
   }
 
   void _onTapDown(TapDownDetails _) {
-    if (widget.onTap != null) _controller.forward();
+    if (widget.onTap != null) {
+      if (widget.enableHaptic) {
+        HapticFeedback.selectionClick();
+      }
+      _controller.forward();
+    }
   }
 
   void _onTapUp(TapUpDetails _) {
@@ -67,10 +75,8 @@ class _BouncingWidgetState extends State<BouncingWidget>
       behavior: HitTestBehavior.opaque,
       child: AnimatedBuilder(
         animation: _scaleAnimation,
-        builder: (context, child) => Transform.scale(
-          scale: _scaleAnimation.value,
-          child: child,
-        ),
+        builder: (context, child) =>
+            Transform.scale(scale: _scaleAnimation.value, child: child),
         child: widget.child,
       ),
     );

@@ -8,20 +8,26 @@ class BookCover extends StatelessWidget {
     required this.coverUrl,
     this.width = 72,
     this.height = 104,
+    this.heroTag,
   });
 
   final String? coverUrl;
   final double width;
   final double height;
+  final Object? heroTag;
 
   @override
   Widget build(BuildContext context) {
     final url = coverUrl?.trim();
     if (url == null || url.isEmpty) {
-      return _CoverPlaceholder(width: width, height: height);
+      final placeholder = _CoverPlaceholder(width: width, height: height);
+      if (heroTag != null) {
+        return Hero(tag: heroTag!, child: placeholder);
+      }
+      return placeholder;
     }
 
-    return ClipRRect(
+    final coverWidget = ClipRRect(
       borderRadius: AppRadius.sRadius,
       child: SizedBox(
         width: width,
@@ -49,6 +55,11 @@ class BookCover extends StatelessWidget {
         ),
       ),
     );
+
+    if (heroTag != null) {
+      return Hero(tag: heroTag!, child: coverWidget);
+    }
+    return coverWidget;
   }
 }
 

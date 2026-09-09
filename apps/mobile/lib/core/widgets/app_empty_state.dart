@@ -30,9 +30,33 @@ class AppEmptyState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 48, color: theme.colorScheme.outline),
-            const SizedBox(height: AppSpacing.l),
-            Text(title, style: theme.textTheme.titleMedium),
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: theme.colorScheme.surfaceContainerHighest.withValues(
+                  alpha: 0.6,
+                ),
+                border: Border.all(
+                  color: theme.colorScheme.outlineVariant.withValues(
+                    alpha: 0.5,
+                  ),
+                  width: 1,
+                ),
+              ),
+              child: Center(
+                child: Icon(icon, size: 36, color: theme.colorScheme.primary),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.m),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             const SizedBox(height: AppSpacing.s),
             Text(
               message,

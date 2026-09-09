@@ -7,6 +7,7 @@ import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../../app/theme/theme_mode_controller.dart';
 import '../../../core/widgets/app_empty_state.dart';
+import '../../../core/widgets/app_shimmer.dart';
 import '../../../features/auth/application/auth_controller.dart';
 import '../../../features/auth/domain/auth_user.dart';
 import '../../../l10n/generated/app_localizations.dart';
@@ -43,7 +44,7 @@ class _StudentProfileScreenState extends ConsumerState<StudentProfileScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(loc.profileTitle)),
       body: profileState.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const _ProfileSkeleton(),
         error: (error, stackTrace) => AppEmptyState(
           icon: Icons.error_outline,
           title: loc.profileLoadError,
@@ -368,6 +369,58 @@ class _ProfileDetail extends StatelessWidget {
       contentPadding: EdgeInsets.zero,
       title: Text(label),
       trailing: Text(value?.isNotEmpty == true ? value! : loc.profileNotSet),
+    );
+  }
+}
+
+class _ProfileSkeleton extends StatelessWidget {
+  const _ProfileSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.cardPadding,
+        AppSpacing.m,
+        AppSpacing.cardPadding,
+        AppSpacing.l,
+      ),
+      children: [
+        const Row(
+          children: [
+            AppShimmer(
+              width: 56,
+              height: 56,
+              borderRadius: BorderRadius.all(Radius.circular(28)),
+            ),
+            SizedBox(width: AppSpacing.m),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AppShimmer(width: 160, height: 20),
+                  SizedBox(height: AppSpacing.s),
+                  AppShimmer(width: 220, height: 14),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.sectionGap),
+        const AppShimmer(width: double.infinity, height: 52),
+        const SizedBox(height: AppSpacing.itemGap),
+        const AppShimmer(width: double.infinity, height: 52),
+        const SizedBox(height: AppSpacing.itemGap),
+        const AppShimmer(width: double.infinity, height: 48),
+        const SizedBox(height: AppSpacing.sectionGap),
+        for (var i = 0; i < 4; i++) ...[
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: AppSpacing.xs),
+            child: AppShimmer(width: double.infinity, height: 24),
+          ),
+        ],
+      ],
     );
   }
 }

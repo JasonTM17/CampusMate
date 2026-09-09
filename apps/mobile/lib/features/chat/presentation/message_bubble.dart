@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -136,6 +138,7 @@ class MessageBubble extends StatelessWidget {
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
                       onPressed: () {
+                        unawaited(HapticFeedback.lightImpact());
                         Clipboard.setData(ClipboardData(text: message.content));
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(

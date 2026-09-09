@@ -107,11 +107,8 @@ class AdminStudentListView extends ConsumerWidget {
                           ),
                           backgroundColor: isActive
                               ? Colors.green.withValues(alpha: 0.1)
-                              : Theme.of(
-                                  context,
-                                ).colorScheme.errorContainer.withValues(
-                                  alpha: 0.3,
-                                ),
+                              : Theme.of(context).colorScheme.errorContainer
+                                    .withValues(alpha: 0.3),
                           side: BorderSide(
                             color: isActive
                                 ? Colors.green.withValues(alpha: 0.3)

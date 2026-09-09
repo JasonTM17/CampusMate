@@ -41,10 +41,12 @@ class _AppShimmerState extends State<AppShimmer>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final baseColor =
-        isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0);
-    final highlightColor =
-        isDark ? const Color(0xFF334155) : const Color(0xFFF1F5F9);
+    final baseColor = isDark
+        ? const Color(0xFF1E293B)
+        : const Color(0xFFE2E8F0);
+    final highlightColor = isDark
+        ? const Color(0xFF334155)
+        : const Color(0xFFF1F5F9);
 
     return AnimatedBuilder(
       animation: _controller,
