@@ -33,9 +33,6 @@ LABEL org.opencontainers.image.source="https://github.com/JasonTM17/CampusMate"
 LABEL org.opencontainers.image.description="CampusMate Serverpod Monolith Backend"
 LABEL org.opencontainers.image.licenses="MIT"
 
-# Copy runtime dependencies
-COPY --from=build /runtime/ /
-
 # Copy compiled server executable
 COPY --from=build /app/server/bin/server server
 
@@ -53,4 +50,4 @@ EXPOSE 8081
 EXPOSE 8082
 
 # Define the entrypoint command
-ENTRYPOINT ./server --mode=$runmode --server-id=$serverid --logging=$logging --role=$role
+ENTRYPOINT ["sh", "-c", "./server --mode=$runmode --server-id=$serverid --logging=$logging --role=$role"]
