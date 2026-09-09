@@ -1,52 +1,51 @@
-# Build from the project root with:
-# docker build -f campusmate_server/Dockerfile .
+# Build from repository root:
+# docker build -f server/Dockerfile -t campusmate-server .
 
 # Build stage
-FROM dart:3.8.0 AS build
+FROM dart:stable AS build
 
-# Create a minimal workspace that preserves locked server dependency versions.
 WORKDIR /app
+COPY pubspec.yaml .
 COPY pubspec.lock .
-COPY campusmate_server campusmate_server
-RUN printf '%s\n' \
-  'name: _' \
-  'environment:' \
-  '  sdk: ^3.8.0' \
-  'workspace:' \
-  '  - campusmate_server' \
-  > pubspec.yaml
+COPY packages/ packages/
+COPY server/ server/
+
 RUN dart pub get
 
-# Compile the server executable.
-WORKDIR /app/campusmate_server
+WORKDIR /app/server
 RUN dart compile exe bin/main.dart -o bin/server
 
-# Add a fallback for the copy of possibly missing directories.
-RUN mkdir -p config web migrations
+# Add a fallback for possibly missing directories
+RUN mkdir -p config web migrations lib/src/generated
 
 # Final stage
-FROM alpine:latest
+FROM debian:bookworm-slim
 WORKDIR /app
 
-# Environment variables
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
+
 ENV runmode=production
 ENV serverid=default
 ENV logging=normal
 ENV role=monolith
 
+LABEL org.opencontainers.image.source="https://github.com/JasonTM17/CampusMate"
+LABEL org.opencontainers.image.description="CampusMate Serverpod Monolith Backend"
+LABEL org.opencontainers.image.licenses="MIT"
+
 # Copy runtime dependencies
 COPY --from=build /runtime/ /
 
 # Copy compiled server executable
-COPY --from=build /app/campusmate_server/bin/server server
+COPY --from=build /app/server/bin/server server
 
 # Copy configuration files and resources
-COPY --from=build /app/campusmate_server/config/ config/
-COPY --from=build /app/campusmate_server/web/ web/
-COPY --from=build /app/campusmate_server/migrations/ migrations/
+COPY --from=build /app/server/config/ config/
+COPY --from=build /app/server/web/ web/
+COPY --from=build /app/server/migrations/ migrations/
 
 # This file is required to enable the endpoint log filter in Insights.
-COPY --from=build /app/campusmate_server/lib/src/generated/protocol.yaml lib/src/generated/protocol.yaml
+COPY --from=build /app/server/lib/src/generated/protocol.yaml lib/src/generated/protocol.yaml
 
 # Expose ports
 EXPOSE 8080
