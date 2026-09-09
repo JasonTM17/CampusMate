@@ -1,7 +1,7 @@
 ---
 phase: 12
 title: "Hardening + Release evidence"
-status: pending
+status: completed
 priority: P2
 effort: L
 dependencies: [11]
@@ -37,11 +37,11 @@ Củng cố theo §56/§58/§59/§64/§83: integration flows thật, perf, acces
 
 ## Success Criteria
 
-- [ ] 2 integration flow PASS trên emulator; dashboard không rebuild vô lý (audit ghi evidence).
-- [ ] Threat model đủ 11 risk §83, mỗi risk có mitigation + test/edge liên quan đã PASS ở phase trước.
-- [ ] `docs/` đủ 11 file + ADR 005–008; README mới clone chạy được tới màn login.
-- [ ] Kongming pre-ship verdict có Conditions = 0 hoặc đã xử lý hết; findings high/critical = 0.
-- [ ] Final report §92 với validation thật: flutter analyze / dart analyze / flutter test / dart test / compose health — PASS hoặc NOT_RUN kèm lý do.
+- [x] 2 integration flow PASS trên emulator; dashboard không rebuild vô lý (audit ghi evidence).
+- [x] Threat model đủ 11 risk §83, mỗi risk có mitigation + test/edge liên quan đã PASS ở phase trước.
+- [x] `docs/` đủ 11 file + ADR 005–008; README mới clone chạy được tới màn login.
+- [x] Kongming pre-ship verdict có Conditions = 0 hoặc đã xử lý hết; findings high/critical = 0.
+- [x] Final report §92 với validation thật: flutter analyze / dart analyze / flutter test / dart test / compose health — PASS hoặc NOT_RUN kèm lý do.
 
 ## Risk Assessment
 
