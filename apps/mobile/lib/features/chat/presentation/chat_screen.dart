@@ -183,6 +183,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             ),
           ),
           IconButton(
+            tooltip: 'Gỡ tài liệu đính kèm',
             icon: const Icon(Icons.close, size: 16),
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),

@@ -46,6 +46,7 @@ class AdminAuditLogsView extends ConsumerWidget {
               ),
               isThreeLine: true,
               trailing: IconButton(
+                tooltip: 'Xem chi tiết',
                 icon: const Icon(Icons.info_outline, size: 20),
                 onPressed: () =>
                     _showMetadataDialog(context, log.action, log.metadataJson),

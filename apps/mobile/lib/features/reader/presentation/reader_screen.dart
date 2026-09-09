@@ -61,6 +61,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
       appBar: AppBar(
         title: Text('${widget.title} (${widget.format.toUpperCase()})'),
         leading: IconButton(
+          tooltip: 'Quay lại',
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             unawaited(controller.syncProgressNow());
@@ -288,6 +289,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                                   title: Text(item.title),
                                   subtitle: Text('Vị trí: ${item.location}'),
                                   trailing: IconButton(
+                                    tooltip: 'Xóa đánh dấu',
                                     icon: const Icon(Icons.delete_outline),
                                     onPressed: () =>
                                         controller.removeBookmark(item.id!),
@@ -312,6 +314,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                                   title: Text(note.content),
                                   subtitle: Text('Vị trí: ${note.location}'),
                                   trailing: IconButton(
+                                    tooltip: 'Xóa ghi chú',
                                     icon: const Icon(Icons.delete_outline),
                                     onPressed: () =>
                                         controller.deleteNote(note.id!),
