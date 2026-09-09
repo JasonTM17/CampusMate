@@ -123,10 +123,26 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
               _ResultHeader(data: data),
               const SizedBox(height: AppSpacing.s),
               if (data.items.isEmpty)
-                const AppEmptyState(
+                AppEmptyState(
                   icon: Icons.manage_search_outlined,
                   title: 'Không tìm thấy tài liệu',
                   message: 'Thử đổi từ khóa hoặc bỏ bớt bộ lọc.',
+                  actionLabel: (data.filters.activeCount > 0 ||
+                          _queryController.text.isNotEmpty)
+                      ? 'Đặt lại tìm kiếm'
+                      : null,
+                  onAction: (data.filters.activeCount > 0 ||
+                          _queryController.text.isNotEmpty)
+                      ? () {
+                          _queryController.clear();
+                          ref
+                              .read(libraryControllerProvider.notifier)
+                              .clearFilters();
+                          ref
+                              .read(libraryControllerProvider.notifier)
+                              .setQuery('');
+                        }
+                      : null,
                 )
               else
                 for (final item in data.items) _BookSummaryTile(book: item),

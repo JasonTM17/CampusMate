@@ -224,8 +224,18 @@ class _NotificationTile extends ConsumerWidget {
         .read(notificationControllerProvider.notifier)
         .markRead(notification);
     if (!context.mounted) return;
-    if (notification.targetType == 'exam' && notification.targetId != null) {
-      context.go('/academic/exams/${notification.targetId}');
+    final targetType = notification.targetType?.toLowerCase();
+    final targetId = notification.targetId;
+    if (targetType == 'exam' && targetId != null) {
+      context.go('/academic/exams/$targetId');
+    } else if (targetType == 'book' && targetId != null) {
+      context.go('/library/books/$targetId');
+    } else if (targetType == 'loan' || targetType == 'library') {
+      context.go('/library/loans');
+    } else if (targetType == 'announcement') {
+      context.go('/home');
+    } else if (targetType == 'academic' || targetType == 'course') {
+      context.go('/academic');
     }
   }
 }

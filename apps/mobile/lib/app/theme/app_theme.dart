@@ -69,17 +69,18 @@ abstract final class AppTheme {
         ),
       ),
       cardTheme: CardThemeData(
-        elevation: 4,
+        elevation: isLight ? 2 : 0,
         shape: RoundedRectangleBorder(
           borderRadius: AppRadius.cardRadius,
           side: BorderSide(
             color: isLight
-                ? AppColors.borderLight.withValues(alpha: 0.8)
-                : AppColors.borderDark.withValues(alpha: 0.8),
+                ? AppColors.borderLight.withValues(alpha: 0.5)
+                : AppColors.borderDark.withValues(alpha: 0.4),
+            width: 1,
           ),
         ),
         color: isLight ? AppColors.surface : AppColors.surfaceDark,
-        shadowColor: Colors.black.withValues(alpha: isLight ? 0.08 : 0.3),
+        shadowColor: AppColors.primary.withValues(alpha: isLight ? 0.06 : 0.2),
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: isLight ? AppColors.surface : AppColors.surfaceDark,

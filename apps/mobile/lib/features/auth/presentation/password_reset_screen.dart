@@ -244,13 +244,16 @@ class _PasswordResetScreenState extends ConsumerState<PasswordResetScreen> {
                             ),
                     ),
                     SizedBox(height: AppSpacing.s),
-                    if (_onCodeStep)
+                    if (!_onEmailStep)
                       TextButton(
                         onPressed: _submitting
                             ? null
                             : () => setState(() {
                                 _passwordResetRequestId = null;
+                                _finishPasswordResetToken = null;
                                 _codeController.clear();
+                                _passwordController.clear();
+                                _confirmPasswordController.clear();
                               }),
                         child: Text(loc.authUseDifferentEmail),
                       ),

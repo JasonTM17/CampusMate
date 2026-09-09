@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -59,6 +60,8 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
+        backgroundColor: backgroundColor,
+        foregroundColor: textColor,
         title: Text('${widget.title} (${widget.format.toUpperCase()})'),
         leading: IconButton(
           tooltip: 'Quay lại',
@@ -124,7 +127,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                           ),
                         ),
                         const SizedBox(height: AppSpacing.m),
-                        Text(
+                        SelectableText(
                           'Nội dung tài liệu đang được nạp thông qua trình đọc ${widget.format.toUpperCase()}.\n\n'
                           'CampusMate hỗ trợ theo dõi tiến trình đọc theo thời gian thực (LWW conflict resolution), '
                           'cho phép bạn lưu vị trí, đánh dấu trang và tạo ghi chú học tập ngay trên thiết bị.',
@@ -133,6 +136,41 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                             fontSize: state.fontSize,
                             height: 1.6,
                           ),
+                          contextMenuBuilder: (context, editableTextState) {
+                            final textSelection =
+                                editableTextState.textEditingValue.selection;
+                            final selectedText = textSelection
+                                .textInside(
+                                  editableTextState.textEditingValue.text,
+                                )
+                                .trim();
+                            final buttonItems =
+                                editableTextState.contextMenuButtonItems;
+                            if (selectedText.isNotEmpty) {
+                              buttonItems.insert(
+                                0,
+                                ContextMenuButtonItem(
+                                  label: 'Hỏi AI đoạn này',
+                                  onPressed: () {
+                                    ContextMenuController.removeAny();
+                                    final encodedTitle = Uri.encodeComponent(
+                                      widget.title,
+                                    );
+                                    final encodedSelected = Uri.encodeComponent(
+                                      selectedText,
+                                    );
+                                    context.push(
+                                      '/ai?bookId=${widget.bookId}&title=$encodedTitle&selectedText=$encodedSelected',
+                                    );
+                                  },
+                                ),
+                              );
+                            }
+                            return AdaptiveTextSelectionToolbar.buttonItems(
+                              anchors: editableTextState.contextMenuAnchors,
+                              buttonItems: buttonItems,
+                            );
+                          },
                         ),
                         const SizedBox(height: AppSpacing.l),
                         Wrap(
@@ -313,11 +351,38 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                                 return ListTile(
                                   title: Text(note.content),
                                   subtitle: Text('Vị trí: ${note.location}'),
-                                  trailing: IconButton(
-                                    tooltip: 'Xóa ghi chú',
-                                    icon: const Icon(Icons.delete_outline),
-                                    onPressed: () =>
-                                        controller.deleteNote(note.id!),
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      IconButton(
+                                        tooltip: 'Sao chép ghi chú',
+                                        icon: const Icon(
+                                          Icons.copy_outlined,
+                                          size: 18,
+                                        ),
+                                        onPressed: () {
+                                          Clipboard.setData(
+                                            ClipboardData(text: note.content),
+                                          );
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'Đã sao chép ghi chú',
+                                              ),
+                                              duration: Duration(seconds: 2),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                      IconButton(
+                                        tooltip: 'Xóa ghi chú',
+                                        icon: const Icon(Icons.delete_outline),
+                                        onPressed: () =>
+                                            controller.deleteNote(note.id!),
+                                      ),
+                                    ],
                                   ),
                                 );
                               },

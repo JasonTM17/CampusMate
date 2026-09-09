@@ -2,6 +2,7 @@ import 'package:campusmate_client/campusmate_client.dart';
 import 'package:campusmate_shared/campusmate_shared.dart' show CampusClock;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_empty_state.dart';
@@ -707,12 +708,56 @@ class _CourseDetailSheet extends ConsumerWidget {
                   subtitle: Text('Trọng số ${(grade.weight * 100).round()}%'),
                   trailing: Text(grade.score.toStringAsFixed(1)),
                 ),
-            const _SectionHeading('Liên kết sắp tới'),
-            Text(detail.documentsPlaceholder),
-            const SizedBox(height: AppSpacing.xs),
-            Text(detail.relatedBooksPlaceholder),
-            const SizedBox(height: AppSpacing.xs),
-            Text(detail.askAiPlaceholder),
+            const _SectionHeading('Liên kết học tập & AI'),
+            Card(
+              elevation: 0,
+              color: Theme.of(context).colorScheme.primaryContainer.withValues(
+                alpha: 0.35,
+              ),
+              child: ListTile(
+                leading: Icon(
+                  Icons.auto_awesome,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                title: const Text('Hỏi trợ lý AI về môn học này'),
+                subtitle: Text(detail.askAiPlaceholder),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  final encodedTitle = Uri.encodeComponent(
+                    '${detail.summary.courseCode} - ${detail.summary.title}',
+                  );
+                  context.push('/ai?title=$encodedTitle');
+                },
+              ),
+            ),
+            const SizedBox(height: AppSpacing.s),
+            Card(
+              elevation: 0,
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              child: ListTile(
+                leading: const Icon(Icons.menu_book_outlined),
+                title: const Text('Tìm sách & giáo trình liên quan'),
+                subtitle: Text(detail.relatedBooksPlaceholder),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  context.go('/library');
+                },
+              ),
+            ),
+            if (detail.documentsPlaceholder.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.s),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: Text(
+                  detail.documentsPlaceholder,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            ],
           ],
         );
       },

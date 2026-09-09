@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/widgets/app_empty_state.dart';
 import '../application/admin_controller.dart';
 
 class AdminStudentListView extends ConsumerWidget {
@@ -51,11 +52,19 @@ class AdminStudentListView extends ConsumerWidget {
         Expanded(
           child: studentsAsync.when(
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (err, _) => Center(child: Text('Lỗi: $err')),
+            error: (err, _) => AppEmptyState(
+              icon: Icons.error_outline,
+              title: 'Lỗi tải danh sách sinh viên',
+              message: 'Kiểm tra kết nối và quyền hạn của bạn.',
+              actionLabel: 'Thử lại',
+              onAction: () => ref.invalidate(adminStudentsProvider),
+            ),
             data: (page) {
               if (page.students.isEmpty) {
-                return const Center(
-                  child: Text('Không tìm thấy sinh viên nào.'),
+                return const AppEmptyState(
+                  icon: Icons.people_outline,
+                  title: 'Không tìm thấy sinh viên',
+                  message: 'Thử tìm với tên hoặc mã số sinh viên khác.',
                 );
               }
               return ListView.separated(
@@ -67,13 +76,13 @@ class AdminStudentListView extends ConsumerWidget {
                   return ListTile(
                     leading: CircleAvatar(
                       backgroundColor: isActive
-                          ? Colors.green.shade100
-                          : Colors.red.shade100,
+                          ? Colors.green.withValues(alpha: 0.15)
+                          : Theme.of(context).colorScheme.errorContainer,
                       child: Icon(
                         isActive ? Icons.person : Icons.person_off,
                         color: isActive
-                            ? Colors.green.shade800
-                            : Colors.red.shade800,
+                            ? Colors.green
+                            : Theme.of(context).colorScheme.error,
                       ),
                     ),
                     title: Text(
@@ -91,13 +100,25 @@ class AdminStudentListView extends ConsumerWidget {
                             style: TextStyle(
                               fontSize: 12,
                               color: isActive
-                                  ? Colors.green.shade900
-                                  : Colors.red.shade900,
+                                  ? Colors.green
+                                  : Theme.of(context).colorScheme.error,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                           backgroundColor: isActive
-                              ? Colors.green.shade50
-                              : Colors.red.shade50,
+                              ? Colors.green.withValues(alpha: 0.1)
+                              : Theme.of(
+                                  context,
+                                ).colorScheme.errorContainer.withValues(
+                                  alpha: 0.3,
+                                ),
+                          side: BorderSide(
+                            color: isActive
+                                ? Colors.green.withValues(alpha: 0.3)
+                                : Theme.of(
+                                    context,
+                                  ).colorScheme.error.withValues(alpha: 0.3),
+                          ),
                         ),
                         IconButton(
                           icon: Icon(

@@ -43,11 +43,13 @@ class MyLoansScreen extends ConsumerWidget {
               ? ListView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.all(AppSpacing.cardPadding),
-                  children: const [
+                  children: [
                     AppEmptyState(
                       icon: Icons.local_library_outlined,
                       title: 'Chưa mượn tài liệu',
                       message: 'Các sách đang mượn sẽ xuất hiện ở đây.',
+                      actionLabel: 'Khám phá thư viện',
+                      onAction: () => context.go('/library'),
                     ),
                   ],
                 )

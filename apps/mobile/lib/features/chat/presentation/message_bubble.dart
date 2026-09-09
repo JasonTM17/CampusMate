@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../app/theme/app_radius.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../domain/chat_message.dart';
 
@@ -51,7 +51,12 @@ class MessageBubble extends StatelessWidget {
             padding: AppSpacing.mPadding,
             decoration: BoxDecoration(
               color: bubbleColor,
-              borderRadius: AppRadius.lRadius,
+              borderRadius: BorderRadius.only(
+                topLeft: const Radius.circular(18),
+                topRight: const Radius.circular(18),
+                bottomLeft: Radius.circular(isUser ? 18 : 4),
+                bottomRight: Radius.circular(isUser ? 4 : 18),
+              ),
             ),
             child: Column(
               crossAxisAlignment: isUser
@@ -105,13 +110,41 @@ class MessageBubble extends StatelessWidget {
                           visualDensity: VisualDensity.compact,
                           onPressed: () {
                             if (citation.bookId != null) {
-                              context.push('/library/${citation.bookId}');
+                              context.push('/library/books/${citation.bookId}');
                             } else {
                               _showCitationDialog(context, citation);
                             }
                           },
                         ),
                     ],
+                  ),
+                ],
+                if (!isUser) ...[
+                  const SizedBox(height: 4),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: IconButton(
+                      tooltip: 'Sao chép nội dung',
+                      icon: Icon(
+                        Icons.copy_outlined,
+                        size: 14,
+                        color: theme.colorScheme.onSurfaceVariant.withValues(
+                          alpha: 0.7,
+                        ),
+                      ),
+                      visualDensity: VisualDensity.compact,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: message.content));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Đã sao chép vào bộ nhớ tạm'),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ],
               ],

@@ -6,6 +6,8 @@ import '../l10n/generated/app_localizations.dart';
 import 'router/app_router.dart';
 import 'theme/app_theme.dart';
 
+import 'theme/theme_mode_controller.dart';
+
 /// Vietnamese is the default locale (§46); English ships as the secondary
 /// supported locale so translators only need to fill `app_en.arb`.
 class CampusMateApp extends ConsumerWidget {
@@ -14,13 +16,15 @@ class CampusMateApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
+    final themeMode = ref.watch(appThemeModeProvider);
+    final locale = ref.watch(appLocaleProvider);
     return MaterialApp.router(
       title: 'CampusMate',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
-      locale: const Locale('vi'),
+      themeMode: themeMode,
+      locale: locale,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: const [
         AppLocalizations.delegate,

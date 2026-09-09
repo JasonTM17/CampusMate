@@ -29,18 +29,22 @@ class AppSearchBar extends StatelessWidget {
       decoration: InputDecoration(
         hintText: hintText,
         prefixIcon: const Icon(Icons.search),
-        suffixIcon: controller.text.isEmpty
-            ? null
-            : IconButton(
-                tooltip: 'Xóa tìm kiếm',
-                onPressed: enabled
-                    ? () {
-                        controller.clear();
-                        onChanged('');
-                      }
-                    : null,
-                icon: const Icon(Icons.close),
-              ),
+        suffixIcon: ListenableBuilder(
+          listenable: controller,
+          builder: (context, _) {
+            if (controller.text.isEmpty) return const SizedBox.shrink();
+            return IconButton(
+              tooltip: 'Xóa tìm kiếm',
+              onPressed: enabled
+                  ? () {
+                      controller.clear();
+                      onChanged('');
+                    }
+                  : null,
+              icon: const Icon(Icons.close),
+            );
+          },
+        ),
         border: const OutlineInputBorder(borderRadius: AppRadius.sRadius),
       ),
     );

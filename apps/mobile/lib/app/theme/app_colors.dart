@@ -87,4 +87,22 @@ abstract final class AppColors {
   // ── Dark error container (M3 tonal: red-900 container / red-100 text) ──
   static const Color errorContainerDark = Color(0xFF7F1D1D);
   static const Color onErrorContainerDark = Color(0xFFFECACA);
+
+  // ── Ambient Gradients & Glassmorphism ─────────────────────────────
+  static const LinearGradient heroGradientLight = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xFF6366F1), Color(0xFF8B5CF6), Color(0xFFA855F7)],
+  );
+
+  static const LinearGradient heroGradientDark = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xFF4338CA), Color(0xFF6D28D9), Color(0xFF1E1B4B)],
+  );
+
+  static const Color glassLight = Color(0xD9FFFFFF);
+  static const Color glassDark = Color(0xD90F172A);
+  static const Color glassBorderLight = Color(0x33FFFFFF);
+  static const Color glassBorderDark = Color(0x2694A3B8);
 }

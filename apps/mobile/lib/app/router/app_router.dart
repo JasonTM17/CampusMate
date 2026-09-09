@@ -109,7 +109,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                         state.pathParameters['examId'] ?? '',
                       );
                       if (examId == null) {
-                        return const _InvalidDeepLinkScreen();
+                        return const _InvalidDeepLinkScreen(
+                          message: 'Mã lịch thi không hợp lệ hoặc đã kết thúc.',
+                        );
                       }
                       return ExamDetailScreen(examId: examId);
                     },
@@ -135,7 +137,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                         state.pathParameters['bookId'] ?? '',
                       );
                       if (bookId == null) {
-                        return const _InvalidDeepLinkScreen();
+                        return const _InvalidDeepLinkScreen(
+                          message: 'Mã sách không hợp lệ hoặc tài liệu không tồn tại.',
+                        );
                       }
                       return BookDetailScreen(bookId: bookId);
                     },
@@ -147,7 +151,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                             state.pathParameters['bookId'] ?? '',
                           );
                           if (bookId == null) {
-                            return const _InvalidDeepLinkScreen();
+                            return const _InvalidDeepLinkScreen(
+                              message: 'Không thể mở trình đọc với mã sách này.',
+                            );
                           }
                           final format =
                               state.uri.queryParameters['format'] ?? 'pdf';
@@ -220,15 +226,35 @@ class _AuthLoadingScreen extends StatelessWidget {
 }
 
 class _InvalidDeepLinkScreen extends StatelessWidget {
-  const _InvalidDeepLinkScreen();
+  const _InvalidDeepLinkScreen({
+    this.message = 'Liên kết không hợp lệ hoặc không tìm thấy nội dung.',
+  });
+
+  final String message;
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Không tìm thấy'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          tooltip: 'Quay lại',
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/home');
+            }
+          },
+        ),
+      ),
       body: AppEmptyState(
         icon: Icons.link_off_outlined,
         title: 'Liên kết không hợp lệ',
-        message: 'Màn hình này cần một mã lịch thi hợp lệ.',
+        message: message,
+        actionLabel: 'Về trang chủ',
+        onAction: () => context.go('/home'),
       ),
     );
   }

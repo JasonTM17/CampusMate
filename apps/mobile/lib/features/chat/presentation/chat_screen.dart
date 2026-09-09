@@ -216,9 +216,19 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       );
     }
     if (chat.messages.isEmpty) {
+      final suggestions = _attachedBookTitle != null
+          ? [
+              '📖 Tóm tắt nội dung chính',
+              '💡 Giải thích các khái niệm quan trọng',
+              '🧠 Tạo 5 câu hỏi ôn tập',
+              '🔗 Ứng dụng thực tế của tài liệu',
+            ]
+          : _suggestions;
       return _EmptyState(
-        suggestions: _suggestions,
-        chipsLabel: l10n.chatSuggestions,
+        suggestions: suggestions,
+        chipsLabel: _attachedBookTitle != null
+            ? 'Gợi ý câu hỏi về tài liệu:'
+            : l10n.chatSuggestions,
         onSuggestion: (text) {
           _inputController.text = text;
           _send();

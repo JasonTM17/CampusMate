@@ -2,6 +2,7 @@ import 'package:campusmate_client/campusmate_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/widgets/app_empty_state.dart';
 import '../application/admin_controller.dart';
 
 class AdminBookManagementView extends ConsumerWidget {
@@ -32,10 +33,20 @@ class AdminBookManagementView extends ConsumerWidget {
         Expanded(
           child: booksAsync.when(
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (err, _) => Center(child: Text('Lỗi tải danh mục: $err')),
+            error: (err, _) => AppEmptyState(
+              icon: Icons.error_outline,
+              title: 'Lỗi tải danh mục tài liệu',
+              message: 'Kiểm tra kết nối và quyền hạn của bạn.',
+              actionLabel: 'Thử lại',
+              onAction: () => ref.invalidate(adminBooksProvider),
+            ),
             data: (page) {
               if (page.items.isEmpty) {
-                return const Center(child: Text('Không có tài liệu nào.'));
+                return const AppEmptyState(
+                  icon: Icons.menu_book_outlined,
+                  title: 'Không có tài liệu nào',
+                  message: 'Thử tìm với từ khóa hoặc tên khác.',
+                );
               }
               return ListView.separated(
                 itemCount: page.items.length,

@@ -2,9 +2,9 @@ import 'package:campusmate_client/campusmate_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_radius.dart';
 import '../../../app/theme/app_spacing.dart';
+import '../../../core/widgets/app_empty_state.dart';
 import '../application/ai_preferences_controller.dart';
 
 class AiSettingsScreen extends ConsumerWidget {
@@ -19,21 +19,12 @@ class AiSettingsScreen extends ConsumerWidget {
       appBar: AppBar(title: const Text('Cài đặt & Bộ nhớ AI')),
       body: prefState.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.error_outline, size: 48, color: AppColors.error),
-              const SizedBox(height: AppSpacing.m),
-              const Text('Không thể tải cài đặt AI.'),
-              const SizedBox(height: AppSpacing.s),
-              FilledButton(
-                onPressed: () =>
-                    ref.invalidate(aiPreferencesControllerProvider),
-                child: const Text('Thử lại'),
-              ),
-            ],
-          ),
+        error: (err, _) => AppEmptyState(
+          icon: Icons.error_outline,
+          title: 'Không thể tải cài đặt AI',
+          message: 'Kiểm tra kết nối rồi thử lại.',
+          actionLabel: 'Thử lại',
+          onAction: () => ref.invalidate(aiPreferencesControllerProvider),
         ),
         data: (pref) => ListView(
           padding: const EdgeInsets.all(AppSpacing.cardPadding),
@@ -68,7 +59,7 @@ class _PreferencesSection extends ConsumerWidget {
           children: [
             Row(
               children: [
-                const Icon(Icons.tune_outlined, color: AppColors.primary),
+                Icon(Icons.tune_outlined, color: theme.colorScheme.primary),
                 const SizedBox(width: AppSpacing.s),
                 Text(
                   'Tùy chọn cá nhân hóa',
@@ -201,9 +192,9 @@ class _MemoriesSection extends ConsumerWidget {
               children: [
                 Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.psychology_outlined,
-                      color: AppColors.primary,
+                      color: theme.colorScheme.primary,
                     ),
                     const SizedBox(width: AppSpacing.s),
                     Text(
@@ -316,18 +307,18 @@ class _MemoriesSection extends ConsumerWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(e.message),
-                      backgroundColor: AppColors.error,
+                      backgroundColor: Theme.of(context).colorScheme.error,
                     ),
                   );
                 }
               } catch (_) {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
+                    SnackBar(
+                      content: const Text(
                         'Không thể thêm ghi nhớ. Vui lòng thử lại.',
                       ),
-                      backgroundColor: AppColors.error,
+                      backgroundColor: Theme.of(context).colorScheme.error,
                     ),
                   );
                 }

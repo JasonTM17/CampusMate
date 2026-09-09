@@ -269,15 +269,18 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
                             ),
                     ),
                     SizedBox(height: AppSpacing.s),
-                    // Escape hatch for a mistyped email: go back one step
-                    // instead of stranding the user on the code step.
-                    if (_onCodeStep)
+                    // Escape hatch for a mistyped email: go back to the email step
+                    // instead of stranding the user on the code or password step.
+                    if (!_onEmailStep)
                       TextButton(
                         onPressed: _submitting
                             ? null
                             : () => setState(() {
                                 _accountRequestId = null;
+                                _registrationToken = null;
                                 _codeController.clear();
+                                _passwordController.clear();
+                                _confirmPasswordController.clear();
                               }),
                         child: Text(l10n.authUseDifferentEmail),
                       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/widgets/app_empty_state.dart';
 import '../application/admin_controller.dart';
 
 class AdminAuditLogsView extends ConsumerWidget {
@@ -12,10 +13,20 @@ class AdminAuditLogsView extends ConsumerWidget {
 
     return logsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (err, _) => Center(child: Text('Lỗi tải nhật ký kiểm toán: $err')),
+      error: (err, _) => AppEmptyState(
+        icon: Icons.error_outline,
+        title: 'Lỗi tải nhật ký kiểm toán',
+        message: 'Kiểm tra kết nối và quyền hạn của bạn.',
+        actionLabel: 'Thử lại',
+        onAction: () => ref.invalidate(adminAuditLogsProvider),
+      ),
       data: (page) {
         if (page.logs.isEmpty) {
-          return const Center(child: Text('Chưa có bản ghi kiểm toán nào.'));
+          return const AppEmptyState(
+            icon: Icons.history_outlined,
+            title: 'Chưa có nhật ký kiểm toán',
+            message: 'Các hành động kiểm toán hệ thống sẽ hiển thị ở đây.',
+          );
         }
         return ListView.separated(
           padding: const EdgeInsets.all(12),

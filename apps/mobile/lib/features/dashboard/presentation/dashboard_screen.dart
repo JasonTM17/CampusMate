@@ -4,7 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../app/theme/app_colors.dart';
+import '../../../app/theme/app_radius.dart';
 import '../../../app/theme/app_spacing.dart';
+import '../../../core/widgets/app_shimmer.dart';
+import '../../../core/widgets/bouncing_widget.dart';
 import '../../chat/application/ai_preferences_controller.dart';
 import '../../notifications/application/notification_controller.dart';
 import '../application/dashboard_controller.dart';
@@ -129,11 +133,13 @@ class DashboardScreen extends ConsumerWidget {
                     ),
             ),
             const SizedBox(height: AppSpacing.s),
-            const _DeferredFeatureCard(
+            _DeferredFeatureCard(
               icon: Icons.menu_book_outlined,
               title: 'Đọc tiếp',
               message:
                   'Kệ sách đang đọc sẽ mở khi phase e-library có dữ liệu thật.',
+              actionLabel: 'Sách của tôi',
+              onAction: () => context.push('/library/loans'),
             ),
             _AsyncSection<StudySuggestion?>(
               title: 'Gợi ý AI',
@@ -184,43 +190,118 @@ class _GreetingSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return value.when(
-      loading: () => const _LoadingCard(height: 132),
+      loading: () => const _LoadingCard(height: 140),
       error: (error, stackTrace) =>
           _ErrorCard(title: 'Không tải được lời chào', onRetry: onRetry),
       data: (greeting) {
         final theme = Theme.of(context);
+        final isDark = theme.brightness == Brightness.dark;
         final name = greeting.studentName?.trim();
-        return Card(
-          color: theme.colorScheme.primaryContainer,
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.m),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  greeting.message,
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    color: theme.colorScheme.onPrimaryContainer,
+
+        return Container(
+          decoration: BoxDecoration(
+            gradient: isDark
+                ? AppColors.heroGradientDark
+                : AppColors.heroGradientLight,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: isDark ? 0.2 : 0.3),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Stack(
+            children: [
+              Positioned(
+                right: -15,
+                top: -15,
+                child: Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white.withValues(alpha: 0.1),
                   ),
                 ),
-                if (name != null && name.isNotEmpty) ...[
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    name,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: theme.colorScheme.onPrimaryContainer,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(AppSpacing.cardPadding),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.22),
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                          child: const Row(
+                            children: [
+                              Icon(
+                                Icons.auto_stories,
+                                color: Colors.white,
+                                size: 12,
+                              ),
+                              SizedBox(width: 4),
+                              Text(
+                                'STUDY · READ · GROW',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(
+                          _greetingIcon(greeting.generatedAt),
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-                const SizedBox(height: AppSpacing.s),
-                Text(
-                  'Hôm nay ${_dateText(greeting.generatedAt)}',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onPrimaryContainer,
-                  ),
+                    const SizedBox(height: 14),
+                    Text(
+                      greeting.message,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    if (name != null && name.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        name,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 10),
+                    Text(
+                      'Hôm nay ${_dateText(greeting.generatedAt)}',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.85),
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       },
@@ -383,19 +464,64 @@ class _TimetableCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        leading: const Icon(Icons.schedule),
-        title: Text('${entry.courseCode} · ${entry.title}'),
-        subtitle: Text(
-          '${_weekdayText(entry.weekday)} · ${_minuteText(entry.startMinute)}-${_minuteText(entry.endMinute)} · ${entry.room}',
-        ),
-        trailing: entry.isCurrent
-            ? const Chip(
-                label: Text('Đang học'),
-                visualDensity: VisualDensity.compact,
-              )
+    final theme = Theme.of(context);
+    final isCurrent = entry.isCurrent;
+
+    return BouncingWidget(
+      onTap: () => context.go('/academic'),
+      child: Card(
+        color: isCurrent
+            ? theme.colorScheme.primaryContainer.withValues(alpha: 0.35)
             : null,
+        shape: RoundedRectangleBorder(
+          borderRadius: AppRadius.cardRadius,
+          side: BorderSide(
+            color: isCurrent
+                ? theme.colorScheme.primary
+                : theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+            width: isCurrent ? 1.5 : 1.0,
+          ),
+        ),
+        child: ListTile(
+          leading: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: isCurrent
+                  ? theme.colorScheme.primary.withValues(alpha: 0.15)
+                  : theme.colorScheme.surfaceContainerHighest.withValues(
+                      alpha: 0.5,
+                    ),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.schedule,
+              size: 20,
+              color: isCurrent
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          title: Text(
+            '${entry.courseCode} · ${entry.title}',
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: isCurrent ? FontWeight.bold : FontWeight.w600,
+            ),
+          ),
+          subtitle: Text(
+            '${_weekdayText(entry.weekday)} · ${_minuteText(entry.startMinute)}-${_minuteText(entry.endMinute)} · ${entry.room}',
+          ),
+          trailing: entry.isCurrent
+              ? Chip(
+                  label: const Text('Đang học'),
+                  visualDensity: VisualDensity.compact,
+                  backgroundColor: theme.colorScheme.primary,
+                  labelStyle: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                )
+              : null,
+        ),
       ),
     );
   }
@@ -444,17 +570,27 @@ class _DeferredFeatureCard extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.message,
+    this.actionLabel,
+    this.onAction,
   });
 
   final IconData icon;
   final String title;
   final String message;
+  final String? actionLabel;
+  final VoidCallback? onAction;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: AppSpacing.s),
-      child: _EmptyCard(icon: icon, title: title, message: message),
+      child: _EmptyCard(
+        icon: icon,
+        title: title,
+        message: message,
+        actionLabel: actionLabel,
+        onAction: onAction,
+      ),
     );
   }
 }
@@ -464,11 +600,15 @@ class _EmptyCard extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.message,
+    this.actionLabel,
+    this.onAction,
   });
 
   final IconData icon;
   final String title;
   final String message;
+  final String? actionLabel;
+  final VoidCallback? onAction;
 
   @override
   Widget build(BuildContext context) {
@@ -476,26 +616,41 @@ class _EmptyCard extends StatelessWidget {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.m),
-        child: Row(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, color: theme.colorScheme.outline),
-            const SizedBox(width: AppSpacing.m),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: theme.textTheme.titleSmall),
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    message,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(icon, color: theme.colorScheme.outline),
+                const SizedBox(width: AppSpacing.m),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(title, style: theme.textTheme.titleSmall),
+                      const SizedBox(height: AppSpacing.xs),
+                      Text(
+                        message,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
+            if (actionLabel != null && onAction != null) ...[
+              const SizedBox(height: AppSpacing.s),
+              Align(
+                alignment: Alignment.centerRight,
+                child: FilledButton.tonal(
+                  onPressed: onAction,
+                  child: Text(actionLabel!),
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -539,10 +694,11 @@ class _LoadingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: SizedBox(
+    return Padding(
+      padding: const EdgeInsets.only(top: AppSpacing.xs),
+      child: AppShimmer(
+        width: double.infinity,
         height: height,
-        child: const Center(child: CircularProgressIndicator()),
       ),
     );
   }
@@ -569,6 +725,13 @@ String _dateText(DateTime value) {
   final day = local.day.toString().padLeft(2, '0');
   final month = local.month.toString().padLeft(2, '0');
   return '$day/$month/${local.year}';
+}
+
+IconData _greetingIcon(DateTime value) {
+  final hour = value.toLocal().hour;
+  if (hour >= 5 && hour < 12) return Icons.wb_sunny_outlined;
+  if (hour >= 12 && hour < 18) return Icons.wb_twilight_outlined;
+  return Icons.nights_stay_outlined;
 }
 
 class _AiSuggestionCard extends StatelessWidget {

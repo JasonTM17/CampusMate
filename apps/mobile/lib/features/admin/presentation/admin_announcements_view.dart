@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/widgets/app_empty_state.dart';
 import '../application/admin_controller.dart';
 
 class AdminAnnouncementsView extends ConsumerWidget {
@@ -13,10 +14,20 @@ class AdminAnnouncementsView extends ConsumerWidget {
     return Scaffold(
       body: announcementsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => Center(child: Text('Lỗi tải thông báo: $err')),
+        error: (err, _) => AppEmptyState(
+          icon: Icons.error_outline,
+          title: 'Lỗi tải thông báo',
+          message: 'Kiểm tra kết nối và quyền hạn của bạn.',
+          actionLabel: 'Thử lại',
+          onAction: () => ref.invalidate(adminAnnouncementsProvider),
+        ),
         data: (page) {
           if (page.announcements.isEmpty) {
-            return const Center(child: Text('Chưa có thông báo nào.'));
+            return const AppEmptyState(
+              icon: Icons.campaign_outlined,
+              title: 'Chưa có thông báo nào',
+              message: 'Nhấn nút thêm ở góc phải để tạo thông báo mới.',
+            );
           }
           return ListView.separated(
             padding: const EdgeInsets.all(12),
@@ -26,7 +37,13 @@ class AdminAnnouncementsView extends ConsumerWidget {
               final item = page.announcements[index];
               return Card(
                 elevation: item.archived ? 0 : 1,
-                color: item.archived ? Colors.grey.shade100 : null,
+                color: item.archived
+                    ? Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest.withValues(
+                        alpha: 0.3,
+                      )
+                    : null,
                 child: Padding(
                   padding: const EdgeInsets.all(12),
                   child: Column(

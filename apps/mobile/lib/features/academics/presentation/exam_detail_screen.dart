@@ -2,6 +2,7 @@ import 'package:campusmate_client/campusmate_client.dart';
 import 'package:campusmate_shared/campusmate_shared.dart' show CampusClock;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../app/theme/app_spacing.dart';
 import '../../../core/widgets/app_empty_state.dart';
@@ -88,6 +89,17 @@ class ExamDetailScreen extends ConsumerWidget {
                   ],
                 ),
               ),
+            ),
+            const SizedBox(height: AppSpacing.m),
+            FilledButton.icon(
+              onPressed: () {
+                final encodedTitle = Uri.encodeComponent(
+                  'Ôn thi môn ${exam.courseCode} - ${exam.title}',
+                );
+                context.push('/ai?title=$encodedTitle');
+              },
+              icon: const Icon(Icons.auto_awesome),
+              label: const Text('Lập kế hoạch ôn thi với AI'),
             ),
           ],
         ),

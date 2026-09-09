@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_spacing.dart';
+import '../../../app/theme/theme_mode_controller.dart';
 import '../../../core/widgets/app_empty_state.dart';
 import '../../../features/auth/application/auth_controller.dart';
 import '../../../features/auth/domain/auth_user.dart';
@@ -108,7 +109,7 @@ class _StudentProfileScreenState extends ConsumerState<StudentProfileScreen> {
   }
 }
 
-class _ProfileForm extends StatelessWidget {
+class _ProfileForm extends ConsumerWidget {
   const _ProfileForm({
     required this.profile,
     required this.email,
@@ -145,7 +146,7 @@ class _ProfileForm extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final displayName = profile.fullName?.isNotEmpty == true
         ? profile.fullName!
@@ -166,11 +167,11 @@ class _ProfileForm extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 28,
-                backgroundColor: AppColors.primaryContainer,
+                backgroundColor: theme.colorScheme.primaryContainer,
                 child: Text(
                   displayName.characters.first.toUpperCase(),
                   style: theme.textTheme.titleLarge?.copyWith(
-                    color: AppColors.onPrimaryContainer,
+                    color: theme.colorScheme.onPrimaryContainer,
                   ),
                 ),
               ),
@@ -267,6 +268,70 @@ class _ProfileForm extends StatelessWidget {
             ),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push('/ai/settings'),
+          ),
+          const Divider(),
+          const SizedBox(height: AppSpacing.s),
+          Text(
+            'Giao diện ứng dụng',
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.s),
+          SegmentedButton<ThemeMode>(
+            key: const Key('theme-mode-segmented-button'),
+            segments: const [
+              ButtonSegment(
+                value: ThemeMode.system,
+                icon: Icon(Icons.brightness_auto_outlined),
+                label: Text('Hệ thống'),
+              ),
+              ButtonSegment(
+                value: ThemeMode.light,
+                icon: Icon(Icons.light_mode_outlined),
+                label: Text('Sáng'),
+              ),
+              ButtonSegment(
+                value: ThemeMode.dark,
+                icon: Icon(Icons.dark_mode_outlined),
+                label: Text('Tối'),
+              ),
+            ],
+            selected: {ref.watch(appThemeModeProvider)},
+            onSelectionChanged: (selected) {
+              ref
+                  .read(appThemeModeProvider.notifier)
+                  .setThemeMode(selected.first);
+            },
+          ),
+          const SizedBox(height: AppSpacing.m),
+          Text(
+            'Ngôn ngữ / Language',
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.s),
+          SegmentedButton<String>(
+            key: const Key('language-segmented-button'),
+            segments: const [
+              ButtonSegment(
+                value: 'vi',
+                icon: Icon(Icons.language),
+                label: Text('Tiếng Việt'),
+              ),
+              ButtonSegment(
+                value: 'en',
+                icon: Icon(Icons.translate),
+                label: Text('English'),
+              ),
+            ],
+            selected: {ref.watch(appLocaleProvider).languageCode},
+            onSelectionChanged: (selected) {
+              ref
+                  .read(appLocaleProvider.notifier)
+                  .setLocale(Locale(selected.first));
+            },
           ),
           SizedBox(height: AppSpacing.sectionGap),
           if (canAccessPrivilegedArea)
