@@ -1,0 +1,8 @@
+class: BookUploadTicket
+fields:
+  bookId: int
+  uploadToken: String
+  storageKey: String
+  format: String
+  maxSizeBytes: int
+  expiresAt: DateTime

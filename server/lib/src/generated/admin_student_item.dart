@@ -11,72 +11,59 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _i1;
 
-abstract class StudentProfile implements _i1.SerializableModel {
-  StudentProfile._({
-    this.id,
+abstract class AdminStudentItem
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+  AdminStudentItem._({
+    required this.id,
     required this.authUserId,
     this.studentCode,
     this.fullName,
+    this.className,
     this.faculty,
     this.major,
-    this.className,
     this.gpa,
-    this.credits,
-    this.conductScore,
     required this.role,
-    this.status,
+    required this.status,
     required this.createdAt,
-    required this.updatedAt,
   });
 
-  factory StudentProfile({
-    int? id,
+  factory AdminStudentItem({
+    required int id,
     required _i1.UuidValue authUserId,
     String? studentCode,
     String? fullName,
+    String? className,
     String? faculty,
     String? major,
-    String? className,
     double? gpa,
-    int? credits,
-    double? conductScore,
     required String role,
-    String? status,
+    required String status,
     required DateTime createdAt,
-    required DateTime updatedAt,
-  }) = _StudentProfileImpl;
+  }) = _AdminStudentItemImpl;
 
-  factory StudentProfile.fromJson(Map<String, dynamic> jsonSerialization) {
-    return StudentProfile(
-      id: jsonSerialization['id'] as int?,
+  factory AdminStudentItem.fromJson(Map<String, dynamic> jsonSerialization) {
+    return AdminStudentItem(
+      id: jsonSerialization['id'] as int,
       authUserId: _i1.UuidValueJsonExtension.fromJson(
         jsonSerialization['authUserId'],
       ),
       studentCode: jsonSerialization['studentCode'] as String?,
       fullName: jsonSerialization['fullName'] as String?,
+      className: jsonSerialization['className'] as String?,
       faculty: jsonSerialization['faculty'] as String?,
       major: jsonSerialization['major'] as String?,
-      className: jsonSerialization['className'] as String?,
       gpa: (jsonSerialization['gpa'] as num?)?.toDouble(),
-      credits: jsonSerialization['credits'] as int?,
-      conductScore: (jsonSerialization['conductScore'] as num?)?.toDouble(),
       role: jsonSerialization['role'] as String,
-      status: jsonSerialization['status'] as String?,
+      status: jsonSerialization['status'] as String,
       createdAt: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['createdAt'],
-      ),
-      updatedAt: _i1.DateTimeJsonExtension.fromJson(
-        jsonSerialization['updatedAt'],
       ),
     );
   }
 
-  /// The database id, set if the object has been inserted into the
-  /// database or if it has been fetched from the database. Otherwise,
-  /// the id will be null.
-  int? id;
+  int id;
 
   _i1.UuidValue authUserId;
 
@@ -84,63 +71,69 @@ abstract class StudentProfile implements _i1.SerializableModel {
 
   String? fullName;
 
+  String? className;
+
   String? faculty;
 
   String? major;
 
-  String? className;
-
   double? gpa;
-
-  int? credits;
-
-  double? conductScore;
 
   String role;
 
-  String? status;
+  String status;
 
   DateTime createdAt;
 
-  DateTime updatedAt;
-
-  /// Returns a shallow copy of this [StudentProfile]
+  /// Returns a shallow copy of this [AdminStudentItem]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  StudentProfile copyWith({
+  AdminStudentItem copyWith({
     int? id,
     _i1.UuidValue? authUserId,
     String? studentCode,
     String? fullName,
+    String? className,
     String? faculty,
     String? major,
-    String? className,
     double? gpa,
-    int? credits,
-    double? conductScore,
     String? role,
     String? status,
     DateTime? createdAt,
-    DateTime? updatedAt,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
-      '__className__': 'StudentProfile',
-      if (id != null) 'id': id,
+      '__className__': 'AdminStudentItem',
+      'id': id,
       'authUserId': authUserId.toJson(),
       if (studentCode != null) 'studentCode': studentCode,
       if (fullName != null) 'fullName': fullName,
+      if (className != null) 'className': className,
       if (faculty != null) 'faculty': faculty,
       if (major != null) 'major': major,
-      if (className != null) 'className': className,
       if (gpa != null) 'gpa': gpa,
-      if (credits != null) 'credits': credits,
-      if (conductScore != null) 'conductScore': conductScore,
       'role': role,
-      if (status != null) 'status': status,
+      'status': status,
       'createdAt': createdAt.toJson(),
-      'updatedAt': updatedAt.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'AdminStudentItem',
+      'id': id,
+      'authUserId': authUserId.toJson(),
+      if (studentCode != null) 'studentCode': studentCode,
+      if (fullName != null) 'fullName': fullName,
+      if (className != null) 'className': className,
+      if (faculty != null) 'faculty': faculty,
+      if (major != null) 'major': major,
+      if (gpa != null) 'gpa': gpa,
+      'role': role,
+      'status': status,
+      'createdAt': createdAt.toJson(),
     };
   }
 
@@ -152,74 +145,62 @@ abstract class StudentProfile implements _i1.SerializableModel {
 
 class _Undefined {}
 
-class _StudentProfileImpl extends StudentProfile {
-  _StudentProfileImpl({
-    int? id,
+class _AdminStudentItemImpl extends AdminStudentItem {
+  _AdminStudentItemImpl({
+    required int id,
     required _i1.UuidValue authUserId,
     String? studentCode,
     String? fullName,
+    String? className,
     String? faculty,
     String? major,
-    String? className,
     double? gpa,
-    int? credits,
-    double? conductScore,
     required String role,
-    String? status,
+    required String status,
     required DateTime createdAt,
-    required DateTime updatedAt,
   }) : super._(
          id: id,
          authUserId: authUserId,
          studentCode: studentCode,
          fullName: fullName,
+         className: className,
          faculty: faculty,
          major: major,
-         className: className,
          gpa: gpa,
-         credits: credits,
-         conductScore: conductScore,
          role: role,
          status: status,
          createdAt: createdAt,
-         updatedAt: updatedAt,
        );
 
-  /// Returns a shallow copy of this [StudentProfile]
+  /// Returns a shallow copy of this [AdminStudentItem]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  StudentProfile copyWith({
-    Object? id = _Undefined,
+  AdminStudentItem copyWith({
+    int? id,
     _i1.UuidValue? authUserId,
     Object? studentCode = _Undefined,
     Object? fullName = _Undefined,
+    Object? className = _Undefined,
     Object? faculty = _Undefined,
     Object? major = _Undefined,
-    Object? className = _Undefined,
     Object? gpa = _Undefined,
-    Object? credits = _Undefined,
-    Object? conductScore = _Undefined,
     String? role,
-    Object? status = _Undefined,
+    String? status,
     DateTime? createdAt,
-    DateTime? updatedAt,
   }) {
-    return StudentProfile(
-      id: id is int? ? id : this.id,
+    return AdminStudentItem(
+      id: id ?? this.id,
       authUserId: authUserId ?? this.authUserId,
       studentCode: studentCode is String? ? studentCode : this.studentCode,
       fullName: fullName is String? ? fullName : this.fullName,
+      className: className is String? ? className : this.className,
       faculty: faculty is String? ? faculty : this.faculty,
       major: major is String? ? major : this.major,
-      className: className is String? ? className : this.className,
       gpa: gpa is double? ? gpa : this.gpa,
-      credits: credits is int? ? credits : this.credits,
-      conductScore: conductScore is double? ? conductScore : this.conductScore,
       role: role ?? this.role,
-      status: status is String? ? status : this.status,
+      status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 }

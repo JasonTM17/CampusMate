@@ -16,6 +16,17 @@ progress:
   - getCurriculumProgress:
 admin:
   - getAccessSummary:
+  - getDashboardStats:
+  - listStudents:
+  - getStudentDetail:
+  - createStudent:
+  - updateStudent:
+  - setStudentStatus:
+  - listAnnouncements:
+  - createAnnouncement:
+  - updateAnnouncement:
+  - archiveAnnouncement:
+  - listAuditLogs:
 aiSpike:
   - mockStream:
 emailIdp:
@@ -57,6 +68,13 @@ lending:
   - returnLoan:
   - myLoans:
   - activeLoansForBook:
+librarian:
+  - createBook:
+  - updateBook:
+  - archiveBook:
+  - requestUploadTicket:
+  - uploadBookFile:
+  - updateAccessPolicy:
 library:
   - explore:
   - search:

@@ -10,6 +10,7 @@ dependencies:
   serverpod: 3.4.13
   serverpod_client: 3.4.13
   serverpod_auth_idp_server: 3.4.13
+  crypto: ^3.0.3
   campusmate_shared:
     path: ../packages/campusmate_shared
 

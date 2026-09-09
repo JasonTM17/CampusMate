@@ -1,0 +1,5 @@
+class: AdminStudentPage
+fields:
+  students: List<AdminStudentItem>
+  nextCursor: String?
+  totalCount: int

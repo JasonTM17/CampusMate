@@ -14,6 +14,8 @@ fields:
   conductScore: double?
   # Derived from the current auth scope and refreshed on every profile read.
   role: String
+  # Account status ('active', 'inactive', null defaults to 'active').
+  status: String?
   createdAt: DateTime
   updatedAt: DateTime
 indexes:
@@ -23,3 +25,5 @@ indexes:
   student_code_idx:
     fields: studentCode
     unique: true
+  status_idx:
+    fields: status

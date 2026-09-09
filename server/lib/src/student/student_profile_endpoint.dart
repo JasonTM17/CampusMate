@@ -28,6 +28,10 @@ class StudentProfileEndpoint extends Endpoint {
       return _createMyProfile(session, authUserId);
     }
 
+    if (profile.status == 'inactive') {
+      throw ServerpodClientForbidden();
+    }
+
     final currentRole = CampusMateAuth.roleFor(session);
     if (profile.role != currentRole) {
       profile.role = currentRole;
@@ -51,6 +55,7 @@ class StudentProfileEndpoint extends Endpoint {
         StudentProfile(
           authUserId: authUserId,
           role: CampusMateAuth.roleFor(session),
+          status: 'active',
           createdAt: now,
           updatedAt: now,
         ),
@@ -82,6 +87,10 @@ class StudentProfileEndpoint extends Endpoint {
       where: (table) => table.authUserId.equals(authUserId),
     );
     final now = DateTime.now().toUtc();
+
+    if (profile != null && profile.status == 'inactive') {
+      throw ServerpodClientForbidden();
+    }
 
     if (profile == null) {
       profile = StudentProfile(

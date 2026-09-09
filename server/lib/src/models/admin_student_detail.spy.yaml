@@ -1,0 +1,5 @@
+class: AdminStudentDetail
+fields:
+  profile: StudentProfile
+  activeLoanCount: int
+  enrolledCourseCount: int

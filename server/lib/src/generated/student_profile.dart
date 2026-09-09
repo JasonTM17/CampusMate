@@ -27,6 +27,7 @@ abstract class StudentProfile
     this.credits,
     this.conductScore,
     required this.role,
+    this.status,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -43,6 +44,7 @@ abstract class StudentProfile
     int? credits,
     double? conductScore,
     required String role,
+    String? status,
     required DateTime createdAt,
     required DateTime updatedAt,
   }) = _StudentProfileImpl;
@@ -62,6 +64,7 @@ abstract class StudentProfile
       credits: jsonSerialization['credits'] as int?,
       conductScore: (jsonSerialization['conductScore'] as num?)?.toDouble(),
       role: jsonSerialization['role'] as String,
+      status: jsonSerialization['status'] as String?,
       createdAt: _i1.DateTimeJsonExtension.fromJson(
         jsonSerialization['createdAt'],
       ),
@@ -98,6 +101,8 @@ abstract class StudentProfile
 
   String role;
 
+  String? status;
+
   DateTime createdAt;
 
   DateTime updatedAt;
@@ -120,6 +125,7 @@ abstract class StudentProfile
     int? credits,
     double? conductScore,
     String? role,
+    String? status,
     DateTime? createdAt,
     DateTime? updatedAt,
   });
@@ -138,6 +144,7 @@ abstract class StudentProfile
       if (credits != null) 'credits': credits,
       if (conductScore != null) 'conductScore': conductScore,
       'role': role,
+      if (status != null) 'status': status,
       'createdAt': createdAt.toJson(),
       'updatedAt': updatedAt.toJson(),
     };
@@ -158,6 +165,7 @@ abstract class StudentProfile
       if (credits != null) 'credits': credits,
       if (conductScore != null) 'conductScore': conductScore,
       'role': role,
+      if (status != null) 'status': status,
       'createdAt': createdAt.toJson(),
       'updatedAt': updatedAt.toJson(),
     };
@@ -208,6 +216,7 @@ class _StudentProfileImpl extends StudentProfile {
     int? credits,
     double? conductScore,
     required String role,
+    String? status,
     required DateTime createdAt,
     required DateTime updatedAt,
   }) : super._(
@@ -222,6 +231,7 @@ class _StudentProfileImpl extends StudentProfile {
          credits: credits,
          conductScore: conductScore,
          role: role,
+         status: status,
          createdAt: createdAt,
          updatedAt: updatedAt,
        );
@@ -242,6 +252,7 @@ class _StudentProfileImpl extends StudentProfile {
     Object? credits = _Undefined,
     Object? conductScore = _Undefined,
     String? role,
+    Object? status = _Undefined,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -257,6 +268,7 @@ class _StudentProfileImpl extends StudentProfile {
       credits: credits is int? ? credits : this.credits,
       conductScore: conductScore is double? ? conductScore : this.conductScore,
       role: role ?? this.role,
+      status: status is String? ? status : this.status,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -319,6 +331,11 @@ class StudentProfileUpdateTable extends _i1.UpdateTable<StudentProfileTable> {
     value,
   );
 
+  _i1.ColumnValue<String, String> status(String? value) => _i1.ColumnValue(
+    table.status,
+    value,
+  );
+
   _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
       _i1.ColumnValue(
         table.createdAt,
@@ -376,6 +393,10 @@ class StudentProfileTable extends _i1.Table<int?> {
       'role',
       this,
     );
+    status = _i1.ColumnString(
+      'status',
+      this,
+    );
     createdAt = _i1.ColumnDateTime(
       'createdAt',
       this,
@@ -408,6 +429,8 @@ class StudentProfileTable extends _i1.Table<int?> {
 
   late final _i1.ColumnString role;
 
+  late final _i1.ColumnString status;
+
   late final _i1.ColumnDateTime createdAt;
 
   late final _i1.ColumnDateTime updatedAt;
@@ -425,6 +448,7 @@ class StudentProfileTable extends _i1.Table<int?> {
     credits,
     conductScore,
     role,
+    status,
     createdAt,
     updatedAt,
   ];

@@ -1,0 +1,5 @@
+class: AdminAnnouncementPage
+fields:
+  announcements: List<Announcement>
+  nextCursor: String?
+  totalCount: int

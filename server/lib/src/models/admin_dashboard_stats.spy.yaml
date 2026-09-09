@@ -1,0 +1,7 @@
+class: AdminDashboardStats
+fields:
+  totalStudents: int
+  activeStudents: int
+  totalBooks: int
+  activeLoans: int
+  aiRequestsToday: int

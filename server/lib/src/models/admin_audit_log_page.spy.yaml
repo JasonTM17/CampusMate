@@ -1,0 +1,5 @@
+class: AdminAuditLogPage
+fields:
+  logs: List<AuditLog>
+  nextCursor: String?
+  totalCount: int

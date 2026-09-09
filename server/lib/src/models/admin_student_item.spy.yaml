@@ -1,0 +1,13 @@
+class: AdminStudentItem
+fields:
+  id: int
+  authUserId: UuidValue
+  studentCode: String?
+  fullName: String?
+  className: String?
+  faculty: String?
+  major: String?
+  gpa: double?
+  role: String
+  status: String
+  createdAt: DateTime

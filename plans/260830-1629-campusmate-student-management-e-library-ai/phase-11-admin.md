@@ -1,7 +1,7 @@
 ---
 phase: 11
 title: "Admin + Librarian management"
-status: pending
+status: completed
 priority: P2
 effort: M
 dependencies: [10]
@@ -39,11 +39,11 @@ UI quản trị theo role để demo (§53): admin dashboard aggregates, student
 
 ## Success Criteria
 
-- [ ] RBAC matrix PASS: mỗi role chỉ tới endpoint được phép; deactivate student ⇒ session tiếp theo bị chặn đúng.
-- [ ] Upload `evil.pdf` giả đuôi `.epub` bị chặn; filename traversal không ảnh hưởng storage key (test PASS).
-- [ ] Mỗi mutation đặc quyền có audit row đúng actor/action/resource (assert PASS).
-- [ ] Admin dashboard số liệu khớp seed (test PASS).
-- [ ] `dart analyze`/tests PASS.
+- [x] RBAC matrix PASS: mỗi role chỉ tới endpoint được phép; deactivate student ⇒ session tiếp theo bị chặn đúng.
+- [x] Upload `evil.pdf` giả đuôi `.epub` bị chặn; filename traversal không ảnh hưởng storage key (test PASS).
+- [x] Mỗi mutation đặc quyền có audit row đúng actor/action/resource (assert PASS).
+- [x] Admin dashboard số liệu khớp seed (test PASS).
+- [x] `dart analyze`/tests PASS.
 
 ## Risk Assessment
 

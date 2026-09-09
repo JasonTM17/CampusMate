@@ -18,6 +18,7 @@ import '../../features/library/presentation/my_loans_screen.dart';
 import '../../features/notifications/presentation/notification_screen.dart';
 import '../../features/reader/presentation/reader_screen.dart';
 import '../../features/student_profile/presentation/student_profile_screen.dart';
+import '../../features/admin/presentation/admin_dashboard_screen.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../core/widgets/app_empty_state.dart';
 import 'auth_redirects.dart';
@@ -81,10 +82,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           final role = authStateNotifier.value.user?.role;
           return role != null && canAccessPrivilegedArea(role) ? null : '/home';
         },
-        builder: (context, state) => BranchPlaceholderScreen(
-          icon: Icons.admin_panel_settings_outlined,
-          title: AppLocalizations.of(context)!.profilePrivilegedArea,
-        ),
+        builder: (context, state) => const AdminDashboardScreen(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
