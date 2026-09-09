@@ -1,4 +1,3 @@
-import 'package:campusmate/features/chat/application/ai_preferences_controller.dart';
 import 'package:campusmate/features/chat/application/chat_controller.dart';
 import 'package:campusmate/features/chat/domain/chat_message.dart';
 import 'package:campusmate/features/chat/domain/chat_repository.dart';

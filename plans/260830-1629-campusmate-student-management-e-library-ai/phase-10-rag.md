@@ -1,7 +1,7 @@
 ---
 phase: 10
 title: "RAG (ingestion, pgvector, authorized retrieval, citations)"
-status: pending
+status: completed
 priority: P2
 effort: L
 dependencies: [9]
@@ -42,11 +42,11 @@ Pipeline RAG (§29) với bất biến số 1: **authorization xảy ra ở DB-l
 
 ## Success Criteria
 
-- [ ] Hỏi nội dung có trong tài liệu authorized ⇒ trả lời + citation đúng chương/trang thật (bảng vàng test PASS với FakeAiProvider).
-- [ ] Hỏi nội dung chỉ có trong restricted doc ⇒ "không tìm thấy tài liệu phù hợp", 0 chunk leak (negative test PASS mọi path).
-- [ ] LLM bịa citation ⇒ verifier loại, không hiển thị citation sai (test PASS).
-- [ ] Ingest 1 tài liệu lớn ⇒ số chunk gửi LLM ≤ budget config (test PASS).
-- [ ] `dart analyze`/tests PASS trên Postgres compose (test đánh dấu skip + ghi lý do nếu chạy không có Docker — không fake PASS).
+- [x] Hỏi nội dung có trong tài liệu authorized ⇒ trả lời + citation đúng chương/trang thật (bảng vàng test PASS với FakeAiProvider).
+- [x] Hỏi nội dung chỉ có trong restricted doc ⇒ "không tìm thấy tài liệu phù hợp", 0 chunk leak (negative test PASS mọi path).
+- [x] LLM bịa citation ⇒ verifier loại, không hiển thị citation sai (test PASS).
+- [x] Ingest 1 tài liệu lớn ⇒ số chunk gửi LLM ≤ budget config (test PASS).
+- [x] `dart analyze`/tests PASS trên Postgres compose (test đánh dấu skip + ghi lý do nếu chạy không có Docker — không fake PASS).
 
 ## Risk Assessment
 

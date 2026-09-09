@@ -1,0 +1,9 @@
+class: RagCitation
+fields:
+  documentId: int
+  chunkId: int?
+  bookId: int?
+  title: String
+  chapter: String?
+  page: int?
+  quote: String?

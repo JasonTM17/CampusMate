@@ -36,31 +36,32 @@ import 'package:campusmate_server/src/generated/student_ai_preference.dart'
     as _i17;
 import 'package:campusmate_server/src/generated/ai_user_memory.dart' as _i18;
 import 'package:campusmate_server/src/generated/study_suggestion.dart' as _i19;
+import 'package:campusmate_server/src/generated/rag_citation.dart' as _i20;
 import 'package:campusmate_server/src/generated/greetings/greeting.dart'
-    as _i20;
-import 'package:campusmate_server/src/generated/book_loan_summary.dart' as _i21;
-import 'package:campusmate_server/src/generated/book_loan_page.dart' as _i22;
-import 'package:campusmate_server/src/generated/library_explore.dart' as _i23;
+    as _i21;
+import 'package:campusmate_server/src/generated/book_loan_summary.dart' as _i22;
+import 'package:campusmate_server/src/generated/book_loan_page.dart' as _i23;
+import 'package:campusmate_server/src/generated/library_explore.dart' as _i24;
 import 'package:campusmate_server/src/generated/library_search_page.dart'
-    as _i24;
-import 'package:campusmate_server/src/generated/book_access_type.dart' as _i25;
-import 'package:campusmate_server/src/generated/book_detail.dart' as _i26;
+    as _i25;
+import 'package:campusmate_server/src/generated/book_access_type.dart' as _i26;
+import 'package:campusmate_server/src/generated/book_detail.dart' as _i27;
 import 'package:campusmate_server/src/generated/book_favorite_status.dart'
-    as _i27;
-import 'package:campusmate_server/src/generated/book_access_policy_update.dart'
     as _i28;
-import 'package:campusmate_server/src/generated/notification_list_page.dart'
+import 'package:campusmate_server/src/generated/book_access_policy_update.dart'
     as _i29;
-import 'package:campusmate_server/src/generated/campus_notification_summary.dart'
+import 'package:campusmate_server/src/generated/notification_list_page.dart'
     as _i30;
-import 'package:campusmate_server/src/generated/reader_asset.dart' as _i31;
+import 'package:campusmate_server/src/generated/campus_notification_summary.dart'
+    as _i31;
+import 'package:campusmate_server/src/generated/reader_asset.dart' as _i32;
 import 'package:campusmate_server/src/generated/reading_progress_sync_result.dart'
-    as _i32;
-import 'package:campusmate_server/src/generated/reading_progress.dart' as _i33;
-import 'package:campusmate_server/src/generated/reader_bookmark.dart' as _i34;
-import 'package:campusmate_server/src/generated/reader_note.dart' as _i35;
-import 'package:campusmate_server/src/generated/reader_highlight.dart' as _i36;
-import 'package:campusmate_server/src/generated/student_profile.dart' as _i37;
+    as _i33;
+import 'package:campusmate_server/src/generated/reading_progress.dart' as _i34;
+import 'package:campusmate_server/src/generated/reader_bookmark.dart' as _i35;
+import 'package:campusmate_server/src/generated/reader_note.dart' as _i36;
+import 'package:campusmate_server/src/generated/reader_highlight.dart' as _i37;
+import 'package:campusmate_server/src/generated/student_profile.dart' as _i38;
 import 'package:campusmate_server/src/generated/protocol.dart';
 import 'package:campusmate_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -1678,6 +1679,43 @@ class _AiEndpoint {
       }
     });
   }
+
+  _i3.Future<List<_i20.RagCitation>> searchKnowledge(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required String query,
+    int? bookId,
+    required int limit,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'ai',
+            method: 'searchKnowledge',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'ai',
+          methodName: 'searchKnowledge',
+          parameters: _i1.testObjectToJson({
+            'query': query,
+            'bookId': bookId,
+            'limit': limit,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i3.Future<List<_i20.RagCitation>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
 }
 
 class _GreetingEndpoint {
@@ -1690,7 +1728,7 @@ class _GreetingEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i20.Greeting> hello(
+  _i3.Future<_i21.Greeting> hello(
     _i1.TestSessionBuilder sessionBuilder,
     String name,
   ) async {
@@ -1713,7 +1751,7 @@ class _GreetingEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i20.Greeting>);
+                as _i3.Future<_i21.Greeting>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1732,7 +1770,7 @@ class _LendingEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i21.BookLoanSummary> borrowBook(
+  _i3.Future<_i22.BookLoanSummary> borrowBook(
     _i1.TestSessionBuilder sessionBuilder, {
     required int bookId,
   }) async {
@@ -1755,7 +1793,7 @@ class _LendingEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i21.BookLoanSummary>);
+                as _i3.Future<_i22.BookLoanSummary>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1763,7 +1801,7 @@ class _LendingEndpoint {
     });
   }
 
-  _i3.Future<_i21.BookLoanSummary> returnLoan(
+  _i3.Future<_i22.BookLoanSummary> returnLoan(
     _i1.TestSessionBuilder sessionBuilder, {
     required int loanId,
   }) async {
@@ -1786,7 +1824,7 @@ class _LendingEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i21.BookLoanSummary>);
+                as _i3.Future<_i22.BookLoanSummary>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1794,7 +1832,7 @@ class _LendingEndpoint {
     });
   }
 
-  _i3.Future<_i22.BookLoanPage> myLoans(
+  _i3.Future<_i23.BookLoanPage> myLoans(
     _i1.TestSessionBuilder sessionBuilder, {
     String? cursor,
     required int limit,
@@ -1823,7 +1861,7 @@ class _LendingEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i22.BookLoanPage>);
+                as _i3.Future<_i23.BookLoanPage>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1831,7 +1869,7 @@ class _LendingEndpoint {
     });
   }
 
-  _i3.Future<List<_i21.BookLoanSummary>> activeLoansForBook(
+  _i3.Future<List<_i22.BookLoanSummary>> activeLoansForBook(
     _i1.TestSessionBuilder sessionBuilder, {
     required int bookId,
   }) async {
@@ -1854,7 +1892,7 @@ class _LendingEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i21.BookLoanSummary>>);
+                as _i3.Future<List<_i22.BookLoanSummary>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1873,7 +1911,7 @@ class _LibraryEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i23.LibraryExplore> explore(
+  _i3.Future<_i24.LibraryExplore> explore(
     _i1.TestSessionBuilder sessionBuilder, {
     required int limitPerSection,
   }) async {
@@ -1898,7 +1936,7 @@ class _LibraryEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i23.LibraryExplore>);
+                as _i3.Future<_i24.LibraryExplore>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1906,7 +1944,7 @@ class _LibraryEndpoint {
     });
   }
 
-  _i3.Future<_i24.LibrarySearchPage> search(
+  _i3.Future<_i25.LibrarySearchPage> search(
     _i1.TestSessionBuilder sessionBuilder, {
     String? query,
     String? cursor,
@@ -1916,7 +1954,7 @@ class _LibraryEndpoint {
     List<String>? categories,
     List<String>? authors,
     List<int>? years,
-    List<_i25.BookAccessType>? accessTypes,
+    List<_i26.BookAccessType>? accessTypes,
     required bool relatedToMyCourses,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -1949,7 +1987,7 @@ class _LibraryEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i24.LibrarySearchPage>);
+                as _i3.Future<_i25.LibrarySearchPage>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1957,7 +1995,7 @@ class _LibraryEndpoint {
     });
   }
 
-  _i3.Future<_i26.BookDetail> getBookDetail(
+  _i3.Future<_i27.BookDetail> getBookDetail(
     _i1.TestSessionBuilder sessionBuilder, {
     required int bookId,
   }) async {
@@ -1980,7 +2018,7 @@ class _LibraryEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i26.BookDetail>);
+                as _i3.Future<_i27.BookDetail>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1988,7 +2026,7 @@ class _LibraryEndpoint {
     });
   }
 
-  _i3.Future<_i27.BookFavoriteStatus> toggleFavorite(
+  _i3.Future<_i28.BookFavoriteStatus> toggleFavorite(
     _i1.TestSessionBuilder sessionBuilder, {
     required int bookId,
   }) async {
@@ -2011,7 +2049,7 @@ class _LibraryEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i27.BookFavoriteStatus>);
+                as _i3.Future<_i28.BookFavoriteStatus>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2019,10 +2057,10 @@ class _LibraryEndpoint {
     });
   }
 
-  _i3.Future<_i28.BookAccessPolicyUpdate> updateAccessPolicy(
+  _i3.Future<_i29.BookAccessPolicyUpdate> updateAccessPolicy(
     _i1.TestSessionBuilder sessionBuilder, {
     required int bookId,
-    required _i25.BookAccessType accessType,
+    required _i26.BookAccessType accessType,
   }) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
@@ -2046,7 +2084,7 @@ class _LibraryEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i28.BookAccessPolicyUpdate>);
+                as _i3.Future<_i29.BookAccessPolicyUpdate>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2065,7 +2103,7 @@ class _NotificationEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i29.NotificationListPage> list(
+  _i3.Future<_i30.NotificationListPage> list(
     _i1.TestSessionBuilder sessionBuilder, {
     String? cursor,
     required int limit,
@@ -2094,7 +2132,7 @@ class _NotificationEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i29.NotificationListPage>);
+                as _i3.Future<_i30.NotificationListPage>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2133,7 +2171,7 @@ class _NotificationEndpoint {
     });
   }
 
-  _i3.Future<_i30.CampusNotificationSummary> markRead(
+  _i3.Future<_i31.CampusNotificationSummary> markRead(
     _i1.TestSessionBuilder sessionBuilder, {
     required int notificationId,
   }) async {
@@ -2156,7 +2194,7 @@ class _NotificationEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i30.CampusNotificationSummary>);
+                as _i3.Future<_i31.CampusNotificationSummary>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2206,7 +2244,7 @@ class _ReaderEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i31.ReaderAsset> getReaderAsset(
+  _i3.Future<_i32.ReaderAsset> getReaderAsset(
     _i1.TestSessionBuilder sessionBuilder, {
     required int bookId,
     required String format,
@@ -2233,7 +2271,7 @@ class _ReaderEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i31.ReaderAsset>);
+                as _i3.Future<_i32.ReaderAsset>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2241,7 +2279,7 @@ class _ReaderEndpoint {
     });
   }
 
-  _i3.Future<_i32.ReadingProgressSyncResult> syncProgress(
+  _i3.Future<_i33.ReadingProgressSyncResult> syncProgress(
     _i1.TestSessionBuilder sessionBuilder, {
     required int bookId,
     required double progressPercent,
@@ -2272,7 +2310,7 @@ class _ReaderEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i32.ReadingProgressSyncResult>);
+                as _i3.Future<_i33.ReadingProgressSyncResult>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2280,7 +2318,7 @@ class _ReaderEndpoint {
     });
   }
 
-  _i3.Future<_i33.ReadingProgress?> getProgress(
+  _i3.Future<_i34.ReadingProgress?> getProgress(
     _i1.TestSessionBuilder sessionBuilder, {
     required int bookId,
   }) async {
@@ -2303,7 +2341,7 @@ class _ReaderEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i33.ReadingProgress?>);
+                as _i3.Future<_i34.ReadingProgress?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2311,7 +2349,7 @@ class _ReaderEndpoint {
     });
   }
 
-  _i3.Future<List<_i34.ReaderBookmark>> getBookmarks(
+  _i3.Future<List<_i35.ReaderBookmark>> getBookmarks(
     _i1.TestSessionBuilder sessionBuilder, {
     required int bookId,
   }) async {
@@ -2334,7 +2372,7 @@ class _ReaderEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i34.ReaderBookmark>>);
+                as _i3.Future<List<_i35.ReaderBookmark>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2342,7 +2380,7 @@ class _ReaderEndpoint {
     });
   }
 
-  _i3.Future<_i34.ReaderBookmark> addBookmark(
+  _i3.Future<_i35.ReaderBookmark> addBookmark(
     _i1.TestSessionBuilder sessionBuilder, {
     required int bookId,
     required String location,
@@ -2371,7 +2409,7 @@ class _ReaderEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i34.ReaderBookmark>);
+                as _i3.Future<_i35.ReaderBookmark>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2410,7 +2448,7 @@ class _ReaderEndpoint {
     });
   }
 
-  _i3.Future<List<_i35.ReaderNote>> getNotes(
+  _i3.Future<List<_i36.ReaderNote>> getNotes(
     _i1.TestSessionBuilder sessionBuilder, {
     required int bookId,
   }) async {
@@ -2433,7 +2471,7 @@ class _ReaderEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i35.ReaderNote>>);
+                as _i3.Future<List<_i36.ReaderNote>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2441,7 +2479,7 @@ class _ReaderEndpoint {
     });
   }
 
-  _i3.Future<_i35.ReaderNote> saveNote(
+  _i3.Future<_i36.ReaderNote> saveNote(
     _i1.TestSessionBuilder sessionBuilder, {
     required int bookId,
     required String location,
@@ -2472,7 +2510,7 @@ class _ReaderEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i35.ReaderNote>);
+                as _i3.Future<_i36.ReaderNote>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2511,7 +2549,7 @@ class _ReaderEndpoint {
     });
   }
 
-  _i3.Future<List<_i36.ReaderHighlight>> getHighlights(
+  _i3.Future<List<_i37.ReaderHighlight>> getHighlights(
     _i1.TestSessionBuilder sessionBuilder, {
     required int bookId,
   }) async {
@@ -2534,7 +2572,7 @@ class _ReaderEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<List<_i36.ReaderHighlight>>);
+                as _i3.Future<List<_i37.ReaderHighlight>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2542,7 +2580,7 @@ class _ReaderEndpoint {
     });
   }
 
-  _i3.Future<_i36.ReaderHighlight> addHighlight(
+  _i3.Future<_i37.ReaderHighlight> addHighlight(
     _i1.TestSessionBuilder sessionBuilder, {
     required int bookId,
     required String location,
@@ -2573,7 +2611,7 @@ class _ReaderEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i36.ReaderHighlight>);
+                as _i3.Future<_i37.ReaderHighlight>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2623,7 +2661,7 @@ class _StudentProfileEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i3.Future<_i37.StudentProfile> getMyProfile(
+  _i3.Future<_i38.StudentProfile> getMyProfile(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -2645,7 +2683,7 @@ class _StudentProfileEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i37.StudentProfile>);
+                as _i3.Future<_i38.StudentProfile>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -2653,7 +2691,7 @@ class _StudentProfileEndpoint {
     });
   }
 
-  _i3.Future<_i37.StudentProfile> updateMyProfile(
+  _i3.Future<_i38.StudentProfile> updateMyProfile(
     _i1.TestSessionBuilder sessionBuilder, {
     required String fullName,
     required String className,
@@ -2680,7 +2718,7 @@ class _StudentProfileEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i3.Future<_i37.StudentProfile>);
+                as _i3.Future<_i38.StudentProfile>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

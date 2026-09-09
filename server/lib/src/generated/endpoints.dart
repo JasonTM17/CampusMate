@@ -921,6 +921,36 @@ class Endpoints extends _i1.EndpointDispatch {
                 session,
               ),
         ),
+        'searchKnowledge': _i1.MethodConnector(
+          name: 'searchKnowledge',
+          params: {
+            'query': _i1.ParameterDescription(
+              name: 'query',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'bookId': _i1.ParameterDescription(
+              name: 'bookId',
+              type: _i1.getType<int?>(),
+              nullable: true,
+            ),
+            'limit': _i1.ParameterDescription(
+              name: 'limit',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['ai'] as _i8.AiEndpoint).searchKnowledge(
+                session,
+                query: params['query'],
+                bookId: params['bookId'],
+                limit: params['limit'],
+              ),
+        ),
         'sendMessage': _i1.MethodStreamConnector(
           name: 'sendMessage',
           params: {

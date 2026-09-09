@@ -1,6 +1,5 @@
 import 'package:campusmate_server/src/ai/fake_ai_provider.dart';
 import 'package:campusmate_server/src/auth/campusmate_auth.dart';
-import 'package:campusmate_server/src/generated/protocol.dart';
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:test/test.dart';
 

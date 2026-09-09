@@ -52,49 +52,53 @@ import 'grade_component.dart' as _i38;
 import 'grade_component_score.dart' as _i39;
 import 'grade_summary.dart' as _i40;
 import 'greetings/greeting.dart' as _i41;
-import 'library_author.dart' as _i42;
-import 'library_book.dart' as _i43;
-import 'library_book_author.dart' as _i44;
-import 'library_book_category.dart' as _i45;
-import 'library_book_course.dart' as _i46;
-import 'library_book_file.dart' as _i47;
-import 'library_category.dart' as _i48;
-import 'library_explore.dart' as _i49;
-import 'library_explore_section.dart' as _i50;
-import 'library_filter_options.dart' as _i51;
-import 'library_search_page.dart' as _i52;
-import 'notification_list_page.dart' as _i53;
-import 'reader_asset.dart' as _i54;
-import 'reader_bookmark.dart' as _i55;
-import 'reader_highlight.dart' as _i56;
-import 'reader_note.dart' as _i57;
-import 'reading_progress.dart' as _i58;
-import 'reading_progress_sync_result.dart' as _i59;
-import 'semester.dart' as _i60;
-import 'semester_summary.dart' as _i61;
-import 'student_ai_preference.dart' as _i62;
-import 'student_grade.dart' as _i63;
-import 'student_profile.dart' as _i64;
-import 'study_suggestion.dart' as _i65;
-import 'timetable_entry.dart' as _i66;
-import 'vector_capability_probe.dart' as _i67;
-import 'package:campusmate_client/src/protocol/course_summary.dart' as _i68;
-import 'package:campusmate_client/src/protocol/timetable_entry.dart' as _i69;
-import 'package:campusmate_client/src/protocol/exam_summary.dart' as _i70;
+import 'knowledge_chunk.dart' as _i42;
+import 'knowledge_document.dart' as _i43;
+import 'library_author.dart' as _i44;
+import 'library_book.dart' as _i45;
+import 'library_book_author.dart' as _i46;
+import 'library_book_category.dart' as _i47;
+import 'library_book_course.dart' as _i48;
+import 'library_book_file.dart' as _i49;
+import 'library_category.dart' as _i50;
+import 'library_explore.dart' as _i51;
+import 'library_explore_section.dart' as _i52;
+import 'library_filter_options.dart' as _i53;
+import 'library_search_page.dart' as _i54;
+import 'notification_list_page.dart' as _i55;
+import 'rag_citation.dart' as _i56;
+import 'reader_asset.dart' as _i57;
+import 'reader_bookmark.dart' as _i58;
+import 'reader_highlight.dart' as _i59;
+import 'reader_note.dart' as _i60;
+import 'reading_progress.dart' as _i61;
+import 'reading_progress_sync_result.dart' as _i62;
+import 'semester.dart' as _i63;
+import 'semester_summary.dart' as _i64;
+import 'student_ai_preference.dart' as _i65;
+import 'student_grade.dart' as _i66;
+import 'student_profile.dart' as _i67;
+import 'study_suggestion.dart' as _i68;
+import 'timetable_entry.dart' as _i69;
+import 'vector_capability_probe.dart' as _i70;
+import 'package:campusmate_client/src/protocol/course_summary.dart' as _i71;
+import 'package:campusmate_client/src/protocol/timetable_entry.dart' as _i72;
+import 'package:campusmate_client/src/protocol/exam_summary.dart' as _i73;
 import 'package:campusmate_client/src/protocol/announcement_summary.dart'
-    as _i71;
-import 'package:campusmate_client/src/protocol/ai_conversations.dart' as _i72;
-import 'package:campusmate_client/src/protocol/ai_messages.dart' as _i73;
-import 'package:campusmate_client/src/protocol/ai_user_memory.dart' as _i74;
-import 'package:campusmate_client/src/protocol/book_loan_summary.dart' as _i75;
-import 'package:campusmate_client/src/protocol/book_access_type.dart' as _i76;
-import 'package:campusmate_client/src/protocol/reader_bookmark.dart' as _i77;
-import 'package:campusmate_client/src/protocol/reader_note.dart' as _i78;
-import 'package:campusmate_client/src/protocol/reader_highlight.dart' as _i79;
+    as _i74;
+import 'package:campusmate_client/src/protocol/ai_conversations.dart' as _i75;
+import 'package:campusmate_client/src/protocol/ai_messages.dart' as _i76;
+import 'package:campusmate_client/src/protocol/ai_user_memory.dart' as _i77;
+import 'package:campusmate_client/src/protocol/rag_citation.dart' as _i78;
+import 'package:campusmate_client/src/protocol/book_loan_summary.dart' as _i79;
+import 'package:campusmate_client/src/protocol/book_access_type.dart' as _i80;
+import 'package:campusmate_client/src/protocol/reader_bookmark.dart' as _i81;
+import 'package:campusmate_client/src/protocol/reader_note.dart' as _i82;
+import 'package:campusmate_client/src/protocol/reader_highlight.dart' as _i83;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _i80;
+    as _i84;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i81;
+    as _i85;
 export 'academic_overview.dart';
 export 'academic_year.dart';
 export 'ai_conversations.dart';
@@ -135,6 +139,8 @@ export 'grade_component.dart';
 export 'grade_component_score.dart';
 export 'grade_summary.dart';
 export 'greetings/greeting.dart';
+export 'knowledge_chunk.dart';
+export 'knowledge_document.dart';
 export 'library_author.dart';
 export 'library_book.dart';
 export 'library_book_author.dart';
@@ -147,6 +153,7 @@ export 'library_explore_section.dart';
 export 'library_filter_options.dart';
 export 'library_search_page.dart';
 export 'notification_list_page.dart';
+export 'rag_citation.dart';
 export 'reader_asset.dart';
 export 'reader_bookmark.dart';
 export 'reader_highlight.dart';
@@ -317,83 +324,92 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i41.Greeting) {
       return _i41.Greeting.fromJson(data) as T;
     }
-    if (t == _i42.LibraryAuthor) {
-      return _i42.LibraryAuthor.fromJson(data) as T;
+    if (t == _i42.KnowledgeChunk) {
+      return _i42.KnowledgeChunk.fromJson(data) as T;
     }
-    if (t == _i43.LibraryBook) {
-      return _i43.LibraryBook.fromJson(data) as T;
+    if (t == _i43.KnowledgeDocument) {
+      return _i43.KnowledgeDocument.fromJson(data) as T;
     }
-    if (t == _i44.LibraryBookAuthor) {
-      return _i44.LibraryBookAuthor.fromJson(data) as T;
+    if (t == _i44.LibraryAuthor) {
+      return _i44.LibraryAuthor.fromJson(data) as T;
     }
-    if (t == _i45.LibraryBookCategory) {
-      return _i45.LibraryBookCategory.fromJson(data) as T;
+    if (t == _i45.LibraryBook) {
+      return _i45.LibraryBook.fromJson(data) as T;
     }
-    if (t == _i46.LibraryBookCourse) {
-      return _i46.LibraryBookCourse.fromJson(data) as T;
+    if (t == _i46.LibraryBookAuthor) {
+      return _i46.LibraryBookAuthor.fromJson(data) as T;
     }
-    if (t == _i47.LibraryBookFile) {
-      return _i47.LibraryBookFile.fromJson(data) as T;
+    if (t == _i47.LibraryBookCategory) {
+      return _i47.LibraryBookCategory.fromJson(data) as T;
     }
-    if (t == _i48.LibraryCategory) {
-      return _i48.LibraryCategory.fromJson(data) as T;
+    if (t == _i48.LibraryBookCourse) {
+      return _i48.LibraryBookCourse.fromJson(data) as T;
     }
-    if (t == _i49.LibraryExplore) {
-      return _i49.LibraryExplore.fromJson(data) as T;
+    if (t == _i49.LibraryBookFile) {
+      return _i49.LibraryBookFile.fromJson(data) as T;
     }
-    if (t == _i50.LibraryExploreSection) {
-      return _i50.LibraryExploreSection.fromJson(data) as T;
+    if (t == _i50.LibraryCategory) {
+      return _i50.LibraryCategory.fromJson(data) as T;
     }
-    if (t == _i51.LibraryFilterOptions) {
-      return _i51.LibraryFilterOptions.fromJson(data) as T;
+    if (t == _i51.LibraryExplore) {
+      return _i51.LibraryExplore.fromJson(data) as T;
     }
-    if (t == _i52.LibrarySearchPage) {
-      return _i52.LibrarySearchPage.fromJson(data) as T;
+    if (t == _i52.LibraryExploreSection) {
+      return _i52.LibraryExploreSection.fromJson(data) as T;
     }
-    if (t == _i53.NotificationListPage) {
-      return _i53.NotificationListPage.fromJson(data) as T;
+    if (t == _i53.LibraryFilterOptions) {
+      return _i53.LibraryFilterOptions.fromJson(data) as T;
     }
-    if (t == _i54.ReaderAsset) {
-      return _i54.ReaderAsset.fromJson(data) as T;
+    if (t == _i54.LibrarySearchPage) {
+      return _i54.LibrarySearchPage.fromJson(data) as T;
     }
-    if (t == _i55.ReaderBookmark) {
-      return _i55.ReaderBookmark.fromJson(data) as T;
+    if (t == _i55.NotificationListPage) {
+      return _i55.NotificationListPage.fromJson(data) as T;
     }
-    if (t == _i56.ReaderHighlight) {
-      return _i56.ReaderHighlight.fromJson(data) as T;
+    if (t == _i56.RagCitation) {
+      return _i56.RagCitation.fromJson(data) as T;
     }
-    if (t == _i57.ReaderNote) {
-      return _i57.ReaderNote.fromJson(data) as T;
+    if (t == _i57.ReaderAsset) {
+      return _i57.ReaderAsset.fromJson(data) as T;
     }
-    if (t == _i58.ReadingProgress) {
-      return _i58.ReadingProgress.fromJson(data) as T;
+    if (t == _i58.ReaderBookmark) {
+      return _i58.ReaderBookmark.fromJson(data) as T;
     }
-    if (t == _i59.ReadingProgressSyncResult) {
-      return _i59.ReadingProgressSyncResult.fromJson(data) as T;
+    if (t == _i59.ReaderHighlight) {
+      return _i59.ReaderHighlight.fromJson(data) as T;
     }
-    if (t == _i60.Semester) {
-      return _i60.Semester.fromJson(data) as T;
+    if (t == _i60.ReaderNote) {
+      return _i60.ReaderNote.fromJson(data) as T;
     }
-    if (t == _i61.SemesterSummary) {
-      return _i61.SemesterSummary.fromJson(data) as T;
+    if (t == _i61.ReadingProgress) {
+      return _i61.ReadingProgress.fromJson(data) as T;
     }
-    if (t == _i62.StudentAiPreference) {
-      return _i62.StudentAiPreference.fromJson(data) as T;
+    if (t == _i62.ReadingProgressSyncResult) {
+      return _i62.ReadingProgressSyncResult.fromJson(data) as T;
     }
-    if (t == _i63.StudentGrade) {
-      return _i63.StudentGrade.fromJson(data) as T;
+    if (t == _i63.Semester) {
+      return _i63.Semester.fromJson(data) as T;
     }
-    if (t == _i64.StudentProfile) {
-      return _i64.StudentProfile.fromJson(data) as T;
+    if (t == _i64.SemesterSummary) {
+      return _i64.SemesterSummary.fromJson(data) as T;
     }
-    if (t == _i65.StudySuggestion) {
-      return _i65.StudySuggestion.fromJson(data) as T;
+    if (t == _i65.StudentAiPreference) {
+      return _i65.StudentAiPreference.fromJson(data) as T;
     }
-    if (t == _i66.TimetableEntry) {
-      return _i66.TimetableEntry.fromJson(data) as T;
+    if (t == _i66.StudentGrade) {
+      return _i66.StudentGrade.fromJson(data) as T;
     }
-    if (t == _i67.VectorCapabilityProbe) {
-      return _i67.VectorCapabilityProbe.fromJson(data) as T;
+    if (t == _i67.StudentProfile) {
+      return _i67.StudentProfile.fromJson(data) as T;
+    }
+    if (t == _i68.StudySuggestion) {
+      return _i68.StudySuggestion.fromJson(data) as T;
+    }
+    if (t == _i69.TimetableEntry) {
+      return _i69.TimetableEntry.fromJson(data) as T;
+    }
+    if (t == _i70.VectorCapabilityProbe) {
+      return _i70.VectorCapabilityProbe.fromJson(data) as T;
     }
     if (t == _i1.getType<_i2.AcademicOverview?>()) {
       return (data != null ? _i2.AcademicOverview.fromJson(data) : null) as T;
@@ -529,96 +545,105 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i41.Greeting?>()) {
       return (data != null ? _i41.Greeting.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i42.LibraryAuthor?>()) {
-      return (data != null ? _i42.LibraryAuthor.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i42.KnowledgeChunk?>()) {
+      return (data != null ? _i42.KnowledgeChunk.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i43.LibraryBook?>()) {
-      return (data != null ? _i43.LibraryBook.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i43.KnowledgeDocument?>()) {
+      return (data != null ? _i43.KnowledgeDocument.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i44.LibraryBookAuthor?>()) {
-      return (data != null ? _i44.LibraryBookAuthor.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i44.LibraryAuthor?>()) {
+      return (data != null ? _i44.LibraryAuthor.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i45.LibraryBookCategory?>()) {
-      return (data != null ? _i45.LibraryBookCategory.fromJson(data) : null)
+    if (t == _i1.getType<_i45.LibraryBook?>()) {
+      return (data != null ? _i45.LibraryBook.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i46.LibraryBookAuthor?>()) {
+      return (data != null ? _i46.LibraryBookAuthor.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i47.LibraryBookCategory?>()) {
+      return (data != null ? _i47.LibraryBookCategory.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i46.LibraryBookCourse?>()) {
-      return (data != null ? _i46.LibraryBookCourse.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i48.LibraryBookCourse?>()) {
+      return (data != null ? _i48.LibraryBookCourse.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i47.LibraryBookFile?>()) {
-      return (data != null ? _i47.LibraryBookFile.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i49.LibraryBookFile?>()) {
+      return (data != null ? _i49.LibraryBookFile.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i48.LibraryCategory?>()) {
-      return (data != null ? _i48.LibraryCategory.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i50.LibraryCategory?>()) {
+      return (data != null ? _i50.LibraryCategory.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i49.LibraryExplore?>()) {
-      return (data != null ? _i49.LibraryExplore.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i51.LibraryExplore?>()) {
+      return (data != null ? _i51.LibraryExplore.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i50.LibraryExploreSection?>()) {
-      return (data != null ? _i50.LibraryExploreSection.fromJson(data) : null)
+    if (t == _i1.getType<_i52.LibraryExploreSection?>()) {
+      return (data != null ? _i52.LibraryExploreSection.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i51.LibraryFilterOptions?>()) {
-      return (data != null ? _i51.LibraryFilterOptions.fromJson(data) : null)
+    if (t == _i1.getType<_i53.LibraryFilterOptions?>()) {
+      return (data != null ? _i53.LibraryFilterOptions.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i52.LibrarySearchPage?>()) {
-      return (data != null ? _i52.LibrarySearchPage.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i54.LibrarySearchPage?>()) {
+      return (data != null ? _i54.LibrarySearchPage.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i53.NotificationListPage?>()) {
-      return (data != null ? _i53.NotificationListPage.fromJson(data) : null)
+    if (t == _i1.getType<_i55.NotificationListPage?>()) {
+      return (data != null ? _i55.NotificationListPage.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i54.ReaderAsset?>()) {
-      return (data != null ? _i54.ReaderAsset.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i56.RagCitation?>()) {
+      return (data != null ? _i56.RagCitation.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i55.ReaderBookmark?>()) {
-      return (data != null ? _i55.ReaderBookmark.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i57.ReaderAsset?>()) {
+      return (data != null ? _i57.ReaderAsset.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i56.ReaderHighlight?>()) {
-      return (data != null ? _i56.ReaderHighlight.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i58.ReaderBookmark?>()) {
+      return (data != null ? _i58.ReaderBookmark.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i57.ReaderNote?>()) {
-      return (data != null ? _i57.ReaderNote.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i59.ReaderHighlight?>()) {
+      return (data != null ? _i59.ReaderHighlight.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i58.ReadingProgress?>()) {
-      return (data != null ? _i58.ReadingProgress.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i60.ReaderNote?>()) {
+      return (data != null ? _i60.ReaderNote.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i59.ReadingProgressSyncResult?>()) {
+    if (t == _i1.getType<_i61.ReadingProgress?>()) {
+      return (data != null ? _i61.ReadingProgress.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i62.ReadingProgressSyncResult?>()) {
       return (data != null
-              ? _i59.ReadingProgressSyncResult.fromJson(data)
+              ? _i62.ReadingProgressSyncResult.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i60.Semester?>()) {
-      return (data != null ? _i60.Semester.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i63.Semester?>()) {
+      return (data != null ? _i63.Semester.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i61.SemesterSummary?>()) {
-      return (data != null ? _i61.SemesterSummary.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i64.SemesterSummary?>()) {
+      return (data != null ? _i64.SemesterSummary.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i62.StudentAiPreference?>()) {
-      return (data != null ? _i62.StudentAiPreference.fromJson(data) : null)
+    if (t == _i1.getType<_i65.StudentAiPreference?>()) {
+      return (data != null ? _i65.StudentAiPreference.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i63.StudentGrade?>()) {
-      return (data != null ? _i63.StudentGrade.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i66.StudentGrade?>()) {
+      return (data != null ? _i66.StudentGrade.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i64.StudentProfile?>()) {
-      return (data != null ? _i64.StudentProfile.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i67.StudentProfile?>()) {
+      return (data != null ? _i67.StudentProfile.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i65.StudySuggestion?>()) {
-      return (data != null ? _i65.StudySuggestion.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i68.StudySuggestion?>()) {
+      return (data != null ? _i68.StudySuggestion.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i66.TimetableEntry?>()) {
-      return (data != null ? _i66.TimetableEntry.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i69.TimetableEntry?>()) {
+      return (data != null ? _i69.TimetableEntry.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i67.VectorCapabilityProbe?>()) {
-      return (data != null ? _i67.VectorCapabilityProbe.fromJson(data) : null)
+    if (t == _i1.getType<_i70.VectorCapabilityProbe?>()) {
+      return (data != null ? _i70.VectorCapabilityProbe.fromJson(data) : null)
           as T;
     }
-    if (t == List<_i61.SemesterSummary>) {
+    if (t == List<_i64.SemesterSummary>) {
       return (data as List)
-              .map((e) => deserialize<_i61.SemesterSummary>(e))
+              .map((e) => deserialize<_i64.SemesterSummary>(e))
               .toList()
           as T;
     }
@@ -628,9 +653,9 @@ class Protocol extends _i1.SerializationManager {
               .toList()
           as T;
     }
-    if (t == List<_i66.TimetableEntry>) {
+    if (t == List<_i69.TimetableEntry>) {
       return (data as List)
-              .map((e) => deserialize<_i66.TimetableEntry>(e))
+              .map((e) => deserialize<_i69.TimetableEntry>(e))
               .toList()
           as T;
     }
@@ -661,9 +686,9 @@ class Protocol extends _i1.SerializationManager {
               .toList()
           as T;
     }
-    if (t == List<_i50.LibraryExploreSection>) {
+    if (t == List<_i52.LibraryExploreSection>) {
       return (data as List)
-              .map((e) => deserialize<_i50.LibraryExploreSection>(e))
+              .map((e) => deserialize<_i52.LibraryExploreSection>(e))
               .toList()
           as T;
     }
@@ -688,49 +713,55 @@ class Protocol extends _i1.SerializationManager {
               .toList()
           as T;
     }
-    if (t == List<_i68.CourseSummary>) {
+    if (t == List<_i71.CourseSummary>) {
       return (data as List)
-              .map((e) => deserialize<_i68.CourseSummary>(e))
+              .map((e) => deserialize<_i71.CourseSummary>(e))
               .toList()
           as T;
     }
-    if (t == List<_i69.TimetableEntry>) {
+    if (t == List<_i72.TimetableEntry>) {
       return (data as List)
-              .map((e) => deserialize<_i69.TimetableEntry>(e))
+              .map((e) => deserialize<_i72.TimetableEntry>(e))
               .toList()
           as T;
     }
-    if (t == List<_i70.ExamSummary>) {
+    if (t == List<_i73.ExamSummary>) {
       return (data as List)
-              .map((e) => deserialize<_i70.ExamSummary>(e))
+              .map((e) => deserialize<_i73.ExamSummary>(e))
               .toList()
           as T;
     }
-    if (t == List<_i71.AnnouncementSummary>) {
+    if (t == List<_i74.AnnouncementSummary>) {
       return (data as List)
-              .map((e) => deserialize<_i71.AnnouncementSummary>(e))
+              .map((e) => deserialize<_i74.AnnouncementSummary>(e))
               .toList()
           as T;
     }
-    if (t == List<_i72.AiConversation>) {
+    if (t == List<_i75.AiConversation>) {
       return (data as List)
-              .map((e) => deserialize<_i72.AiConversation>(e))
+              .map((e) => deserialize<_i75.AiConversation>(e))
               .toList()
           as T;
     }
-    if (t == List<_i73.AiMessage>) {
-      return (data as List).map((e) => deserialize<_i73.AiMessage>(e)).toList()
+    if (t == List<_i76.AiMessage>) {
+      return (data as List).map((e) => deserialize<_i76.AiMessage>(e)).toList()
           as T;
     }
-    if (t == List<_i74.AiUserMemory>) {
+    if (t == List<_i77.AiUserMemory>) {
       return (data as List)
-              .map((e) => deserialize<_i74.AiUserMemory>(e))
+              .map((e) => deserialize<_i77.AiUserMemory>(e))
               .toList()
           as T;
     }
-    if (t == List<_i75.BookLoanSummary>) {
+    if (t == List<_i78.RagCitation>) {
       return (data as List)
-              .map((e) => deserialize<_i75.BookLoanSummary>(e))
+              .map((e) => deserialize<_i78.RagCitation>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_i79.BookLoanSummary>) {
+      return (data as List)
+              .map((e) => deserialize<_i79.BookLoanSummary>(e))
               .toList()
           as T;
     }
@@ -752,41 +783,41 @@ class Protocol extends _i1.SerializationManager {
               : null)
           as T;
     }
-    if (t == List<_i76.BookAccessType>) {
+    if (t == List<_i80.BookAccessType>) {
       return (data as List)
-              .map((e) => deserialize<_i76.BookAccessType>(e))
+              .map((e) => deserialize<_i80.BookAccessType>(e))
               .toList()
           as T;
     }
-    if (t == _i1.getType<List<_i76.BookAccessType>?>()) {
+    if (t == _i1.getType<List<_i80.BookAccessType>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<_i76.BookAccessType>(e))
+                    .map((e) => deserialize<_i80.BookAccessType>(e))
                     .toList()
               : null)
           as T;
     }
-    if (t == List<_i77.ReaderBookmark>) {
+    if (t == List<_i81.ReaderBookmark>) {
       return (data as List)
-              .map((e) => deserialize<_i77.ReaderBookmark>(e))
+              .map((e) => deserialize<_i81.ReaderBookmark>(e))
               .toList()
           as T;
     }
-    if (t == List<_i78.ReaderNote>) {
-      return (data as List).map((e) => deserialize<_i78.ReaderNote>(e)).toList()
+    if (t == List<_i82.ReaderNote>) {
+      return (data as List).map((e) => deserialize<_i82.ReaderNote>(e)).toList()
           as T;
     }
-    if (t == List<_i79.ReaderHighlight>) {
+    if (t == List<_i83.ReaderHighlight>) {
       return (data as List)
-              .map((e) => deserialize<_i79.ReaderHighlight>(e))
+              .map((e) => deserialize<_i83.ReaderHighlight>(e))
               .toList()
           as T;
     }
     try {
-      return _i80.Protocol().deserialize<T>(data, t);
+      return _i84.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i81.Protocol().deserialize<T>(data, t);
+      return _i85.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -833,32 +864,35 @@ class Protocol extends _i1.SerializationManager {
       _i39.GradeComponentScore => 'GradeComponentScore',
       _i40.GradeSummary => 'GradeSummary',
       _i41.Greeting => 'Greeting',
-      _i42.LibraryAuthor => 'LibraryAuthor',
-      _i43.LibraryBook => 'LibraryBook',
-      _i44.LibraryBookAuthor => 'LibraryBookAuthor',
-      _i45.LibraryBookCategory => 'LibraryBookCategory',
-      _i46.LibraryBookCourse => 'LibraryBookCourse',
-      _i47.LibraryBookFile => 'LibraryBookFile',
-      _i48.LibraryCategory => 'LibraryCategory',
-      _i49.LibraryExplore => 'LibraryExplore',
-      _i50.LibraryExploreSection => 'LibraryExploreSection',
-      _i51.LibraryFilterOptions => 'LibraryFilterOptions',
-      _i52.LibrarySearchPage => 'LibrarySearchPage',
-      _i53.NotificationListPage => 'NotificationListPage',
-      _i54.ReaderAsset => 'ReaderAsset',
-      _i55.ReaderBookmark => 'ReaderBookmark',
-      _i56.ReaderHighlight => 'ReaderHighlight',
-      _i57.ReaderNote => 'ReaderNote',
-      _i58.ReadingProgress => 'ReadingProgress',
-      _i59.ReadingProgressSyncResult => 'ReadingProgressSyncResult',
-      _i60.Semester => 'Semester',
-      _i61.SemesterSummary => 'SemesterSummary',
-      _i62.StudentAiPreference => 'StudentAiPreference',
-      _i63.StudentGrade => 'StudentGrade',
-      _i64.StudentProfile => 'StudentProfile',
-      _i65.StudySuggestion => 'StudySuggestion',
-      _i66.TimetableEntry => 'TimetableEntry',
-      _i67.VectorCapabilityProbe => 'VectorCapabilityProbe',
+      _i42.KnowledgeChunk => 'KnowledgeChunk',
+      _i43.KnowledgeDocument => 'KnowledgeDocument',
+      _i44.LibraryAuthor => 'LibraryAuthor',
+      _i45.LibraryBook => 'LibraryBook',
+      _i46.LibraryBookAuthor => 'LibraryBookAuthor',
+      _i47.LibraryBookCategory => 'LibraryBookCategory',
+      _i48.LibraryBookCourse => 'LibraryBookCourse',
+      _i49.LibraryBookFile => 'LibraryBookFile',
+      _i50.LibraryCategory => 'LibraryCategory',
+      _i51.LibraryExplore => 'LibraryExplore',
+      _i52.LibraryExploreSection => 'LibraryExploreSection',
+      _i53.LibraryFilterOptions => 'LibraryFilterOptions',
+      _i54.LibrarySearchPage => 'LibrarySearchPage',
+      _i55.NotificationListPage => 'NotificationListPage',
+      _i56.RagCitation => 'RagCitation',
+      _i57.ReaderAsset => 'ReaderAsset',
+      _i58.ReaderBookmark => 'ReaderBookmark',
+      _i59.ReaderHighlight => 'ReaderHighlight',
+      _i60.ReaderNote => 'ReaderNote',
+      _i61.ReadingProgress => 'ReadingProgress',
+      _i62.ReadingProgressSyncResult => 'ReadingProgressSyncResult',
+      _i63.Semester => 'Semester',
+      _i64.SemesterSummary => 'SemesterSummary',
+      _i65.StudentAiPreference => 'StudentAiPreference',
+      _i66.StudentGrade => 'StudentGrade',
+      _i67.StudentProfile => 'StudentProfile',
+      _i68.StudySuggestion => 'StudySuggestion',
+      _i69.TimetableEntry => 'TimetableEntry',
+      _i70.VectorCapabilityProbe => 'VectorCapabilityProbe',
       _ => null,
     };
   }
@@ -953,64 +987,70 @@ class Protocol extends _i1.SerializationManager {
         return 'GradeSummary';
       case _i41.Greeting():
         return 'Greeting';
-      case _i42.LibraryAuthor():
+      case _i42.KnowledgeChunk():
+        return 'KnowledgeChunk';
+      case _i43.KnowledgeDocument():
+        return 'KnowledgeDocument';
+      case _i44.LibraryAuthor():
         return 'LibraryAuthor';
-      case _i43.LibraryBook():
+      case _i45.LibraryBook():
         return 'LibraryBook';
-      case _i44.LibraryBookAuthor():
+      case _i46.LibraryBookAuthor():
         return 'LibraryBookAuthor';
-      case _i45.LibraryBookCategory():
+      case _i47.LibraryBookCategory():
         return 'LibraryBookCategory';
-      case _i46.LibraryBookCourse():
+      case _i48.LibraryBookCourse():
         return 'LibraryBookCourse';
-      case _i47.LibraryBookFile():
+      case _i49.LibraryBookFile():
         return 'LibraryBookFile';
-      case _i48.LibraryCategory():
+      case _i50.LibraryCategory():
         return 'LibraryCategory';
-      case _i49.LibraryExplore():
+      case _i51.LibraryExplore():
         return 'LibraryExplore';
-      case _i50.LibraryExploreSection():
+      case _i52.LibraryExploreSection():
         return 'LibraryExploreSection';
-      case _i51.LibraryFilterOptions():
+      case _i53.LibraryFilterOptions():
         return 'LibraryFilterOptions';
-      case _i52.LibrarySearchPage():
+      case _i54.LibrarySearchPage():
         return 'LibrarySearchPage';
-      case _i53.NotificationListPage():
+      case _i55.NotificationListPage():
         return 'NotificationListPage';
-      case _i54.ReaderAsset():
+      case _i56.RagCitation():
+        return 'RagCitation';
+      case _i57.ReaderAsset():
         return 'ReaderAsset';
-      case _i55.ReaderBookmark():
+      case _i58.ReaderBookmark():
         return 'ReaderBookmark';
-      case _i56.ReaderHighlight():
+      case _i59.ReaderHighlight():
         return 'ReaderHighlight';
-      case _i57.ReaderNote():
+      case _i60.ReaderNote():
         return 'ReaderNote';
-      case _i58.ReadingProgress():
+      case _i61.ReadingProgress():
         return 'ReadingProgress';
-      case _i59.ReadingProgressSyncResult():
+      case _i62.ReadingProgressSyncResult():
         return 'ReadingProgressSyncResult';
-      case _i60.Semester():
+      case _i63.Semester():
         return 'Semester';
-      case _i61.SemesterSummary():
+      case _i64.SemesterSummary():
         return 'SemesterSummary';
-      case _i62.StudentAiPreference():
+      case _i65.StudentAiPreference():
         return 'StudentAiPreference';
-      case _i63.StudentGrade():
+      case _i66.StudentGrade():
         return 'StudentGrade';
-      case _i64.StudentProfile():
+      case _i67.StudentProfile():
         return 'StudentProfile';
-      case _i65.StudySuggestion():
+      case _i68.StudySuggestion():
         return 'StudySuggestion';
-      case _i66.TimetableEntry():
+      case _i69.TimetableEntry():
         return 'TimetableEntry';
-      case _i67.VectorCapabilityProbe():
+      case _i70.VectorCapabilityProbe():
         return 'VectorCapabilityProbe';
     }
-    className = _i80.Protocol().getClassNameForObject(data);
+    className = _i84.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_idp.$className';
     }
-    className = _i81.Protocol().getClassNameForObject(data);
+    className = _i85.Protocol().getClassNameForObject(data);
     if (className != null) {
       return 'serverpod_auth_core.$className';
     }
@@ -1143,91 +1183,100 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'Greeting') {
       return deserialize<_i41.Greeting>(data['data']);
     }
+    if (dataClassName == 'KnowledgeChunk') {
+      return deserialize<_i42.KnowledgeChunk>(data['data']);
+    }
+    if (dataClassName == 'KnowledgeDocument') {
+      return deserialize<_i43.KnowledgeDocument>(data['data']);
+    }
     if (dataClassName == 'LibraryAuthor') {
-      return deserialize<_i42.LibraryAuthor>(data['data']);
+      return deserialize<_i44.LibraryAuthor>(data['data']);
     }
     if (dataClassName == 'LibraryBook') {
-      return deserialize<_i43.LibraryBook>(data['data']);
+      return deserialize<_i45.LibraryBook>(data['data']);
     }
     if (dataClassName == 'LibraryBookAuthor') {
-      return deserialize<_i44.LibraryBookAuthor>(data['data']);
+      return deserialize<_i46.LibraryBookAuthor>(data['data']);
     }
     if (dataClassName == 'LibraryBookCategory') {
-      return deserialize<_i45.LibraryBookCategory>(data['data']);
+      return deserialize<_i47.LibraryBookCategory>(data['data']);
     }
     if (dataClassName == 'LibraryBookCourse') {
-      return deserialize<_i46.LibraryBookCourse>(data['data']);
+      return deserialize<_i48.LibraryBookCourse>(data['data']);
     }
     if (dataClassName == 'LibraryBookFile') {
-      return deserialize<_i47.LibraryBookFile>(data['data']);
+      return deserialize<_i49.LibraryBookFile>(data['data']);
     }
     if (dataClassName == 'LibraryCategory') {
-      return deserialize<_i48.LibraryCategory>(data['data']);
+      return deserialize<_i50.LibraryCategory>(data['data']);
     }
     if (dataClassName == 'LibraryExplore') {
-      return deserialize<_i49.LibraryExplore>(data['data']);
+      return deserialize<_i51.LibraryExplore>(data['data']);
     }
     if (dataClassName == 'LibraryExploreSection') {
-      return deserialize<_i50.LibraryExploreSection>(data['data']);
+      return deserialize<_i52.LibraryExploreSection>(data['data']);
     }
     if (dataClassName == 'LibraryFilterOptions') {
-      return deserialize<_i51.LibraryFilterOptions>(data['data']);
+      return deserialize<_i53.LibraryFilterOptions>(data['data']);
     }
     if (dataClassName == 'LibrarySearchPage') {
-      return deserialize<_i52.LibrarySearchPage>(data['data']);
+      return deserialize<_i54.LibrarySearchPage>(data['data']);
     }
     if (dataClassName == 'NotificationListPage') {
-      return deserialize<_i53.NotificationListPage>(data['data']);
+      return deserialize<_i55.NotificationListPage>(data['data']);
+    }
+    if (dataClassName == 'RagCitation') {
+      return deserialize<_i56.RagCitation>(data['data']);
     }
     if (dataClassName == 'ReaderAsset') {
-      return deserialize<_i54.ReaderAsset>(data['data']);
+      return deserialize<_i57.ReaderAsset>(data['data']);
     }
     if (dataClassName == 'ReaderBookmark') {
-      return deserialize<_i55.ReaderBookmark>(data['data']);
+      return deserialize<_i58.ReaderBookmark>(data['data']);
     }
     if (dataClassName == 'ReaderHighlight') {
-      return deserialize<_i56.ReaderHighlight>(data['data']);
+      return deserialize<_i59.ReaderHighlight>(data['data']);
     }
     if (dataClassName == 'ReaderNote') {
-      return deserialize<_i57.ReaderNote>(data['data']);
+      return deserialize<_i60.ReaderNote>(data['data']);
     }
     if (dataClassName == 'ReadingProgress') {
-      return deserialize<_i58.ReadingProgress>(data['data']);
+      return deserialize<_i61.ReadingProgress>(data['data']);
     }
     if (dataClassName == 'ReadingProgressSyncResult') {
-      return deserialize<_i59.ReadingProgressSyncResult>(data['data']);
+      return deserialize<_i62.ReadingProgressSyncResult>(data['data']);
     }
     if (dataClassName == 'Semester') {
-      return deserialize<_i60.Semester>(data['data']);
+      return deserialize<_i63.Semester>(data['data']);
     }
     if (dataClassName == 'SemesterSummary') {
-      return deserialize<_i61.SemesterSummary>(data['data']);
+      return deserialize<_i64.SemesterSummary>(data['data']);
     }
     if (dataClassName == 'StudentAiPreference') {
-      return deserialize<_i62.StudentAiPreference>(data['data']);
+      return deserialize<_i65.StudentAiPreference>(data['data']);
     }
     if (dataClassName == 'StudentGrade') {
-      return deserialize<_i63.StudentGrade>(data['data']);
+      return deserialize<_i66.StudentGrade>(data['data']);
     }
     if (dataClassName == 'StudentProfile') {
-      return deserialize<_i64.StudentProfile>(data['data']);
+      return deserialize<_i67.StudentProfile>(data['data']);
     }
     if (dataClassName == 'StudySuggestion') {
-      return deserialize<_i65.StudySuggestion>(data['data']);
+      return deserialize<_i68.StudySuggestion>(data['data']);
     }
     if (dataClassName == 'TimetableEntry') {
-      return deserialize<_i66.TimetableEntry>(data['data']);
+      return deserialize<_i69.TimetableEntry>(data['data']);
     }
     if (dataClassName == 'VectorCapabilityProbe') {
-      return deserialize<_i67.VectorCapabilityProbe>(data['data']);
+      return deserialize<_i70.VectorCapabilityProbe>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth_idp.')) {
       data['className'] = dataClassName.substring(19);
-      return _i80.Protocol().deserializeByClassName(data);
+      return _i84.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i81.Protocol().deserializeByClassName(data);
+      return _i85.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
@@ -1242,10 +1291,10 @@ class Protocol extends _i1.SerializationManager {
       return null;
     }
     try {
-      return _i80.Protocol().mapRecordToJson(record);
+      return _i84.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i81.Protocol().mapRecordToJson(record);
+      return _i85.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

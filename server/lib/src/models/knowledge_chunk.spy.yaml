@@ -1,0 +1,16 @@
+class: KnowledgeChunk
+table: knowledge_chunks
+fields:
+  documentId: int
+  bookId: int?
+  title: String
+  chapter: String?
+  page: int?
+  content: String
+  embedding: Vector(1536)
+  createdAt: DateTime
+indexes:
+  knowledge_chunks_doc_idx:
+    fields: documentId
+  knowledge_chunks_book_idx:
+    fields: bookId

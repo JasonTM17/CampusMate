@@ -49,6 +49,7 @@ ai:
   - toggleMemory:
   - deleteMemory:
   - getStudySuggestion:
+  - searchKnowledge:
 greeting:
   - hello:
 lending:

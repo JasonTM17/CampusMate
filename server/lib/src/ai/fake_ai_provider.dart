@@ -34,7 +34,7 @@ class FakeAiProvider implements AiProvider {
     final prompt = request.messages.isEmpty
         ? ''
         : request.messages.last.content;
-    final reply = _replyFor(prompt);
+    final reply = _replyFor(prompt, context: request.studentContext);
     final chunks = reply.split(' ');
     for (var i = 0; i < chunks.length; i++) {
       await Future<void>.delayed(chunkDelay);
@@ -49,7 +49,7 @@ class FakeAiProvider implements AiProvider {
   /// Same text always yields the same vector — enough for RAG tests.
   @override
   Future<List<double>> createEmbedding(String text) async {
-    const dim = 16;
+    const dim = 1536;
     final counts = List<double>.filled(dim, 0);
     final lower = text.toLowerCase();
     for (var i = 0; i < lower.length; i++) {
@@ -60,13 +60,33 @@ class FakeAiProvider implements AiProvider {
     return counts.map((v) => v / magnitude).toList(growable: false);
   }
 
-  /// Builds a canned, citation-free reply echoing the prompt plus a few
-  /// starter suggestions for an empty conversation.
-  String _replyFor(String prompt) {
+  /// Builds a reply echoing the prompt, or returning RAG knowledge answers
+  /// with verifiable citations when reference context is provided.
+  String _replyFor(String prompt, {String? context}) {
     final suggestionLine = 'Gợi ý bắt đầu: ${_suggestions.join(' · ')}.';
     if (prompt.trim().isEmpty) {
       return 'Xin chào! Tôi là trợ lý CampusMate. $suggestionLine';
     }
+
+    final hasRagContext = context != null && context.contains('[Nguồn 1');
+
+    if (prompt.contains('bịa citation') || prompt.contains('hallucinate citation')) {
+      return 'Đây là câu trả lời có chứa trích dẫn bịa đặt [Sách Bịa Đặt - Chương 99, tr. 999] để kiểm tra hệ thống xác thực.';
+    }
+
+    final lower = prompt.toLowerCase();
+    if (lower.contains('restricted') ||
+        lower.contains('tai lieu mat') ||
+        lower.contains('tài liệu mật') ||
+        lower.contains('mật khẩu') ||
+        lower.contains('giáo trình chưa đăng ký')) {
+      return 'Xin lỗi, tôi không tìm thấy tài liệu phù hợp với câu hỏi của bạn trong các nguồn được cấp phép.';
+    }
+
+    if (hasRagContext) {
+      return 'Theo tài liệu tham khảo được cấp phép: nội dung giải đáp cho câu hỏi "$prompt" được trình bày đầy đủ [Nguồn 1].';
+    }
+
     return 'Bạn hỏi: "$prompt". Đây là phản hồi mẫu (FakeAiProvider). '
         '$suggestionLine';
   }

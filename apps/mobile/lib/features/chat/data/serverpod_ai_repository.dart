@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:campusmate_client/campusmate_client.dart';
 
 import '../domain/chat_message.dart';
@@ -45,9 +47,23 @@ class ServerpodAiRepository implements AiRepository {
               ? MessageRole.assistant
               : MessageRole.user,
           content: r.content,
+          citations: _decodeCitations(r.citations),
           status: MessageStatus.sent,
         ),
     ];
+  }
+
+  static List<ChatCitation> _decodeCitations(String? rawJson) {
+    if (rawJson == null || rawJson.trim().isEmpty) return const [];
+    try {
+      final list = jsonDecode(rawJson) as List<dynamic>;
+      return [
+        for (final item in list)
+          if (item is Map<String, dynamic>) ChatCitation.fromJson(item),
+      ];
+    } catch (_) {
+      return const [];
+    }
   }
 
   @override

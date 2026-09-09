@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:campusmate_shared/campusmate_shared.dart' as shared;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_client/serverpod_client.dart';
@@ -13,6 +11,8 @@ import '../../src/ai/quota.dart';
 import '../../src/ai/study_suggestion_service.dart';
 import '../../src/auth/campusmate_auth.dart';
 import '../../src/generated/protocol.dart';
+import '../rag/citation/citation_verifier.dart';
+import '../rag/retrieval/rag_retrieval_service.dart';
 
 /// AI assistant endpoints (phase-08 & phase-09): conversation lifecycle,
 /// message history, streaming chat with personalized student context,
@@ -30,6 +30,15 @@ class AiEndpoint extends Endpoint {
   final AiPreferenceService _preferenceService = AiPreferenceService();
   final AiMemoryService _memoryService = AiMemoryService();
   final StudySuggestionService _suggestionService = StudySuggestionService();
+  final CitationVerifier _citationVerifier = const CitationVerifier();
+  RagRetrievalService? _retrievalOverride;
+
+  RagRetrievalService _getRetrievalService() =>
+      _retrievalOverride ??= RagRetrievalService(aiProvider: createAiProvider());
+
+  void setRetrievalServiceForTest(RagRetrievalService service) {
+    _retrievalOverride = service;
+  }
 
   /// Resolves the caller's stable user id or throws if not signed in.
   String _requireUserId(Session session) {
@@ -136,6 +145,41 @@ class AiEndpoint extends Endpoint {
       selectedText: selectedText,
     );
 
+    // Retrieve authorized RAG chunks (phase-10)
+    final ragChunks = await _getRetrievalService().retrieve(
+      session: session,
+      query: userMessage,
+      userId: userId,
+      bookId: bookId,
+      limit: 4,
+    );
+
+    // Combine student context and authorized RAG reference context
+    final combinedContext = StringBuffer();
+    if (studentContext != null && studentContext.trim().isNotEmpty) {
+      combinedContext.writeln(studentContext.trim());
+      combinedContext.writeln();
+    }
+    if (ragChunks.isNotEmpty) {
+      combinedContext.writeln('[Tài liệu tham khảo được cấp phép]');
+      for (var i = 0; i < ragChunks.length; i++) {
+        final c = ragChunks[i];
+        final ch = c.chapter != null ? ', chapter="${c.chapter}"' : '';
+        final pg = c.page != null ? ', page=${c.page}' : '';
+        final bk = c.bookId != null ? ', bookId=${c.bookId}' : '';
+        combinedContext.writeln(
+          '[Nguồn ${i + 1}: docId=${c.documentId}, chunkId=${c.chunkId}$bk, title="${c.title}"$ch$pg]',
+        );
+        combinedContext.writeln(c.content);
+        combinedContext.writeln();
+      }
+      combinedContext.writeln(
+        'Nếu câu trả lời dựa trên tài liệu tham khảo, hãy trích dẫn bằng dạng [Nguồn X] hoặc [Tựa đề - Chương, tr. Trang]. Nếu không có tài liệu phù hợp, hãy thông báo không tìm thấy.',
+      );
+    }
+    final finalContext =
+        combinedContext.isEmpty ? null : combinedContext.toString().trim();
+
     // Load transcript and persist the user turn.
     final history = await AiMessage.db.find(
       session,
@@ -157,30 +201,52 @@ class AiEndpoint extends Endpoint {
       messages: assembleChatMessages(
         history: [for (final m in history) (m.role, m.content)],
         userMessage: userMessage,
-        studentContext: studentContext,
+        studentContext: finalContext,
       ),
-      studentContext: studentContext,
+      studentContext: finalContext,
     );
 
     final collected = StringBuffer();
     await for (final chunk in provider.streamChat(request)) {
       collected.write(chunk.text);
       if (chunk.isDone) {
-        final citations = chunk.citations.isEmpty
-            ? null
-            : jsonEncode(
-                chunk.citations
-                    .map(
-                      (c) => {
-                        'title': c.title,
-                        'documentId': c.documentId,
-                        'bookId': c.bookId,
-                        'chapter': c.chapter,
-                        'page': c.page,
-                      },
-                    )
-                    .toList(),
-              );
+        // Verify citations against authentic retrieved chunks (Kongming C6).
+        final verifiedCitations = _citationVerifier.extractAndVerify(
+          responseText: collected.toString(),
+          retrievedChunks: ragChunks,
+        );
+
+        if (chunk.citations.isNotEmpty) {
+          final candidateCitations = chunk.citations
+              .map(
+                (c) => RagCitation(
+                  documentId: int.tryParse(c.documentId ?? '') ?? 0,
+                  bookId: int.tryParse(c.bookId ?? ''),
+                  title: c.title,
+                  chapter: c.chapter,
+                  page: c.page,
+                ),
+              )
+              .toList();
+          final verifiedFromChunk = _citationVerifier.verify(
+            candidateCitations: candidateCitations,
+            retrievedChunks: ragChunks,
+          );
+          for (final vc in verifiedFromChunk) {
+            final exists = verifiedCitations.any(
+              (existing) =>
+                  existing.documentId == vc.documentId &&
+                  existing.chapter == vc.chapter &&
+                  existing.page == vc.page,
+            );
+            if (!exists) {
+              verifiedCitations.add(vc);
+            }
+          }
+        }
+
+        final citationsJson = CitationVerifier.encodeCitations(verifiedCitations);
+
         // Persist the completed assistant turn + bump conversation timestamp.
         await AiMessage.db.insertRow(
           session,
@@ -188,7 +254,7 @@ class AiEndpoint extends Endpoint {
             conversationId: conversationId,
             role: 'assistant',
             content: collected.toString(),
-            citations: citations,
+            citations: citationsJson,
             createdAt: DateTime.now(),
           ),
         );
@@ -287,5 +353,38 @@ class AiEndpoint extends Endpoint {
   /// Returns a personalized study suggestion for the dashboard card.
   Future<StudySuggestion?> getStudySuggestion(Session session) async {
     return _suggestionService.getSuggestion(session);
+  }
+
+  /// Searches authorized knowledge base documents using vector similarity.
+  /// (Kongming C7: DB-level authorization filter).
+  Future<List<RagCitation>> searchKnowledge(
+    Session session, {
+    required String query,
+    int? bookId,
+    int limit = 4,
+  }) async {
+    final userId = CampusMateAuth.requireUserId(session);
+    final chunks = await _getRetrievalService().retrieve(
+      session: session,
+      query: query,
+      userId: userId.toString(),
+      bookId: bookId,
+      limit: limit,
+    );
+    return chunks
+        .map(
+          (c) => RagCitation(
+            documentId: c.documentId,
+            chunkId: c.chunkId,
+            bookId: c.bookId,
+            title: c.title,
+            chapter: c.chapter,
+            page: c.page,
+            quote: c.content.length > 200
+                ? '${c.content.substring(0, 200)}...'
+                : c.content,
+          ),
+        )
+        .toList();
   }
 }

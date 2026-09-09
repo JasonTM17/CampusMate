@@ -1,0 +1,15 @@
+class: KnowledgeDocument
+table: knowledge_documents
+fields:
+  title: String
+  sourceType: String
+  bookId: int?
+  accessLevel: String
+  requiredCourseId: int?
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  knowledge_documents_book_idx:
+    fields: bookId
+  knowledge_documents_course_idx:
+    fields: requiredCourseId
