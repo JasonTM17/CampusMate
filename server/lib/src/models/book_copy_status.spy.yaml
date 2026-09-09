@@ -1,0 +1,6 @@
+enum: BookCopyStatus
+serialized: byName
+values:
+  - available
+  - borrowed
+  - inactive

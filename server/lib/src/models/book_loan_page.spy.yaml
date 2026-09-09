@@ -1,0 +1,5 @@
+class: BookLoanPage
+fields:
+  items: List<BookLoanSummary>
+  nextCursor: String?
+  serverNow: DateTime

@@ -1,0 +1,14 @@
+class: BookCopy
+table: book_copies
+fields:
+  bookId: int, relation(parent=books, onDelete=Cascade)
+  barcode: String
+  status: BookCopyStatus
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  book_copy_book_status_idx:
+    fields: bookId, status, id
+  book_copy_barcode_idx:
+    fields: barcode
+    unique: true

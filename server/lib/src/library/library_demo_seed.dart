@@ -35,6 +35,7 @@ Future<void> seedLibraryDemoData(Session session) async {
     await _ensureCategoryLinks(session, book, categories);
     await _ensureCourseLinks(session, book, linkedCourses);
     await _ensureFiles(session, book, seed, now);
+    await _ensureCopies(session, book, seed, now);
   }
 }
 
@@ -235,6 +236,41 @@ Future<void> _ensureFiles(
       await LibraryBookFile.db.insertRow(session, file);
     } else {
       await LibraryBookFile.db.updateRow(session, file);
+    }
+  }
+}
+
+Future<void> _ensureCopies(
+  Session session,
+  LibraryBook book,
+  _BookSeed seed,
+  DateTime now,
+) async {
+  if (seed.accessType != BookAccessType.borrowRequired) return;
+  for (var index = 1; index <= 2; index++) {
+    final barcode = 'CM-${seed.isbn}-C${index.toString().padLeft(2, '0')}';
+    final existing = await BookCopy.db.findFirstRow(
+      session,
+      where: (t) => t.barcode.equals(barcode),
+    );
+    if (existing == null) {
+      await BookCopy.db.insertRow(
+        session,
+        BookCopy(
+          bookId: book.id!,
+          barcode: barcode,
+          status: BookCopyStatus.available,
+          createdAt: now,
+          updatedAt: now,
+        ),
+      );
+      continue;
+    }
+    if (existing.bookId != book.id!) {
+      await BookCopy.db.updateRow(
+        session,
+        existing.copyWith(bookId: book.id!, updatedAt: now),
+      );
     }
   }
 }

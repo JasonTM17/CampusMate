@@ -17,9 +17,13 @@ abstract final class CampusMateAuth {
   }
 
   static UuidValue requireUserId(Session session) {
-    return UuidValue.withValidation(
-      requireAuthentication(session).userIdentifier,
-    );
+    final identifier = requireAuthentication(session).userIdentifier;
+    try {
+      return UuidValue.withValidation(identifier);
+    } on FormatException {
+      final hex = identifier.hashCode.abs().toRadixString(16).padLeft(12, '0');
+      return UuidValue.withValidation('00000000-0000-4000-8000-$hex');
+    }
   }
 
   static void requireScope(Session session, Scope requiredScope) {

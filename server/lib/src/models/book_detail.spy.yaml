@@ -19,3 +19,6 @@ fields:
   availableFormats: List<String>
   isFavorite: bool
   access: BookAccessDecision
+  activeLoan: BookLoanSummary?
+  activeLoanCount: int
+  availableCopies: int

@@ -1,0 +1,5 @@
+class: BookAccessPolicyUpdate
+fields:
+  bookId: int
+  accessType: BookAccessType
+  updatedAt: DateTime

@@ -1,0 +1,12 @@
+class: ReaderNote
+table: reader_notes
+fields:
+  userId: UuidValue
+  bookId: int, relation(parent=books, onDelete=Cascade)
+  location: String
+  content: String
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  reader_note_user_book_idx:
+    fields: userId, bookId

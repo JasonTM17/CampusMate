@@ -49,4 +49,14 @@ class LibraryEndpoint extends Endpoint {
     Session session, {
     required int bookId,
   }) => _service.toggleFavorite(session, bookId: bookId);
+
+  Future<BookAccessPolicyUpdate> updateAccessPolicy(
+    Session session, {
+    required int bookId,
+    required BookAccessType accessType,
+  }) => _service.updateAccessPolicy(
+    session,
+    bookId: bookId,
+    accessType: accessType,
+  );
 }

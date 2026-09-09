@@ -1,0 +1,11 @@
+class: ReaderBookmark
+table: reader_bookmarks
+fields:
+  userId: UuidValue
+  bookId: int, relation(parent=books, onDelete=Cascade)
+  location: String
+  title: String
+  createdAt: DateTime
+indexes:
+  reader_bookmark_user_book_idx:
+    fields: userId, bookId

@@ -1,0 +1,11 @@
+class: AiUserMemory
+table: ai_user_memories
+fields:
+  userId: UuidValue
+  content: String
+  source: String
+  createdAt: DateTime
+  disabledAt: DateTime?
+indexes:
+  ai_user_memory_user_idx:
+    fields: userId, createdAt, id

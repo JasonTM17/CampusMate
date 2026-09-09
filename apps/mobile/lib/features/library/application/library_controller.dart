@@ -22,6 +22,17 @@ final bookDetailProvider = FutureProvider.autoDispose.family<BookDetail, int>((
   return ref.watch(libraryRepositoryProvider).getBookDetail(bookId: bookId);
 });
 
+final myLoansProvider = FutureProvider.autoDispose<BookLoanPage>((ref) {
+  return ref.watch(libraryRepositoryProvider).myLoans();
+});
+
+final activeBookLoansProvider = FutureProvider.autoDispose
+    .family<List<BookLoanSummary>, int>((ref, bookId) {
+      return ref
+          .watch(libraryRepositoryProvider)
+          .activeLoansForBook(bookId: bookId);
+    });
+
 final libraryControllerProvider =
     AsyncNotifierProvider<LibraryController, LibraryState>(
       LibraryController.new,

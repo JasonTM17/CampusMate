@@ -1,7 +1,7 @@
 ---
 phase: 7
 title: "Ebook Reader (PDF/EPUB, progress, annotations, offline)"
-status: pending
+status: completed
 priority: P1
 effort: L
 dependencies: [6]
@@ -44,11 +44,11 @@ Reader theo vertical slice chạy thật (§81): Book Detail → Access Check �
 
 ## Success Criteria
 
-- [ ] Mở PDF thật + EPUB thật trên emulator; đóng app mở lại → resume đúng trang/locations (test PASS).
-- [ ] Sửa progress offline rồi online ⇒ bản mới hơn thắng; sửa 2 nơi ⇒ `updatedAt` max thắng (unit test PASS).
-- [ ] metadataOnly/restricted: không tải được file; loan hết hạn: mở offline bị chặn khi re-check (test PASS).
-- [ ] Log không chứa signed URL/token (log-scrub test PASS).
-- [ ] Limitation EPUB highlight được ghi rõ trong ADR-006 + README (không fake chức năng).
+- [x] Mở PDF thật + EPUB thật trên emulator; đóng app mở lại → resume đúng trang/locations (test PASS).
+- [x] Sửa progress offline rồi online ⇒ bản mới hơn thắng; sửa 2 nơi ⇒ `updatedAt` max thắng (unit test PASS).
+- [x] metadataOnly/restricted: không tải được file; loan hết hạn: mở offline bị chặn khi re-check (test PASS).
+- [x] Log không chứa signed URL/token (log-scrub test PASS).
+- [x] Limitation EPUB highlight được ghi rõ trong ADR-006 + README (không fake chức năng).
 
 ## Risk Assessment
 

@@ -79,7 +79,11 @@ class ChatController extends Notifier<ChatState> {
 
   /// Sends [text], streams the reply into a growing assistant bubble, and
   /// persists both turns once the stream completes.
-  Future<void> sendMessage(String text) async {
+  Future<void> sendMessage(
+    String text, {
+    int? bookId,
+    String? selectedText,
+  }) async {
     final conversationId = state.conversationId;
     if (conversationId == null || text.trim().isEmpty) return;
 
@@ -105,6 +109,8 @@ class ChatController extends Notifier<ChatState> {
       final stream = _repo.sendMessage(
         conversationId: conversationId,
         content: userMsg.content,
+        bookId: bookId,
+        selectedText: selectedText,
       );
       await for (final chunk in stream) {
         final updated = state.messages.toList();

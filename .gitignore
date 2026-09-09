@@ -19,6 +19,8 @@ server/.run/
 
 # Agent runtime session state & personal skill kits
 .zcode/
+.mimosa/
+.video_agent/
 .agentkit/
 .agents/
 .codex/

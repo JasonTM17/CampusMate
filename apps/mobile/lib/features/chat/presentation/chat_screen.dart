@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:go_router/go_router.dart';
+
+import '../../../app/theme/app_colors.dart';
 import '../../../app/theme/app_radius.dart';
 import '../../../app/theme/app_spacing.dart';
 import '../../../l10n/generated/app_localizations.dart';
@@ -15,9 +18,18 @@ import 'message_bubble.dart';
 /// conversation via the authenticated user's session. Shows a first-run
 /// empty state with the 4 suggested prompts (📚 🧠 📅 📖) per phase-08.
 class ChatScreen extends ConsumerStatefulWidget {
-  const ChatScreen({super.key, this.conversationId});
+  const ChatScreen({
+    super.key,
+    this.conversationId,
+    this.bookId,
+    this.bookTitle,
+    this.selectedText,
+  });
 
   final int? conversationId;
+  final int? bookId;
+  final String? bookTitle;
+  final String? selectedText;
 
   @override
   ConsumerState<ChatScreen> createState() => _ChatScreenState();
@@ -27,6 +39,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   final _inputController = TextEditingController();
   final _scrollController = ScrollController();
   bool _inputNotEmpty = false;
+  int? _attachedBookId;
+  String? _attachedBookTitle;
+  String? _attachedSelectedText;
 
   static const _suggestions = [
     '📚 Giải thích bài học',
@@ -38,6 +53,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   @override
   void initState() {
     super.initState();
+    _attachedBookId = widget.bookId;
+    _attachedBookTitle = widget.bookTitle;
+    _attachedSelectedText = widget.selectedText;
     _inputController.addListener(() {
       final notEmpty = _inputController.text.trim().isNotEmpty;
       if (notEmpty != _inputNotEmpty) {
@@ -51,11 +69,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   /// Ensures there is a conversation to talk to, then loads its history.
   Future<void> _bootstrap() async {
+    final title = _attachedBookTitle != null
+        ? 'Hỏi về ${_attachedBookTitle!}'
+        : 'Hội thoại mới';
     await ref
         .read(chatControllerProvider.notifier)
         .openOrCreateConversation(
           conversationId: widget.conversationId,
-          newConversationTitle: 'Hội thoại mới',
+          newConversationTitle: title,
         );
     _scrollToBottom();
   }
@@ -83,7 +104,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final text = _inputController.text.trim();
     if (text.isEmpty) return;
     _inputController.clear();
-    await ref.read(chatControllerProvider.notifier).sendMessage(text);
+    await ref.read(chatControllerProvider.notifier).sendMessage(
+          text,
+          bookId: _attachedBookId,
+          selectedText: _attachedSelectedText,
+        );
     _scrollToBottom();
   }
 
@@ -95,14 +120,79 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final isStreaming = chat.status == ChatStatus.streaming;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.navAi)),
+      appBar: AppBar(
+        title: Text(l10n.navAi),
+        actions: [
+          IconButton(
+            tooltip: 'Cài đặt & Bộ nhớ AI',
+            icon: const Icon(Icons.tune_outlined),
+            onPressed: () => context.push('/ai/settings'),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Column(
           children: [
+            _attachedContextChip(theme),
             Expanded(child: _body(context, chat)),
             _inputBar(context, theme, isStreaming),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _attachedContextChip(ThemeData theme) {
+    if (_attachedBookTitle == null && _attachedSelectedText == null) {
+      return const SizedBox.shrink();
+    }
+    final title = _attachedBookTitle ?? 'Đoạn trích tài liệu';
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.m,
+        vertical: AppSpacing.xs,
+      ),
+      margin: const EdgeInsets.fromLTRB(
+        AppSpacing.m,
+        AppSpacing.xs,
+        AppSpacing.m,
+        0,
+      ),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(AppRadius.m),
+      ),
+      child: Row(
+        children: [
+          const Icon(
+            Icons.menu_book_outlined,
+            size: 16,
+            color: AppColors.primary,
+          ),
+          const SizedBox(width: AppSpacing.s),
+          Expanded(
+            child: Text(
+              'Đang hỏi về: $title',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.close, size: 16),
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+            onPressed: () {
+              setState(() {
+                _attachedBookId = null;
+                _attachedBookTitle = null;
+                _attachedSelectedText = null;
+              });
+            },
+          ),
+        ],
       ),
     );
   }

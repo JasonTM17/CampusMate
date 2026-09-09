@@ -18,14 +18,14 @@ flowchart TB
     api --> academic[Academic domain\ncourses / timetable / grades / exams / progress]
     api --> dashboard[Dashboard + notifications\ngreeting / announcements / unread center]
     api --> ai[AI domain\nchat / quota / prompt guard]
-    api --> library[Library domain\ncatalog / access policy\nplanned lending / reader]
+    api --> library[Library domain\ncatalog / access policy\nlending + audit]
 
     academic --> pg[(PostgreSQL + pgvector)]
     dashboard --> pg
     ai --> pg
     library --> pg
     api --> redis[(Redis\nphase-gated cache)]
-    library --> minio[(MinIO / S3\nplanned books + assets)]
+    library --> minio[(MinIO / S3\nplanned reader assets)]
     ai --> provider[AI provider\nFake / GLM / OpenAI-compatible]
 
     classDef mobile fill:#d9f99d,stroke:#3f6212,color:#1a2e05
@@ -59,11 +59,15 @@ erDiagram
     BOOKS ||--o{ BOOK_COURSE_LINKS : supports
     COURSES ||--o{ BOOK_COURSE_LINKS : recommends
     BOOKS ||--o{ FAVORITE_BOOKS : bookmarked_by
+    BOOKS ||--o{ BOOK_COPIES : owns
+    BOOK_COPIES ||--o{ BOOK_LOANS : circulates
+    BOOKS ||--o{ BOOK_LOANS : summarizes
+    AUDIT_LOGS }o--|| BOOKS : records_policy_change
 ```
 
 - **apps/mobile** — Flutter + Material 3 + Riverpod + go_router + Drift offline pull-cache.
 - **server** — Serverpod 3.4.x (Dart), migrations, RBAC kiểm quyền ở server,
-  dashboard/notifications/library derive user từ session.
+  dashboard/notifications/library/lending derive user từ session.
 - **packages/campusmate_client** — generated client (không sửa tay; dùng `serverpod generate`).
 - **packages/campusmate_shared** — pure Dart domain logic dùng chung, ví dụ GPA calculation.
 - **docs/architecture.md** — sơ đồ hệ thống, trust boundary và runtime flow.
@@ -71,7 +75,7 @@ erDiagram
 - **docs/release-packages.md** — chính sách GitHub Releases/GitHub Packages.
 - **docs/adr/** — các quyết định kiến trúc quan trọng.
 
-Quy tắc cứng: mobile không bao giờ giữ AI key hay kết nối DB trực tiếp; mọi authorization kiểm tra ở SERVER; identity chỉ lấy từ session (không tin `userId` từ payload). Library detail trả DTO metadata/action theo `BookAccessPolicyService`; file URL/storage key không thuộc catalog API.
+Quy tắc cứng: mobile không bao giờ giữ AI key hay kết nối DB trực tiếp; mọi authorization kiểm tra ở SERVER; identity chỉ lấy từ session (không tin `userId` từ payload). Library detail trả DTO metadata/action theo `BookAccessPolicyService`; lending dùng server time, transaction + row lock, và partial unique index để bảo đảm một copy chỉ có một active loan. File URL/storage key không thuộc catalog/lending API.
 
 ## GitHub repository surface
 

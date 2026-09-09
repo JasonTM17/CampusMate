@@ -9,11 +9,14 @@ import '../../features/auth/presentation/password_reset_screen.dart';
 import '../../features/auth/presentation/registration_screen.dart';
 import '../../features/academics/presentation/academic_screen.dart';
 import '../../features/academics/presentation/exam_detail_screen.dart';
+import '../../features/chat/presentation/ai_settings_screen.dart';
 import '../../features/chat/presentation/chat_screen.dart';
 import '../../features/dashboard/presentation/dashboard_screen.dart';
 import '../../features/library/presentation/book_detail_screen.dart';
 import '../../features/library/presentation/library_screen.dart';
+import '../../features/library/presentation/my_loans_screen.dart';
 import '../../features/notifications/presentation/notification_screen.dart';
+import '../../features/reader/presentation/reader_screen.dart';
 import '../../features/student_profile/presentation/student_profile_screen.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../core/widgets/app_empty_state.dart';
@@ -69,6 +72,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const NotificationScreen(),
       ),
       GoRoute(
+        path: '/ai/settings',
+        builder: (context, state) => const AiSettingsScreen(),
+      ),
+      GoRoute(
         path: '/admin',
         redirect: (context, state) {
           final role = authStateNotifier.value.user?.role;
@@ -120,6 +127,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) => const LibraryScreen(),
                 routes: [
                   GoRoute(
+                    path: 'loans',
+                    builder: (context, state) => const MyLoansScreen(),
+                  ),
+                  GoRoute(
                     path: 'books/:bookId',
                     builder: (context, state) {
                       final bookId = int.tryParse(
@@ -130,6 +141,29 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                       }
                       return BookDetailScreen(bookId: bookId);
                     },
+                    routes: [
+                      GoRoute(
+                        path: 'read',
+                        builder: (context, state) {
+                          final bookId = int.tryParse(
+                            state.pathParameters['bookId'] ?? '',
+                          );
+                          if (bookId == null) {
+                            return const _InvalidDeepLinkScreen();
+                          }
+                          final format =
+                              state.uri.queryParameters['format'] ?? 'pdf';
+                          final title =
+                              state.uri.queryParameters['title'] ??
+                              'Tài liệu học tập';
+                          return ReaderScreen(
+                            bookId: bookId,
+                            format: format,
+                            title: title,
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -139,7 +173,19 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/ai',
-                builder: (context, state) => const ChatScreen(),
+                builder: (context, state) {
+                  final bookIdStr = state.uri.queryParameters['bookId'];
+                  final bookId =
+                      bookIdStr != null ? int.tryParse(bookIdStr) : null;
+                  final bookTitle = state.uri.queryParameters['title'];
+                  final selectedText =
+                      state.uri.queryParameters['selectedText'];
+                  return ChatScreen(
+                    bookId: bookId,
+                    bookTitle: bookTitle,
+                    selectedText: selectedText,
+                  );
+                },
               ),
             ],
           ),

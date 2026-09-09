@@ -1,7 +1,7 @@
 ---
 phase: 6
 title: "Lending (borrow/return) + audit write path (05b)"
-status: pending
+status: completed
 priority: P1
 effort: M
 dependencies: [5]
@@ -41,11 +41,11 @@ Nửa hai phase-05 gốc (Kongming C4): borrow/return transaction-safe + **đưa
 
 ## Success Criteria
 
-- [ ] Concurrency test PASS trên server thật (không mock DB): đúng 1 loan, request kia nhận lỗi nghiệp vụ rõ.
-- [ ] Return → copy AVAILABLE lại, borrow tiếp OK; quá hạn tự đánh OVERDUE khi đọc.
-- [ ] Mọi mutation đặc quyền trong phase này có audit row (test assert), metadata sạch secret.
-- [ ] Client đổi giờ máy không ảnh hưởng dueAt hiển thị (server time).
-- [ ] `dart analyze`/tests PASS.
+- [x] Concurrency test PASS trên server thật (không mock DB): đúng 1 loan, request kia nhận lỗi nghiệp vụ rõ.
+- [x] Return → copy AVAILABLE lại, borrow tiếp OK; quá hạn tự đánh OVERDUE khi đọc.
+- [x] Mọi mutation đặc quyền trong phase này có audit row (test assert), metadata sạch secret.
+- [x] Client đổi giờ máy không ảnh hưởng dueAt hiển thị (server time).
+- [x] `dart analyze`/tests PASS.
 
 ## Risk Assessment
 

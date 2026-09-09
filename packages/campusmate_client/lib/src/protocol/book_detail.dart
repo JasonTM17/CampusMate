@@ -14,7 +14,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'book_access_type.dart' as _i2;
 import 'book_access_decision.dart' as _i3;
-import 'package:campusmate_client/src/protocol/protocol.dart' as _i4;
+import 'book_loan_summary.dart' as _i4;
+import 'package:campusmate_client/src/protocol/protocol.dart' as _i5;
 
 abstract class BookDetail implements _i1.SerializableModel {
   BookDetail._({
@@ -37,6 +38,9 @@ abstract class BookDetail implements _i1.SerializableModel {
     required this.availableFormats,
     required this.isFavorite,
     required this.access,
+    this.activeLoan,
+    required this.activeLoanCount,
+    required this.availableCopies,
   });
 
   factory BookDetail({
@@ -59,6 +63,9 @@ abstract class BookDetail implements _i1.SerializableModel {
     required List<String> availableFormats,
     required bool isFavorite,
     required _i3.BookAccessDecision access,
+    _i4.BookLoanSummary? activeLoan,
+    required int activeLoanCount,
+    required int availableCopies,
   }) = _BookDetailImpl;
 
   factory BookDetail.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -82,24 +89,31 @@ abstract class BookDetail implements _i1.SerializableModel {
               jsonSerialization['licenseExpiresAt'],
             ),
       keywords: jsonSerialization['keywords'] as String,
-      authors: _i4.Protocol().deserialize<List<String>>(
+      authors: _i5.Protocol().deserialize<List<String>>(
         jsonSerialization['authors'],
       ),
-      categories: _i4.Protocol().deserialize<List<String>>(
+      categories: _i5.Protocol().deserialize<List<String>>(
         jsonSerialization['categories'],
       ),
-      courseCodes: _i4.Protocol().deserialize<List<String>>(
+      courseCodes: _i5.Protocol().deserialize<List<String>>(
         jsonSerialization['courseCodes'],
       ),
-      availableFormats: _i4.Protocol().deserialize<List<String>>(
+      availableFormats: _i5.Protocol().deserialize<List<String>>(
         jsonSerialization['availableFormats'],
       ),
       isFavorite: _i1.BoolJsonExtension.fromJson(
         jsonSerialization['isFavorite'],
       ),
-      access: _i4.Protocol().deserialize<_i3.BookAccessDecision>(
+      access: _i5.Protocol().deserialize<_i3.BookAccessDecision>(
         jsonSerialization['access'],
       ),
+      activeLoan: jsonSerialization['activeLoan'] == null
+          ? null
+          : _i5.Protocol().deserialize<_i4.BookLoanSummary>(
+              jsonSerialization['activeLoan'],
+            ),
+      activeLoanCount: jsonSerialization['activeLoanCount'] as int,
+      availableCopies: jsonSerialization['availableCopies'] as int,
     );
   }
 
@@ -141,6 +155,12 @@ abstract class BookDetail implements _i1.SerializableModel {
 
   _i3.BookAccessDecision access;
 
+  _i4.BookLoanSummary? activeLoan;
+
+  int activeLoanCount;
+
+  int availableCopies;
+
   /// Returns a shallow copy of this [BookDetail]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -164,6 +184,9 @@ abstract class BookDetail implements _i1.SerializableModel {
     List<String>? availableFormats,
     bool? isFavorite,
     _i3.BookAccessDecision? access,
+    _i4.BookLoanSummary? activeLoan,
+    int? activeLoanCount,
+    int? availableCopies,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -189,6 +212,9 @@ abstract class BookDetail implements _i1.SerializableModel {
       'availableFormats': availableFormats.toJson(),
       'isFavorite': isFavorite,
       'access': access.toJson(),
+      if (activeLoan != null) 'activeLoan': activeLoan?.toJson(),
+      'activeLoanCount': activeLoanCount,
+      'availableCopies': availableCopies,
     };
   }
 
@@ -221,6 +247,9 @@ class _BookDetailImpl extends BookDetail {
     required List<String> availableFormats,
     required bool isFavorite,
     required _i3.BookAccessDecision access,
+    _i4.BookLoanSummary? activeLoan,
+    required int activeLoanCount,
+    required int availableCopies,
   }) : super._(
          id: id,
          title: title,
@@ -241,6 +270,9 @@ class _BookDetailImpl extends BookDetail {
          availableFormats: availableFormats,
          isFavorite: isFavorite,
          access: access,
+         activeLoan: activeLoan,
+         activeLoanCount: activeLoanCount,
+         availableCopies: availableCopies,
        );
 
   /// Returns a shallow copy of this [BookDetail]
@@ -267,6 +299,9 @@ class _BookDetailImpl extends BookDetail {
     List<String>? availableFormats,
     bool? isFavorite,
     _i3.BookAccessDecision? access,
+    Object? activeLoan = _Undefined,
+    int? activeLoanCount,
+    int? availableCopies,
   }) {
     return BookDetail(
       id: id ?? this.id,
@@ -291,6 +326,11 @@ class _BookDetailImpl extends BookDetail {
           availableFormats ?? this.availableFormats.map((e0) => e0).toList(),
       isFavorite: isFavorite ?? this.isFavorite,
       access: access ?? this.access.copyWith(),
+      activeLoan: activeLoan is _i4.BookLoanSummary?
+          ? activeLoan
+          : this.activeLoan?.copyWith(),
+      activeLoanCount: activeLoanCount ?? this.activeLoanCount,
+      availableCopies: availableCopies ?? this.availableCopies,
     );
   }
 }

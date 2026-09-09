@@ -557,6 +557,52 @@ Limitations and deferred findings:
 
 ## Next resume point
 
-- Commit and push Phase 05, watch GitHub Actions for the new head, then resume
-  Phase 06: lending + audit. Required next high-risk gate: Wukong borrow-race
-  claim with a deterministic two-borrow concurrency test.
+- Phase 06 (Lending + Audit write path) completed:
+  - Database schema: `book_copies`, `book_loans`, `audit_logs` + partial unique index `book_loans_active_copy_idx` on `(copyId) WHERE status IN ('borrowed', 'overdue')`.
+  - Backend services & endpoints: `LendingService`, `AuditService`, `LendingEndpoint` (`borrowBook`, `returnLoan`, `myLoans`, `activeLoansForBook`), `LibraryEndpoint.updateAccessPolicy`.
+  - Client & presentation: `MyLoansScreen` ("Sách của tôi"), `BookDetailScreen` integration with copy availability display, server error message propagation via `ServerpodClientException`.
+  - Security: `AuditService` sensitive key filtering for credentials, tokens, session keys, and API keys.
+  - Test coverage: 52 server unit tests (including `audit_service_test.dart` and `lending_service_test.dart`), 96 mobile tests (including `my_loans_screen_test.dart`), 14 shared tests (`campusmate_shared`). 100% PASS. `dart analyze` clean across all packages.
+- Phase 07 (Ebook Reader) completed:
+  - ADRs: ADR-006 (EPUB WebView & Reader Engine abstraction) and ADR-007 (Last-Write-Wins progress sync with outbox).
+  - Shared domain: `ReadingProgressState` and `ReadingProgressSync.shouldClientWin` / `resolveLww` in `campusmate_shared` (100% test coverage).
+  - Database & protocol: Serverpod models `reading_progress` (unique index on userId + bookId), `reader_bookmarks`, `reader_notes`, `reader_highlights`, `reader_assets`, `reading_progress_sync_result` + migration `20260909014433481-phase07-reader`.
+  - Backend services: `ReaderService` and `ReaderEndpoint` implementing `getReaderAsset` with access-policy checks, `syncProgress` with LWW conflict resolution, and bookmark/note/highlight CRUD.
+  - Client & UI: `ReaderRepository`, `ServerpodReaderRepository`, `ReaderController` (Riverpod `Notifier<ReaderState>`), `ReaderScreen` supporting font sizing (12-28pt), theme modes (Light, Dark, Sepia), resume banner ("Tiếp tục từ 65%?"), and bookmark/note/highlight tools. Wired into `BookDetailScreen` and `AppRouter`.
+  - Test coverage: `reader_screen_test.dart` (4/4 PASS), all mobile tests (100/100 PASS), server unit tests (14/14 PASS), integration tests (all PASS), 0 analyzer issues across monorepo.
+- Phase 09 (Personalized AI) completed:
+  - Database & Models: `StudentAiPreference` (userId, explanationStyle, personalizationEnabled, memoryEnabled), `AiUserMemory` (userId, content, source, createdAt, disabledAt), `StudySuggestion` DTO (title, message, priority, actionLabel, actionRoute). Migration `20260909020152277-phase09-personalized-ai` applied.
+  - Backend Services:
+    - `StudentContextBuilder`: multi-layer least-data budgeting (identity, preferences, academic courses, upcoming exams, today's timetable, library loans, active memories, and document excerpt context). Omits student data when personalization is disabled.
+    - `AiMemoryService`: full CRUD with active/disabled toggle and strict sensitive data blocklist (passwords, tokens, bearer, credit cards, bank account/stk).
+    - `AiPreferenceService`: loads and updates student explanation styles (`standard`, `concise`, `detailed`, `socratic`, `eli5`) and personalization/memory toggles.
+    - `StudySuggestionService`: generates real-time suggestions based on upcoming exams (<=14 days), due/overdue book loans, and daily timetable.
+    - `AiEndpoint`: updated `sendMessage` with optional `bookId` and `selectedText`, injecting budgeted student context into prompt assembly. Exposes `getPreferences`, `updatePreferences`, `getMemories`, `addMemory`, `toggleMemory`, `deleteMemory`, and `getStudySuggestion`.
+  - Mobile UI & Controllers:
+    - `AiPreferencesController`, `AiMemoriesController`, and `studySuggestionProvider`.
+    - `AiSettingsScreen`: manage explanation style, toggle personalization/memory, add memories with dialog, and toggle/delete memories.
+    - `DashboardScreen`: wired live `_AiSuggestionCard` replacing deferred placeholder card (satisfies Kongming Condition 3), with empty state handling.
+    - `BookDetailScreen` & `ReaderScreen`: added "Hỏi AI về sách / tài liệu" entry points passing book metadata and excerpts to `ChatScreen`.
+    - `ChatScreen`: displays active book context chip and quick navigation to AI settings.
+    - `StudentProfileScreen`: added navigation tile to AI Settings & Memory.
+  - Test Verification:
+    - `server/test/integration/ai_personalization_test.dart` (10/10 PASS): verified preferences, memory CRUD, blocklist rejection of secrets/passwords, Wukong prompt isolation (User A context never appears in User B prompts and vice versa), document excerpt inclusion without book dumping, and study suggestion.
+    - `apps/mobile/test/ai_settings_screen_test.dart` (3/3 PASS) and `dashboard_ai_suggestion_test.dart` (2/2 PASS).
+    - All 57 server integration tests PASS.
+    - All 105 mobile unit/widget tests PASS.
+    - 0 analyzer issues across monorepo (`server`, `apps/mobile`, `packages/campusmate_client`, `packages/campusmate_shared`).
+- Next resume point: Phase 10: RAG (pgvector, document chunking, DB-level access-policy retrieval filter, and source citations).
+
+## 2026-09-09 verification lane (concurrent session, read-only + test-infra repair)
+
+Second ZCode session ran `/ak:scout` + `/ak:wukong` verification in parallel with the active phase-06→09 implementer. This lane did NOT edit product files (ownership ruling: implementer owns phase-06/07/09 file sets and the commit); contributions are evidence + one test-infra repair:
+
+- **Phase-08 gap closed (was NOT_RUN):** `server/test/integration/ai_endpoint_test.dart` ran against the live Docker test DB (postgres_test:9090) this session — **9/9 PASS**, incl. quota-exhausted 429 + prompt-injection authorization assertions. Closes the `ai_endpoint_test requires Docker = NOT_RUN` line from the 2026-09-06 sections.
+- **Test-DB drift found + repaired (infra, not repo):** migration `20260908124350773-phase06` has `book_loans_active_copy_idx` hand-injected into `migration.sql:57`, but the pre-existing local `campusmate_test` volume was migrated from an earlier draft of that file → live DB lacked the partial unique index → `lending_endpoint_test` index assertion failed. Repaired idempotently via `psql` `CREATE UNIQUE INDEX IF NOT EXISTS` (no file edits); `lending_endpoint_test` then **8/8 PASS**. Fresh DBs (CI) are unaffected because they apply migration.sql including the index line.
+- **WUKONG borrow-race verdict (phase-06 step-6 required gate):** claim status **NOT_FALSIFIED**, gate **PROCEED_WITH_RESIDUAL_RISK**. Identity: HEAD `699e417` + working tree; sha256 manifest of 31 scope files stable across the run (no drift). Decisive evidence: live psql probes inside explicit ROLLBACK transactions — duplicate active loan for same copyId rejected (SQLSTATE 23505 on `book_loans_active_copy_idx`); `'overdue'` also covered by the predicate; second `'returned'` row allowed; return→re-borrow insert OK; final active count exactly 1; DB residue 0/0/0. INV-002 E4; INV-001/003 E3 (no true multi-session replay — prohibited to avoid DB contention; DB backstop makes double-commit impossible); INV-004/005 E2 static code-read (server-only CampusClock; only two AuditService.record call sites, metadata UUID/int/enum only).
+  - F-A (LOW-MED, maintenance): the partial index is absent from `book_loan.spy.yaml` and from the latest definition snapshots → invisible to `serverpod generate`; any future model-vs-schema "cleanup" could drop it. Existing mitigation: `lending_endpoint_test` asserts the index on the live DB — keep that assertion as the canonical guard; document the hand-injection in the phase-06 section.
+  - F-B (LOW): `_isActiveLoanConflict` also matches generic duplicate-key text → any unrelated unique violation would surface as 409 (currently unreachable).
+  - F-C (intent ruling needed, owner): privileged user returning their OWN loan is not audited; no-op access-policy change is not audited.
+  - F-D (LOW, latent): audit sanitizer filters KEYS only; secret-as-value under an innocuous key would persist (no current call site does this).
+- **Concurrency hazard (procedural ruling):** two server integration suites running simultaneously against shared `campusmate_test` produce false failures — observed: `academic_endpoint_test "seeds the academic catalog idempotently"` failed in a run concurrent with another suite, **PASS in isolation** (re-run 2026-09-09 ~09:10). Ruling: sessions must serialize `dart test` integration runs (or coordinate DB time slices).
+- Tree state at write time: implementer mid-phase-09 (ai_settings, memory, suggestion services); transient format/unused-import issues in their files are mid-work state, not defects for this lane.

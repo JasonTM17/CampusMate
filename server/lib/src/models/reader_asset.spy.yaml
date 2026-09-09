@@ -1,0 +1,6 @@
+class: ReaderAsset
+fields:
+  bookId: int
+  format: String
+  assetUrl: String
+  expiresAt: DateTime

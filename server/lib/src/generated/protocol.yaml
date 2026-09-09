@@ -42,18 +42,44 @@ ai:
   - deleteConversation:
   - getMessages:
   - sendMessage:
+  - getPreferences:
+  - updatePreferences:
+  - getMemories:
+  - addMemory:
+  - toggleMemory:
+  - deleteMemory:
+  - getStudySuggestion:
 greeting:
   - hello:
+lending:
+  - borrowBook:
+  - returnLoan:
+  - myLoans:
+  - activeLoansForBook:
 library:
   - explore:
   - search:
   - getBookDetail:
   - toggleFavorite:
+  - updateAccessPolicy:
 notification:
   - list:
   - unreadCount:
   - markRead:
   - markAllRead:
+reader:
+  - getReaderAsset:
+  - syncProgress:
+  - getProgress:
+  - getBookmarks:
+  - addBookmark:
+  - removeBookmark:
+  - getNotes:
+  - saveNote:
+  - deleteNote:
+  - getHighlights:
+  - addHighlight:
+  - removeHighlight:
 studentProfile:
   - getMyProfile:
   - updateMyProfile:

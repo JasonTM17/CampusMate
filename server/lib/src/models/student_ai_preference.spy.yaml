@@ -1,0 +1,12 @@
+class: StudentAiPreference
+table: student_ai_preferences
+fields:
+  userId: UuidValue
+  explanationStyle: String
+  personalizationEnabled: bool
+  memoryEnabled: bool
+  updatedAt: DateTime
+indexes:
+  student_ai_pref_user_idx:
+    fields: userId
+    unique: true

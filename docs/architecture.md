@@ -27,6 +27,8 @@ flowchart TB
         notify[Notification endpoints]
         ai[AI assistant endpoints]
         library[Library catalog endpoints]
+        lending[Lending endpoints]
+        audit[AuditService]
         quota[Quota + prompt guard]
     end
 
@@ -53,6 +55,9 @@ flowchart TB
     session --> notify
     session --> ai
     session --> library
+    session --> lending
+    library --> audit
+    lending --> audit
     academic --> postgres
     dashboard --> postgres
     notify --> postgres
@@ -62,6 +67,8 @@ flowchart TB
     quota --> postgres
     ai --> llm
     library --> postgres
+    lending --> postgres
+    audit --> postgres
     library --> minio
     backend --> redis
 
@@ -70,7 +77,7 @@ flowchart TB
     classDef store fill:#fde68a,stroke:#b45309,color:#451a03
     classDef provider fill:#fbcfe8,stroke:#be185d,color:#500724
     class shell,router,controllers,drift,client,protocol mobile
-    class session,auth,profile,academic,dashboard,notify,ai,library,quota api
+    class session,auth,profile,academic,dashboard,notify,ai,library,lending,audit,quota api
     class postgres,redis,minio store
     class llm provider
 ```
@@ -114,6 +121,14 @@ sequenceDiagram
     API-->>Mobile: DTOs with metadata and allowed actions
     Mobile-->>Student: Render catalog, detail, and favorite state
 
+    Student->>Mobile: Borrow or return a library copy
+    Mobile->>API: Request borrow/return with session token
+    API->>API: Derive actor from session and evaluate policy
+    API->>DB: Transaction, row lock copy, write loan/copy state
+    DB-->>API: One active loan per copy enforced by partial unique index
+    API-->>Mobile: Server-owned borrowedAt/dueAt/return state
+    Mobile-->>Student: Render My Loans countdown from server DTO
+
     Student->>Mobile: Ask AI
     Mobile->>API: Send message without provider secret
     API->>API: Apply quota and prompt guard
@@ -129,7 +144,9 @@ sequenceDiagram
 - Offline academic data is a pull-cache. Server data remains authoritative, and cache rows are partitioned by authenticated account, week, and semester.
 - Notification rows are user-scoped on the server; mobile deep links map typed
   notification targets to guarded app routes.
-- Library catalog access checks are server-owned before mobile receives metadata or action flags. Reader/RAG phases must keep file URL, storage key, and retrieval authorization behind the same server boundary.
+- Library catalog and lending access checks are server-owned before mobile receives metadata or action flags. Borrow/return uses server time and DB transactions; the client never decides due dates or acting user.
+- Privileged library mutations call `AuditService`, which sanitizes metadata before writing `audit_logs`.
+- Reader/RAG phases must keep file URL, storage key, and retrieval authorization behind the same server boundary.
 - Release claims require local gates, independent review, GitHub Actions evidence, and explicit tag/package evidence.
 
 ## Component Ownership
@@ -137,7 +154,7 @@ sequenceDiagram
 | Component | Owner | Current status |
 | --- | --- | --- |
 | `apps/mobile` | Flutter client, routing, Riverpod controllers, Drift read cache | Active |
-| `server` | Serverpod endpoints, auth, library policy, migrations, seed data | Active |
+| `server` | Serverpod endpoints, auth, library/lending policy, audit, migrations, seed data | Active |
 | `packages/campusmate_client` | Generated protocol/client | Generated |
 | `packages/campusmate_shared` | Pure Dart reusable domain logic | Active |
 | `docs/adr` | Architecture decisions | Active |

@@ -159,6 +159,31 @@ class _LibraryRepository implements LibraryRepository {
   @override
   Future<BookFavoriteStatus> toggleFavorite({required int bookId}) =>
       throw UnimplementedError();
+
+  @override
+  Future<BookLoanSummary> borrowBook({required int bookId}) =>
+      throw UnimplementedError();
+
+  @override
+  Future<BookLoanSummary> returnLoan({required int loanId}) =>
+      throw UnimplementedError();
+
+  @override
+  Future<BookLoanPage> myLoans({
+    String? cursor,
+    int limit = 20,
+    bool activeOnly = true,
+  }) => throw UnimplementedError();
+
+  @override
+  Future<List<BookLoanSummary>> activeLoansForBook({required int bookId}) =>
+      throw UnimplementedError();
+
+  @override
+  Future<BookAccessPolicyUpdate> updateAccessPolicy({
+    required int bookId,
+    required BookAccessType accessType,
+  }) => throw UnimplementedError();
 }
 
 void main() {

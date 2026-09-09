@@ -1,0 +1,6 @@
+enum: BookLoanStatus
+serialized: byName
+values:
+  - borrowed
+  - overdue
+  - returned

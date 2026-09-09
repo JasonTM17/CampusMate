@@ -11,3 +11,6 @@
 20260907154030243-phase03-academic
 20260908004517941-phase04-dashboard-notifications
 20260908075418239-phase05-library-catalog
+20260908124350773-phase06-lending-audit
+20260909014433481-phase07-reader
+20260909020152277-phase09-personalized-ai

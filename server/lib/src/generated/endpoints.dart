@@ -20,14 +20,16 @@ import '../auth/jwt_refresh_endpoint.dart' as _i6;
 import '../dashboard/dashboard_endpoint.dart' as _i7;
 import '../endpoints/ai_endpoint.dart' as _i8;
 import '../greetings/greeting_endpoint.dart' as _i9;
-import '../library/library_endpoint.dart' as _i10;
-import '../notifications/notification_endpoint.dart' as _i11;
-import '../student/student_profile_endpoint.dart' as _i12;
-import 'package:campusmate_server/src/generated/book_access_type.dart' as _i13;
+import '../lending/lending_endpoint.dart' as _i10;
+import '../library/library_endpoint.dart' as _i11;
+import '../notifications/notification_endpoint.dart' as _i12;
+import '../reader/reader_endpoint.dart' as _i13;
+import '../student/student_profile_endpoint.dart' as _i14;
+import 'package:campusmate_server/src/generated/book_access_type.dart' as _i15;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i14;
+    as _i16;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i15;
+    as _i17;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -111,19 +113,31 @@ class Endpoints extends _i1.EndpointDispatch {
           'greeting',
           null,
         ),
-      'library': _i10.LibraryEndpoint()
+      'lending': _i10.LendingEndpoint()
+        ..initialize(
+          server,
+          'lending',
+          null,
+        ),
+      'library': _i11.LibraryEndpoint()
         ..initialize(
           server,
           'library',
           null,
         ),
-      'notification': _i11.NotificationEndpoint()
+      'notification': _i12.NotificationEndpoint()
         ..initialize(
           server,
           'notification',
           null,
         ),
-      'studentProfile': _i12.StudentProfileEndpoint()
+      'reader': _i13.ReaderEndpoint()
+        ..initialize(
+          server,
+          'reader',
+          null,
+        ),
+      'studentProfile': _i14.StudentProfileEndpoint()
         ..initialize(
           server,
           'studentProfile',
@@ -772,6 +786,141 @@ class Endpoints extends _i1.EndpointDispatch {
                 conversationId: params['conversationId'],
               ),
         ),
+        'getPreferences': _i1.MethodConnector(
+          name: 'getPreferences',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['ai'] as _i8.AiEndpoint).getPreferences(session),
+        ),
+        'updatePreferences': _i1.MethodConnector(
+          name: 'updatePreferences',
+          params: {
+            'explanationStyle': _i1.ParameterDescription(
+              name: 'explanationStyle',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'personalizationEnabled': _i1.ParameterDescription(
+              name: 'personalizationEnabled',
+              type: _i1.getType<bool>(),
+              nullable: false,
+            ),
+            'memoryEnabled': _i1.ParameterDescription(
+              name: 'memoryEnabled',
+              type: _i1.getType<bool>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['ai'] as _i8.AiEndpoint).updatePreferences(
+                session,
+                explanationStyle: params['explanationStyle'],
+                personalizationEnabled: params['personalizationEnabled'],
+                memoryEnabled: params['memoryEnabled'],
+              ),
+        ),
+        'getMemories': _i1.MethodConnector(
+          name: 'getMemories',
+          params: {
+            'activeOnly': _i1.ParameterDescription(
+              name: 'activeOnly',
+              type: _i1.getType<bool>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['ai'] as _i8.AiEndpoint).getMemories(
+                session,
+                activeOnly: params['activeOnly'],
+              ),
+        ),
+        'addMemory': _i1.MethodConnector(
+          name: 'addMemory',
+          params: {
+            'content': _i1.ParameterDescription(
+              name: 'content',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'source': _i1.ParameterDescription(
+              name: 'source',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['ai'] as _i8.AiEndpoint).addMemory(
+                session,
+                content: params['content'],
+                source: params['source'],
+              ),
+        ),
+        'toggleMemory': _i1.MethodConnector(
+          name: 'toggleMemory',
+          params: {
+            'memoryId': _i1.ParameterDescription(
+              name: 'memoryId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'disabled': _i1.ParameterDescription(
+              name: 'disabled',
+              type: _i1.getType<bool>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['ai'] as _i8.AiEndpoint).toggleMemory(
+                session,
+                memoryId: params['memoryId'],
+                disabled: params['disabled'],
+              ),
+        ),
+        'deleteMemory': _i1.MethodConnector(
+          name: 'deleteMemory',
+          params: {
+            'memoryId': _i1.ParameterDescription(
+              name: 'memoryId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['ai'] as _i8.AiEndpoint).deleteMemory(
+                session,
+                memoryId: params['memoryId'],
+              ),
+        ),
+        'getStudySuggestion': _i1.MethodConnector(
+          name: 'getStudySuggestion',
+          params: {},
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['ai'] as _i8.AiEndpoint).getStudySuggestion(
+                session,
+              ),
+        ),
         'sendMessage': _i1.MethodStreamConnector(
           name: 'sendMessage',
           params: {
@@ -785,6 +934,16 @@ class Endpoints extends _i1.EndpointDispatch {
               type: _i1.getType<String>(),
               nullable: false,
             ),
+            'bookId': _i1.ParameterDescription(
+              name: 'bookId',
+              type: _i1.getType<int?>(),
+              nullable: true,
+            ),
+            'selectedText': _i1.ParameterDescription(
+              name: 'selectedText',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
           },
           streamParams: {},
           returnType: _i1.MethodStreamReturnType.streamType,
@@ -797,6 +956,8 @@ class Endpoints extends _i1.EndpointDispatch {
                 session,
                 conversationId: params['conversationId'],
                 userMessage: params['userMessage'],
+                bookId: params['bookId'],
+                selectedText: params['selectedText'],
               ),
         ),
       },
@@ -825,6 +986,99 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
+    connectors['lending'] = _i1.EndpointConnector(
+      name: 'lending',
+      endpoint: endpoints['lending']!,
+      methodConnectors: {
+        'borrowBook': _i1.MethodConnector(
+          name: 'borrowBook',
+          params: {
+            'bookId': _i1.ParameterDescription(
+              name: 'bookId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['lending'] as _i10.LendingEndpoint).borrowBook(
+                    session,
+                    bookId: params['bookId'],
+                  ),
+        ),
+        'returnLoan': _i1.MethodConnector(
+          name: 'returnLoan',
+          params: {
+            'loanId': _i1.ParameterDescription(
+              name: 'loanId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['lending'] as _i10.LendingEndpoint).returnLoan(
+                    session,
+                    loanId: params['loanId'],
+                  ),
+        ),
+        'myLoans': _i1.MethodConnector(
+          name: 'myLoans',
+          params: {
+            'cursor': _i1.ParameterDescription(
+              name: 'cursor',
+              type: _i1.getType<String?>(),
+              nullable: true,
+            ),
+            'limit': _i1.ParameterDescription(
+              name: 'limit',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'activeOnly': _i1.ParameterDescription(
+              name: 'activeOnly',
+              type: _i1.getType<bool>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['lending'] as _i10.LendingEndpoint).myLoans(
+                session,
+                cursor: params['cursor'],
+                limit: params['limit'],
+                activeOnly: params['activeOnly'],
+              ),
+        ),
+        'activeLoansForBook': _i1.MethodConnector(
+          name: 'activeLoansForBook',
+          params: {
+            'bookId': _i1.ParameterDescription(
+              name: 'bookId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['lending'] as _i10.LendingEndpoint)
+                  .activeLoansForBook(
+                    session,
+                    bookId: params['bookId'],
+                  ),
+        ),
+      },
+    );
     connectors['library'] = _i1.EndpointConnector(
       name: 'library',
       endpoint: endpoints['library']!,
@@ -842,7 +1096,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['library'] as _i10.LibraryEndpoint).explore(
+              ) async => (endpoints['library'] as _i11.LibraryEndpoint).explore(
                 session,
                 limitPerSection: params['limitPerSection'],
               ),
@@ -892,7 +1146,7 @@ class Endpoints extends _i1.EndpointDispatch {
             ),
             'accessTypes': _i1.ParameterDescription(
               name: 'accessTypes',
-              type: _i1.getType<List<_i13.BookAccessType>?>(),
+              type: _i1.getType<List<_i15.BookAccessType>?>(),
               nullable: true,
             ),
             'relatedToMyCourses': _i1.ParameterDescription(
@@ -905,7 +1159,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['library'] as _i10.LibraryEndpoint).search(
+              ) async => (endpoints['library'] as _i11.LibraryEndpoint).search(
                 session,
                 query: params['query'],
                 cursor: params['cursor'],
@@ -933,7 +1187,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['library'] as _i10.LibraryEndpoint).getBookDetail(
+                  (endpoints['library'] as _i11.LibraryEndpoint).getBookDetail(
                     session,
                     bookId: params['bookId'],
                   ),
@@ -952,9 +1206,34 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['library'] as _i10.LibraryEndpoint).toggleFavorite(
+                  (endpoints['library'] as _i11.LibraryEndpoint).toggleFavorite(
                     session,
                     bookId: params['bookId'],
+                  ),
+        ),
+        'updateAccessPolicy': _i1.MethodConnector(
+          name: 'updateAccessPolicy',
+          params: {
+            'bookId': _i1.ParameterDescription(
+              name: 'bookId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'accessType': _i1.ParameterDescription(
+              name: 'accessType',
+              type: _i1.getType<_i15.BookAccessType>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['library'] as _i11.LibraryEndpoint)
+                  .updateAccessPolicy(
+                    session,
+                    bookId: params['bookId'],
+                    accessType: params['accessType'],
                   ),
         ),
       },
@@ -987,7 +1266,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['notification'] as _i11.NotificationEndpoint).list(
+                  (endpoints['notification'] as _i12.NotificationEndpoint).list(
                     session,
                     cursor: params['cursor'],
                     limit: params['limit'],
@@ -1008,7 +1287,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['notification'] as _i11.NotificationEndpoint)
+                  (endpoints['notification'] as _i12.NotificationEndpoint)
                       .unreadCount(
                         session,
                         category: params['category'],
@@ -1028,7 +1307,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['notification'] as _i11.NotificationEndpoint)
+                  (endpoints['notification'] as _i12.NotificationEndpoint)
                       .markRead(
                         session,
                         notificationId: params['notificationId'],
@@ -1048,11 +1327,315 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['notification'] as _i11.NotificationEndpoint)
+                  (endpoints['notification'] as _i12.NotificationEndpoint)
                       .markAllRead(
                         session,
                         category: params['category'],
                       ),
+        ),
+      },
+    );
+    connectors['reader'] = _i1.EndpointConnector(
+      name: 'reader',
+      endpoint: endpoints['reader']!,
+      methodConnectors: {
+        'getReaderAsset': _i1.MethodConnector(
+          name: 'getReaderAsset',
+          params: {
+            'bookId': _i1.ParameterDescription(
+              name: 'bookId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'format': _i1.ParameterDescription(
+              name: 'format',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['reader'] as _i13.ReaderEndpoint).getReaderAsset(
+                    session,
+                    bookId: params['bookId'],
+                    format: params['format'],
+                  ),
+        ),
+        'syncProgress': _i1.MethodConnector(
+          name: 'syncProgress',
+          params: {
+            'bookId': _i1.ParameterDescription(
+              name: 'bookId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'progressPercent': _i1.ParameterDescription(
+              name: 'progressPercent',
+              type: _i1.getType<double>(),
+              nullable: false,
+            ),
+            'currentLocation': _i1.ParameterDescription(
+              name: 'currentLocation',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'clientUpdatedAt': _i1.ParameterDescription(
+              name: 'clientUpdatedAt',
+              type: _i1.getType<DateTime>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['reader'] as _i13.ReaderEndpoint).syncProgress(
+                    session,
+                    bookId: params['bookId'],
+                    progressPercent: params['progressPercent'],
+                    currentLocation: params['currentLocation'],
+                    clientUpdatedAt: params['clientUpdatedAt'],
+                  ),
+        ),
+        'getProgress': _i1.MethodConnector(
+          name: 'getProgress',
+          params: {
+            'bookId': _i1.ParameterDescription(
+              name: 'bookId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['reader'] as _i13.ReaderEndpoint).getProgress(
+                    session,
+                    bookId: params['bookId'],
+                  ),
+        ),
+        'getBookmarks': _i1.MethodConnector(
+          name: 'getBookmarks',
+          params: {
+            'bookId': _i1.ParameterDescription(
+              name: 'bookId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['reader'] as _i13.ReaderEndpoint).getBookmarks(
+                    session,
+                    bookId: params['bookId'],
+                  ),
+        ),
+        'addBookmark': _i1.MethodConnector(
+          name: 'addBookmark',
+          params: {
+            'bookId': _i1.ParameterDescription(
+              name: 'bookId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'location': _i1.ParameterDescription(
+              name: 'location',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'title': _i1.ParameterDescription(
+              name: 'title',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['reader'] as _i13.ReaderEndpoint).addBookmark(
+                    session,
+                    bookId: params['bookId'],
+                    location: params['location'],
+                    title: params['title'],
+                  ),
+        ),
+        'removeBookmark': _i1.MethodConnector(
+          name: 'removeBookmark',
+          params: {
+            'bookmarkId': _i1.ParameterDescription(
+              name: 'bookmarkId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['reader'] as _i13.ReaderEndpoint).removeBookmark(
+                    session,
+                    bookmarkId: params['bookmarkId'],
+                  ),
+        ),
+        'getNotes': _i1.MethodConnector(
+          name: 'getNotes',
+          params: {
+            'bookId': _i1.ParameterDescription(
+              name: 'bookId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['reader'] as _i13.ReaderEndpoint).getNotes(
+                session,
+                bookId: params['bookId'],
+              ),
+        ),
+        'saveNote': _i1.MethodConnector(
+          name: 'saveNote',
+          params: {
+            'bookId': _i1.ParameterDescription(
+              name: 'bookId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'location': _i1.ParameterDescription(
+              name: 'location',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'content': _i1.ParameterDescription(
+              name: 'content',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'noteId': _i1.ParameterDescription(
+              name: 'noteId',
+              type: _i1.getType<int?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['reader'] as _i13.ReaderEndpoint).saveNote(
+                session,
+                bookId: params['bookId'],
+                location: params['location'],
+                content: params['content'],
+                noteId: params['noteId'],
+              ),
+        ),
+        'deleteNote': _i1.MethodConnector(
+          name: 'deleteNote',
+          params: {
+            'noteId': _i1.ParameterDescription(
+              name: 'noteId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['reader'] as _i13.ReaderEndpoint).deleteNote(
+                    session,
+                    noteId: params['noteId'],
+                  ),
+        ),
+        'getHighlights': _i1.MethodConnector(
+          name: 'getHighlights',
+          params: {
+            'bookId': _i1.ParameterDescription(
+              name: 'bookId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['reader'] as _i13.ReaderEndpoint).getHighlights(
+                    session,
+                    bookId: params['bookId'],
+                  ),
+        ),
+        'addHighlight': _i1.MethodConnector(
+          name: 'addHighlight',
+          params: {
+            'bookId': _i1.ParameterDescription(
+              name: 'bookId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'location': _i1.ParameterDescription(
+              name: 'location',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'text': _i1.ParameterDescription(
+              name: 'text',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'colorToken': _i1.ParameterDescription(
+              name: 'colorToken',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['reader'] as _i13.ReaderEndpoint).addHighlight(
+                    session,
+                    bookId: params['bookId'],
+                    location: params['location'],
+                    text: params['text'],
+                    colorToken: params['colorToken'],
+                  ),
+        ),
+        'removeHighlight': _i1.MethodConnector(
+          name: 'removeHighlight',
+          params: {
+            'highlightId': _i1.ParameterDescription(
+              name: 'highlightId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['reader'] as _i13.ReaderEndpoint).removeHighlight(
+                    session,
+                    highlightId: params['highlightId'],
+                  ),
         ),
       },
     );
@@ -1068,7 +1651,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['studentProfile'] as _i12.StudentProfileEndpoint)
+                  (endpoints['studentProfile'] as _i14.StudentProfileEndpoint)
                       .getMyProfile(session),
         ),
         'updateMyProfile': _i1.MethodConnector(
@@ -1090,7 +1673,7 @@ class Endpoints extends _i1.EndpointDispatch {
                 _i1.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['studentProfile'] as _i12.StudentProfileEndpoint)
+                  (endpoints['studentProfile'] as _i14.StudentProfileEndpoint)
                       .updateMyProfile(
                         session,
                         fullName: params['fullName'],
@@ -1099,9 +1682,9 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    modules['serverpod_auth_idp'] = _i14.Endpoints()
+    modules['serverpod_auth_idp'] = _i16.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_core'] = _i15.Endpoints()
+    modules['serverpod_auth_core'] = _i17.Endpoints()
       ..initializeEndpoints(server);
   }
 }

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/theme/app_spacing.dart';
+import '../../chat/application/ai_preferences_controller.dart';
 import '../../notifications/application/notification_controller.dart';
 import '../application/dashboard_controller.dart';
 
@@ -20,6 +21,7 @@ class DashboardScreen extends ConsumerWidget {
     final upcomingExam = ref.watch(dashboardUpcomingExamProvider);
     final announcements = ref.watch(dashboardAnnouncementsProvider);
     final unreadCount = ref.watch(notificationUnreadCountProvider);
+    final studySuggestion = ref.watch(studySuggestionProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -133,11 +135,19 @@ class DashboardScreen extends ConsumerWidget {
               message:
                   'Kệ sách đang đọc sẽ mở khi phase e-library có dữ liệu thật.',
             ),
-            const _DeferredFeatureCard(
-              icon: Icons.auto_awesome_outlined,
+            _AsyncSection<StudySuggestion?>(
               title: 'Gợi ý AI',
-              message:
-                  'CampusMate sẽ chỉ hiển thị gợi ý cá nhân hóa khi pipeline AI được nối đầy đủ.',
+              icon: Icons.auto_awesome_outlined,
+              value: studySuggestion,
+              onRetry: () => ref.invalidate(studySuggestionProvider),
+              builder: (context, suggestion) => suggestion == null
+                  ? const _EmptyCard(
+                      icon: Icons.lightbulb_outline,
+                      title: 'Chưa có gợi ý mới',
+                      message:
+                          'Khi có lịch thi, lớp học hoặc sách đến hạn, trợ lý AI sẽ tự động gợi ý tại đây.',
+                    )
+                  : _AiSuggestionCard(suggestion: suggestion),
             ),
           ],
         ),
@@ -149,6 +159,7 @@ class DashboardScreen extends ConsumerWidget {
 Future<void> _refresh(WidgetRef ref) async {
   refreshDashboardSections(ref);
   ref.invalidate(notificationUnreadCountProvider);
+  ref.invalidate(studySuggestionProvider);
   try {
     await Future.wait<Object?>([
       ref.read(dashboardGreetingProvider.future),
@@ -558,4 +569,86 @@ String _dateText(DateTime value) {
   final day = local.day.toString().padLeft(2, '0');
   final month = local.month.toString().padLeft(2, '0');
   return '$day/$month/${local.year}';
+}
+
+class _AiSuggestionCard extends StatelessWidget {
+  const _AiSuggestionCard({required this.suggestion});
+
+  final StudySuggestion suggestion;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isHigh = suggestion.priority == 'high';
+
+    return Card(
+      key: const Key('dashboard-ai-suggestion-card'),
+      color: isHigh
+          ? theme.colorScheme.errorContainer.withValues(alpha: 0.3)
+          : theme.colorScheme.primaryContainer.withValues(alpha: 0.25),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.cardPadding),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.auto_awesome,
+                  size: 20,
+                  color: isHigh
+                      ? theme.colorScheme.error
+                      : theme.colorScheme.primary,
+                ),
+                const SizedBox(width: AppSpacing.s),
+                Expanded(
+                  child: Text(
+                    suggestion.title,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                if (isHigh)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.s,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.error,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      'Ưu tiên',
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.colorScheme.onError,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.s),
+            Text(
+              suggestion.message,
+              style: theme.textTheme.bodyMedium,
+            ),
+            if (suggestion.actionLabel != null &&
+                suggestion.actionRoute != null) ...[
+              const SizedBox(height: AppSpacing.s),
+              Align(
+                alignment: Alignment.centerRight,
+                child: FilledButton.tonal(
+                  key: const Key('suggestion-action-button'),
+                  onPressed: () => context.push(suggestion.actionRoute!),
+                  child: Text(suggestion.actionLabel!),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
 }

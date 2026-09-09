@@ -1,0 +1,7 @@
+class: StudySuggestion
+fields:
+  title: String
+  message: String
+  priority: String
+  actionLabel: String?
+  actionRoute: String?

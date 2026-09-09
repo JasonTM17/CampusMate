@@ -5,12 +5,19 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_client/serverpod_client.dart';
 
 import '../auth/campusmate_auth.dart';
+import '../audit/audit_service.dart';
 import '../generated/protocol.dart';
+import '../lending/lending_service.dart';
 import 'book_access_policy_service.dart';
 
 class LibraryCatalogService {
-  LibraryCatalogService({BookAccessPolicyService? policy})
-    : _policy = policy ?? BookAccessPolicyService();
+  LibraryCatalogService({
+    BookAccessPolicyService? policy,
+    LendingService? lending,
+    AuditService? audit,
+  }) : _policy = policy ?? BookAccessPolicyService(),
+       _lending = lending ?? LendingService(policy: policy),
+       _audit = audit ?? AuditService();
 
   static const formats = {'pdf', 'epub'};
   static const languages = {'vi', 'en'};
@@ -18,6 +25,8 @@ class LibraryCatalogService {
       'Tài liệu này hiện chỉ có thông tin tham khảo.';
 
   final BookAccessPolicyService _policy;
+  final LendingService _lending;
+  final AuditService _audit;
 
   Future<LibraryExplore> explore(
     Session session, {
@@ -196,7 +205,11 @@ class LibraryCatalogService {
     if (book == null || !_policy.mayViewDetail(role: role, book: book)) {
       throw ServerpodClientException('Book not found', 404);
     }
-    final metadata = await _metadataFor(session, {bookId});
+    final metadata = await _metadataFor(
+      session,
+      {bookId},
+      booksById: {bookId: book},
+    );
     return _detail(
       session,
       book,
@@ -231,6 +244,62 @@ class LibraryCatalogService {
 
     await FavoriteBook.db.deleteRow(session, existing);
     return BookFavoriteStatus(bookId: bookId, isFavorite: false);
+  }
+
+  Future<BookAccessPolicyUpdate> updateAccessPolicy(
+    Session session, {
+    required int bookId,
+    required BookAccessType accessType,
+  }) async {
+    final actorUserId = CampusMateAuth.requireUserId(session);
+    final role = CampusMateAuth.roleFor(session);
+    if (role != 'librarian' && role != 'admin') {
+      throw ServerpodClientForbidden();
+    }
+    final updated = await session.db.transaction<LibraryBook>((
+      transaction,
+    ) async {
+      final now = CampusClock.nowUtc();
+      final book = await LibraryBook.db.findById(
+        session,
+        bookId,
+        transaction: transaction,
+        lockMode: LockMode.forUpdate,
+      );
+      if (book == null) {
+        throw ServerpodClientException('Book not found', 404);
+      }
+      if (book.accessType == accessType) {
+        return book;
+      }
+      final updatedBook = await LibraryBook.db.updateRow(
+        session,
+        book.copyWith(accessType: accessType, updatedAt: now),
+        transaction: transaction,
+      );
+      await _audit.record(
+        session,
+        actorUserId: actorUserId,
+        action: role == 'admin'
+            ? 'ADMIN_CHANGE_ACCESS_POLICY'
+            : 'LIBRARIAN_CHANGE_ACCESS_POLICY',
+        resourceType: 'book',
+        resourceId: bookId.toString(),
+        metadata: {
+          'from': book.accessType.name,
+          'to': accessType.name,
+          'role': role,
+        },
+        transaction: transaction,
+      );
+      return updatedBook;
+    });
+
+    return BookAccessPolicyUpdate(
+      bookId: bookId,
+      accessType: updated.accessType,
+      updatedAt: updated.updatedAt,
+    );
   }
 
   Future<List<BookSummary>> _searchSummaries(
@@ -479,7 +548,11 @@ class LibraryCatalogService {
   ) async {
     if (books.isEmpty) return [];
     final ids = books.map((book) => book.id!).toSet();
-    final metadata = await _metadataFor(session, ids);
+    final metadata = await _metadataFor(
+      session,
+      ids,
+      booksById: {for (final book in books) book.id!: book},
+    );
     return [
       for (final book in books)
         _summary(session, book, metadata[book.id!] ?? _BookMetadata.empty()),
@@ -488,10 +561,18 @@ class LibraryCatalogService {
 
   Future<Map<int, _BookMetadata>> _metadataFor(
     Session session,
-    Set<int> bookIds,
-  ) async {
+    Set<int> bookIds, {
+    Map<int, LibraryBook>? booksById,
+  }) async {
     if (bookIds.isEmpty) return {};
     final userId = CampusMateAuth.requireUserId(session);
+    final now = CampusClock.nowUtc();
+    await _lending.refreshOverdue(
+      session,
+      userId: userId,
+      bookIds: bookIds,
+      now: now,
+    );
     final authorLinks = await LibraryBookAuthor.db.find(
       session,
       where: (t) => t.bookId.inSet(bookIds),
@@ -517,6 +598,23 @@ class LibraryCatalogService {
       where: (t) => t.userId.equals(userId) & t.bookId.inSet(bookIds),
       limit: 1000,
     );
+    final activeLoans = await BookLoan.db.find(
+      session,
+      where: (t) =>
+          t.bookId.inSet(bookIds) &
+          t.status.inSet(LendingService.activeLoanStatuses),
+      orderByList: (t) => [
+        Order(column: t.dueAt),
+        Order(column: t.id),
+      ],
+      limit: 2000,
+    );
+    final availableCopies = await BookCopy.db.find(
+      session,
+      where: (t) =>
+          t.bookId.inSet(bookIds) & t.status.equals(BookCopyStatus.available),
+      limit: 2000,
+    );
     final authorsById = await _authorsById(
       session,
       authorLinks.map((row) => row.authorId).toSet(),
@@ -530,9 +628,37 @@ class LibraryCatalogService {
       courseLinks.map((row) => row.courseId).toSet(),
     );
     final favoriteIds = favorites.map((row) => row.bookId).toSet();
+    final availableCopiesByBookId = <int, int>{};
+    for (final copy in availableCopies) {
+      availableCopiesByBookId[copy.bookId] =
+          (availableCopiesByBookId[copy.bookId] ?? 0) + 1;
+    }
+    final activeLoanCountByBookId = <int, int>{};
+    final userActiveLoans = <BookLoan>[];
+    for (final loan in activeLoans) {
+      activeLoanCountByBookId[loan.bookId] =
+          (activeLoanCountByBookId[loan.bookId] ?? 0) + 1;
+      if (loan.userId.toString() == userId.toString()) {
+        userActiveLoans.add(loan);
+      }
+    }
+    final activeLoanSummaries = await _lending.summariesForLoans(
+      session,
+      userActiveLoans,
+      serverNow: now,
+      booksById: booksById,
+    );
+    final activeLoanByBookId = {
+      for (final loan in activeLoanSummaries) loan.bookId: loan,
+    };
     final output = {
       for (final id in bookIds)
-        id: _BookMetadata(isFavorite: favoriteIds.contains(id)),
+        id: _BookMetadata(
+          isFavorite: favoriteIds.contains(id),
+          activeLoan: activeLoanByBookId[id],
+          activeLoanCount: activeLoanCountByBookId[id] ?? 0,
+          availableCopies: availableCopiesByBookId[id] ?? 0,
+        ),
     };
 
     for (final link in authorLinks) {
@@ -610,7 +736,11 @@ class LibraryCatalogService {
       courseCodes: metadata.courseCodes,
       availableFormats: metadata.formats,
       isFavorite: metadata.isFavorite,
-      access: _policy.evaluateForSession(session, book),
+      access: _policy.evaluateForSession(
+        session,
+        book,
+        hasActiveLoan: metadata.activeLoan != null,
+      ),
     );
   }
 
@@ -638,7 +768,14 @@ class LibraryCatalogService {
       courseCodes: metadata.courseCodes,
       availableFormats: metadata.formats,
       isFavorite: metadata.isFavorite,
-      access: _policy.evaluateForSession(session, book),
+      access: _policy.evaluateForSession(
+        session,
+        book,
+        hasActiveLoan: metadata.activeLoan != null,
+      ),
+      activeLoan: metadata.activeLoan,
+      activeLoanCount: metadata.activeLoanCount,
+      availableCopies: metadata.availableCopies,
     );
   }
 
@@ -726,7 +863,12 @@ class LibraryCatalogService {
 }
 
 class _BookMetadata {
-  _BookMetadata({this.isFavorite = false});
+  _BookMetadata({
+    this.isFavorite = false,
+    this.activeLoan,
+    this.activeLoanCount = 0,
+    this.availableCopies = 0,
+  });
 
   factory _BookMetadata.empty() => _BookMetadata();
 
@@ -735,6 +877,9 @@ class _BookMetadata {
   final courseCodes = <String>[];
   final formats = <String>[];
   final bool isFavorite;
+  final BookLoanSummary? activeLoan;
+  final int activeLoanCount;
+  final int availableCopies;
 
   void sort() {
     authors.removeWhere((value) => value.isEmpty);

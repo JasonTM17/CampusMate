@@ -1,0 +1,12 @@
+class: ReaderHighlight
+table: reader_highlights
+fields:
+  userId: UuidValue
+  bookId: int, relation(parent=books, onDelete=Cascade)
+  location: String
+  text: String
+  colorToken: String
+  createdAt: DateTime
+indexes:
+  reader_highlight_user_book_idx:
+    fields: userId, bookId

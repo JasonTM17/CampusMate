@@ -31,20 +31,35 @@ import 'package:campusmate_client/src/protocol/announcement_summary.dart'
     as _i14;
 import 'package:campusmate_client/src/protocol/ai_conversations.dart' as _i15;
 import 'package:campusmate_client/src/protocol/ai_messages.dart' as _i16;
-import 'package:campusmate_client/src/protocol/greetings/greeting.dart' as _i17;
-import 'package:campusmate_client/src/protocol/library_explore.dart' as _i18;
+import 'package:campusmate_client/src/protocol/student_ai_preference.dart'
+    as _i17;
+import 'package:campusmate_client/src/protocol/ai_user_memory.dart' as _i18;
+import 'package:campusmate_client/src/protocol/study_suggestion.dart' as _i19;
+import 'package:campusmate_client/src/protocol/greetings/greeting.dart' as _i20;
+import 'package:campusmate_client/src/protocol/book_loan_summary.dart' as _i21;
+import 'package:campusmate_client/src/protocol/book_loan_page.dart' as _i22;
+import 'package:campusmate_client/src/protocol/library_explore.dart' as _i23;
 import 'package:campusmate_client/src/protocol/library_search_page.dart'
-    as _i19;
-import 'package:campusmate_client/src/protocol/book_access_type.dart' as _i20;
-import 'package:campusmate_client/src/protocol/book_detail.dart' as _i21;
-import 'package:campusmate_client/src/protocol/book_favorite_status.dart'
-    as _i22;
-import 'package:campusmate_client/src/protocol/notification_list_page.dart'
-    as _i23;
-import 'package:campusmate_client/src/protocol/campus_notification_summary.dart'
     as _i24;
-import 'package:campusmate_client/src/protocol/student_profile.dart' as _i25;
-import 'protocol.dart' as _i26;
+import 'package:campusmate_client/src/protocol/book_access_type.dart' as _i25;
+import 'package:campusmate_client/src/protocol/book_detail.dart' as _i26;
+import 'package:campusmate_client/src/protocol/book_favorite_status.dart'
+    as _i27;
+import 'package:campusmate_client/src/protocol/book_access_policy_update.dart'
+    as _i28;
+import 'package:campusmate_client/src/protocol/notification_list_page.dart'
+    as _i29;
+import 'package:campusmate_client/src/protocol/campus_notification_summary.dart'
+    as _i30;
+import 'package:campusmate_client/src/protocol/reader_asset.dart' as _i31;
+import 'package:campusmate_client/src/protocol/reading_progress_sync_result.dart'
+    as _i32;
+import 'package:campusmate_client/src/protocol/reading_progress.dart' as _i33;
+import 'package:campusmate_client/src/protocol/reader_bookmark.dart' as _i34;
+import 'package:campusmate_client/src/protocol/reader_note.dart' as _i35;
+import 'package:campusmate_client/src/protocol/reader_highlight.dart' as _i36;
+import 'package:campusmate_client/src/protocol/student_profile.dart' as _i37;
+import 'protocol.dart' as _i38;
 
 /// {@category Endpoint}
 class EndpointAcademic extends _i1.EndpointRef {
@@ -494,8 +509,9 @@ class EndpointDashboard extends _i1.EndpointRef {
   );
 }
 
-/// AI assistant endpoints (phase-08): conversation lifecycle, message history,
-/// and token-by-token streaming chat backed by [AiProvider].
+/// AI assistant endpoints (phase-08 & phase-09): conversation lifecycle,
+/// message history, streaming chat with personalized student context,
+/// AI user memories, student AI preferences, and study suggestions.
 ///
 /// Authorization rule (§31): every read/write is scoped to the authenticated
 /// user via `session.authenticated.userIdentifier`. A request can never read
@@ -542,25 +558,98 @@ class EndpointAi extends _i1.EndpointRef {
 
   /// Streams an assistant reply to [userMessage] within [conversationId].
   ///
-  /// The user message is persisted first; the assistant reply is persisted
-  /// (with any citations) once the stream completes. Each emitted String is
-  /// one streaming chunk the client appends to the live bubble. The method
-  /// return type is `Stream<String>` (not `Future<Stream>`) so Serverpod keeps
-  /// the streaming session open. Implemented as an `async*` generator so the
-  /// method body can `await` persistence while still returning a
-  /// `Stream<String>`.
+  /// In Phase 09, builds personalized context via [StudentContextBuilder]
+  /// incorporating academic schedules, upcoming exams, active loans, and
+  /// user memories, while obeying least-data budgeting and privacy controls.
   _i2.Stream<String> sendMessage({
     required int conversationId,
     required String userMessage,
+    int? bookId,
+    String? selectedText,
   }) => caller.callStreamingServerEndpoint<_i2.Stream<String>, String>(
     'ai',
     'sendMessage',
     {
       'conversationId': conversationId,
       'userMessage': userMessage,
+      'bookId': bookId,
+      'selectedText': selectedText,
     },
     {},
   );
+
+  /// Gets the caller's AI preferences (creates default if not set).
+  _i2.Future<_i17.StudentAiPreference> getPreferences() =>
+      caller.callServerEndpoint<_i17.StudentAiPreference>(
+        'ai',
+        'getPreferences',
+        {},
+      );
+
+  /// Updates the caller's AI preferences.
+  _i2.Future<_i17.StudentAiPreference> updatePreferences({
+    required String explanationStyle,
+    required bool personalizationEnabled,
+    required bool memoryEnabled,
+  }) => caller.callServerEndpoint<_i17.StudentAiPreference>(
+    'ai',
+    'updatePreferences',
+    {
+      'explanationStyle': explanationStyle,
+      'personalizationEnabled': personalizationEnabled,
+      'memoryEnabled': memoryEnabled,
+    },
+  );
+
+  /// Lists the caller's AI memories.
+  _i2.Future<List<_i18.AiUserMemory>> getMemories({required bool activeOnly}) =>
+      caller.callServerEndpoint<List<_i18.AiUserMemory>>(
+        'ai',
+        'getMemories',
+        {'activeOnly': activeOnly},
+      );
+
+  /// Adds a new personal memory for the caller.
+  _i2.Future<_i18.AiUserMemory> addMemory({
+    required String content,
+    String? source,
+  }) => caller.callServerEndpoint<_i18.AiUserMemory>(
+    'ai',
+    'addMemory',
+    {
+      'content': content,
+      'source': source,
+    },
+  );
+
+  /// Enables or disables a specific memory.
+  _i2.Future<_i18.AiUserMemory> toggleMemory({
+    required int memoryId,
+    required bool disabled,
+  }) => caller.callServerEndpoint<_i18.AiUserMemory>(
+    'ai',
+    'toggleMemory',
+    {
+      'memoryId': memoryId,
+      'disabled': disabled,
+    },
+  );
+
+  /// Permanently deletes a specific memory.
+  _i2.Future<void> deleteMemory({required int memoryId}) =>
+      caller.callServerEndpoint<void>(
+        'ai',
+        'deleteMemory',
+        {'memoryId': memoryId},
+      );
+
+  /// Returns a personalized study suggestion for the dashboard card.
+  _i2.Future<_i19.StudySuggestion?> getStudySuggestion() =>
+      caller.callServerEndpoint<_i19.StudySuggestion?>(
+        'ai',
+        'getStudySuggestion',
+        {},
+      );
 }
 
 /// This is an example endpoint that returns a greeting message through
@@ -573,12 +662,56 @@ class EndpointGreeting extends _i1.EndpointRef {
   String get name => 'greeting';
 
   /// Returns a personalized greeting message: "Hello {name}".
-  _i2.Future<_i17.Greeting> hello(String name) =>
-      caller.callServerEndpoint<_i17.Greeting>(
+  _i2.Future<_i20.Greeting> hello(String name) =>
+      caller.callServerEndpoint<_i20.Greeting>(
         'greeting',
         'hello',
         {'name': name},
       );
+}
+
+/// {@category Endpoint}
+class EndpointLending extends _i1.EndpointRef {
+  EndpointLending(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'lending';
+
+  _i2.Future<_i21.BookLoanSummary> borrowBook({required int bookId}) =>
+      caller.callServerEndpoint<_i21.BookLoanSummary>(
+        'lending',
+        'borrowBook',
+        {'bookId': bookId},
+      );
+
+  _i2.Future<_i21.BookLoanSummary> returnLoan({required int loanId}) =>
+      caller.callServerEndpoint<_i21.BookLoanSummary>(
+        'lending',
+        'returnLoan',
+        {'loanId': loanId},
+      );
+
+  _i2.Future<_i22.BookLoanPage> myLoans({
+    String? cursor,
+    required int limit,
+    required bool activeOnly,
+  }) => caller.callServerEndpoint<_i22.BookLoanPage>(
+    'lending',
+    'myLoans',
+    {
+      'cursor': cursor,
+      'limit': limit,
+      'activeOnly': activeOnly,
+    },
+  );
+
+  _i2.Future<List<_i21.BookLoanSummary>> activeLoansForBook({
+    required int bookId,
+  }) => caller.callServerEndpoint<List<_i21.BookLoanSummary>>(
+    'lending',
+    'activeLoansForBook',
+    {'bookId': bookId},
+  );
 }
 
 /// {@category Endpoint}
@@ -588,14 +721,14 @@ class EndpointLibrary extends _i1.EndpointRef {
   @override
   String get name => 'library';
 
-  _i2.Future<_i18.LibraryExplore> explore({required int limitPerSection}) =>
-      caller.callServerEndpoint<_i18.LibraryExplore>(
+  _i2.Future<_i23.LibraryExplore> explore({required int limitPerSection}) =>
+      caller.callServerEndpoint<_i23.LibraryExplore>(
         'library',
         'explore',
         {'limitPerSection': limitPerSection},
       );
 
-  _i2.Future<_i19.LibrarySearchPage> search({
+  _i2.Future<_i24.LibrarySearchPage> search({
     String? query,
     String? cursor,
     required int limit,
@@ -604,9 +737,9 @@ class EndpointLibrary extends _i1.EndpointRef {
     List<String>? categories,
     List<String>? authors,
     List<int>? years,
-    List<_i20.BookAccessType>? accessTypes,
+    List<_i25.BookAccessType>? accessTypes,
     required bool relatedToMyCourses,
-  }) => caller.callServerEndpoint<_i19.LibrarySearchPage>(
+  }) => caller.callServerEndpoint<_i24.LibrarySearchPage>(
     'library',
     'search',
     {
@@ -623,19 +756,31 @@ class EndpointLibrary extends _i1.EndpointRef {
     },
   );
 
-  _i2.Future<_i21.BookDetail> getBookDetail({required int bookId}) =>
-      caller.callServerEndpoint<_i21.BookDetail>(
+  _i2.Future<_i26.BookDetail> getBookDetail({required int bookId}) =>
+      caller.callServerEndpoint<_i26.BookDetail>(
         'library',
         'getBookDetail',
         {'bookId': bookId},
       );
 
-  _i2.Future<_i22.BookFavoriteStatus> toggleFavorite({required int bookId}) =>
-      caller.callServerEndpoint<_i22.BookFavoriteStatus>(
+  _i2.Future<_i27.BookFavoriteStatus> toggleFavorite({required int bookId}) =>
+      caller.callServerEndpoint<_i27.BookFavoriteStatus>(
         'library',
         'toggleFavorite',
         {'bookId': bookId},
       );
+
+  _i2.Future<_i28.BookAccessPolicyUpdate> updateAccessPolicy({
+    required int bookId,
+    required _i25.BookAccessType accessType,
+  }) => caller.callServerEndpoint<_i28.BookAccessPolicyUpdate>(
+    'library',
+    'updateAccessPolicy',
+    {
+      'bookId': bookId,
+      'accessType': accessType,
+    },
+  );
 }
 
 /// {@category Endpoint}
@@ -645,11 +790,11 @@ class EndpointNotification extends _i1.EndpointRef {
   @override
   String get name => 'notification';
 
-  _i2.Future<_i23.NotificationListPage> list({
+  _i2.Future<_i29.NotificationListPage> list({
     String? cursor,
     required int limit,
     String? category,
-  }) => caller.callServerEndpoint<_i23.NotificationListPage>(
+  }) => caller.callServerEndpoint<_i29.NotificationListPage>(
     'notification',
     'list',
     {
@@ -666,9 +811,9 @@ class EndpointNotification extends _i1.EndpointRef {
         {'category': category},
       );
 
-  _i2.Future<_i24.CampusNotificationSummary> markRead({
+  _i2.Future<_i30.CampusNotificationSummary> markRead({
     required int notificationId,
-  }) => caller.callServerEndpoint<_i24.CampusNotificationSummary>(
+  }) => caller.callServerEndpoint<_i30.CampusNotificationSummary>(
     'notification',
     'markRead',
     {'notificationId': notificationId},
@@ -679,6 +824,137 @@ class EndpointNotification extends _i1.EndpointRef {
         'notification',
         'markAllRead',
         {'category': category},
+      );
+}
+
+/// {@category Endpoint}
+class EndpointReader extends _i1.EndpointRef {
+  EndpointReader(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'reader';
+
+  _i2.Future<_i31.ReaderAsset> getReaderAsset({
+    required int bookId,
+    required String format,
+  }) => caller.callServerEndpoint<_i31.ReaderAsset>(
+    'reader',
+    'getReaderAsset',
+    {
+      'bookId': bookId,
+      'format': format,
+    },
+  );
+
+  _i2.Future<_i32.ReadingProgressSyncResult> syncProgress({
+    required int bookId,
+    required double progressPercent,
+    required String currentLocation,
+    required DateTime clientUpdatedAt,
+  }) => caller.callServerEndpoint<_i32.ReadingProgressSyncResult>(
+    'reader',
+    'syncProgress',
+    {
+      'bookId': bookId,
+      'progressPercent': progressPercent,
+      'currentLocation': currentLocation,
+      'clientUpdatedAt': clientUpdatedAt,
+    },
+  );
+
+  _i2.Future<_i33.ReadingProgress?> getProgress({required int bookId}) =>
+      caller.callServerEndpoint<_i33.ReadingProgress?>(
+        'reader',
+        'getProgress',
+        {'bookId': bookId},
+      );
+
+  _i2.Future<List<_i34.ReaderBookmark>> getBookmarks({required int bookId}) =>
+      caller.callServerEndpoint<List<_i34.ReaderBookmark>>(
+        'reader',
+        'getBookmarks',
+        {'bookId': bookId},
+      );
+
+  _i2.Future<_i34.ReaderBookmark> addBookmark({
+    required int bookId,
+    required String location,
+    required String title,
+  }) => caller.callServerEndpoint<_i34.ReaderBookmark>(
+    'reader',
+    'addBookmark',
+    {
+      'bookId': bookId,
+      'location': location,
+      'title': title,
+    },
+  );
+
+  _i2.Future<void> removeBookmark({required int bookmarkId}) =>
+      caller.callServerEndpoint<void>(
+        'reader',
+        'removeBookmark',
+        {'bookmarkId': bookmarkId},
+      );
+
+  _i2.Future<List<_i35.ReaderNote>> getNotes({required int bookId}) =>
+      caller.callServerEndpoint<List<_i35.ReaderNote>>(
+        'reader',
+        'getNotes',
+        {'bookId': bookId},
+      );
+
+  _i2.Future<_i35.ReaderNote> saveNote({
+    required int bookId,
+    required String location,
+    required String content,
+    int? noteId,
+  }) => caller.callServerEndpoint<_i35.ReaderNote>(
+    'reader',
+    'saveNote',
+    {
+      'bookId': bookId,
+      'location': location,
+      'content': content,
+      'noteId': noteId,
+    },
+  );
+
+  _i2.Future<void> deleteNote({required int noteId}) =>
+      caller.callServerEndpoint<void>(
+        'reader',
+        'deleteNote',
+        {'noteId': noteId},
+      );
+
+  _i2.Future<List<_i36.ReaderHighlight>> getHighlights({required int bookId}) =>
+      caller.callServerEndpoint<List<_i36.ReaderHighlight>>(
+        'reader',
+        'getHighlights',
+        {'bookId': bookId},
+      );
+
+  _i2.Future<_i36.ReaderHighlight> addHighlight({
+    required int bookId,
+    required String location,
+    required String text,
+    required String colorToken,
+  }) => caller.callServerEndpoint<_i36.ReaderHighlight>(
+    'reader',
+    'addHighlight',
+    {
+      'bookId': bookId,
+      'location': location,
+      'text': text,
+      'colorToken': colorToken,
+    },
+  );
+
+  _i2.Future<void> removeHighlight({required int highlightId}) =>
+      caller.callServerEndpoint<void>(
+        'reader',
+        'removeHighlight',
+        {'highlightId': highlightId},
       );
 }
 
@@ -693,8 +969,8 @@ class EndpointStudentProfile extends _i1.EndpointRef {
   @override
   String get name => 'studentProfile';
 
-  _i2.Future<_i25.StudentProfile> getMyProfile() =>
-      caller.callServerEndpoint<_i25.StudentProfile>(
+  _i2.Future<_i37.StudentProfile> getMyProfile() =>
+      caller.callServerEndpoint<_i37.StudentProfile>(
         'studentProfile',
         'getMyProfile',
         {},
@@ -704,10 +980,10 @@ class EndpointStudentProfile extends _i1.EndpointRef {
   ///
   /// Student code, academic results, faculty and major remain server-managed
   /// so client input cannot rewrite institutional data.
-  _i2.Future<_i25.StudentProfile> updateMyProfile({
+  _i2.Future<_i37.StudentProfile> updateMyProfile({
     required String fullName,
     required String className,
-  }) => caller.callServerEndpoint<_i25.StudentProfile>(
+  }) => caller.callServerEndpoint<_i37.StudentProfile>(
     'studentProfile',
     'updateMyProfile',
     {
@@ -748,7 +1024,7 @@ class Client extends _i1.ServerpodClientShared {
     bool? disconnectStreamsOnLostInternetConnection,
   }) : super(
          host,
-         _i26.Protocol(),
+         _i38.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -770,8 +1046,10 @@ class Client extends _i1.ServerpodClientShared {
     dashboard = EndpointDashboard(this);
     ai = EndpointAi(this);
     greeting = EndpointGreeting(this);
+    lending = EndpointLending(this);
     library = EndpointLibrary(this);
     notification = EndpointNotification(this);
+    reader = EndpointReader(this);
     studentProfile = EndpointStudentProfile(this);
     modules = Modules(this);
   }
@@ -802,9 +1080,13 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointGreeting greeting;
 
+  late final EndpointLending lending;
+
   late final EndpointLibrary library;
 
   late final EndpointNotification notification;
+
+  late final EndpointReader reader;
 
   late final EndpointStudentProfile studentProfile;
 
@@ -825,8 +1107,10 @@ class Client extends _i1.ServerpodClientShared {
     'dashboard': dashboard,
     'ai': ai,
     'greeting': greeting,
+    'lending': lending,
     'library': library,
     'notification': notification,
+    'reader': reader,
     'studentProfile': studentProfile,
   };
 

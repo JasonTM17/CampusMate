@@ -1,7 +1,7 @@
 ---
 phase: 9
 title: "Personalized AI (context builder, memory, preferences)"
-status: pending
+status: completed
 priority: P2
 effort: M
 dependencies: [8]
@@ -41,12 +41,12 @@ AI hiểu từng sinh viên qua `StudentContextBuilder` phía server (§27) — 
 
 ## Success Criteria
 
-- [ ] Hai student khác nhau hỏi cùng câu ⇒ prompt context khác nhau đúng dữ liệu từng người (capturing test PASS).
-- [ ] Prompt KHÔNG chứa: dữ liệu sinh viên khác, secret-pattern (blocklist test PASS).
-- [ ] AI Memory xoá hết → prompt không còn memory; personalization OFF → context rút gọn còn tối thiểu (test PASS).
-- [ ] Book chat payload không chứa toàn văn sách (size assertion PASS).
-- [ ] Dashboard card hiển thị exam thật của user, biến mất khi không có exam (empty state test PASS).
-- [ ] `dart analyze`/tests PASS.
+- [x] Hai student khác nhau hỏi cùng câu ⇒ prompt context khác nhau đúng dữ liệu từng người (capturing test PASS).
+- [x] Prompt KHÔNG chứa: dữ liệu sinh viên khác, secret-pattern (blocklist test PASS).
+- [x] AI Memory xoá hết → prompt không còn memory; personalization OFF → context rút gọn còn tối thiểu (test PASS).
+- [x] Book chat payload không chứa toàn văn sách (size assertion PASS).
+- [x] Dashboard card hiển thị exam thật của user, biến mất khi không có exam (empty state test PASS).
+- [x] `dart analyze`/tests PASS.
 
 ## Risk Assessment
 

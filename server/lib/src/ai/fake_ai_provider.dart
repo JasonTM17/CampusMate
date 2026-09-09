@@ -24,8 +24,13 @@ class FakeAiProvider implements AiProvider {
     '📖 Gợi ý sách',
   ];
 
+  static final List<AiRequest> capturedRequests = [];
+
+  static void clearCapturedRequests() => capturedRequests.clear();
+
   @override
   Stream<AiStreamChunk> streamChat(AiRequest request) async* {
+    capturedRequests.add(request);
     final prompt = request.messages.isEmpty
         ? ''
         : request.messages.last.content;

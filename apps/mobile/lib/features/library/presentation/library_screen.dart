@@ -63,6 +63,11 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
         title: const Text('Thư viện'),
         actions: [
           IconButton(
+            tooltip: 'Sách của tôi',
+            onPressed: () => context.push('/library/loans'),
+            icon: const Icon(Icons.assignment_outlined),
+          ),
+          IconButton(
             tooltip: 'Làm mới',
             onPressed: state.isLoading
                 ? null

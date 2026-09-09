@@ -1,17 +1,22 @@
 import 'dart:convert';
 
+import 'package:campusmate_shared/campusmate_shared.dart' as shared;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_client/serverpod_client.dart';
-import 'package:campusmate_shared/campusmate_shared.dart' as shared;
 
 import '../../src/ai/ai_provider_factory.dart';
-import '../../src/ai/ai_provider.dart';
 import '../../src/ai/chat_request_builder.dart';
+import '../../src/ai/context/student_context_builder.dart';
+import '../../src/ai/memory/ai_memory_service.dart';
+import '../../src/ai/memory/ai_preference_service.dart';
 import '../../src/ai/quota.dart';
+import '../../src/ai/study_suggestion_service.dart';
+import '../../src/auth/campusmate_auth.dart';
 import '../../src/generated/protocol.dart';
 
-/// AI assistant endpoints (phase-08): conversation lifecycle, message history,
-/// and token-by-token streaming chat backed by [AiProvider].
+/// AI assistant endpoints (phase-08 & phase-09): conversation lifecycle,
+/// message history, streaming chat with personalized student context,
+/// AI user memories, student AI preferences, and study suggestions.
 ///
 /// Authorization rule (§31): every read/write is scoped to the authenticated
 /// user via `session.authenticated.userIdentifier`. A request can never read
@@ -21,10 +26,12 @@ class AiEndpoint extends Endpoint {
   /// Per-user daily chat gate (stage 6) — limit from `AI_DAILY_MESSAGE_QUOTA`.
   final DailyMessageQuota _quota = DailyMessageQuota();
 
+  final StudentContextBuilder _contextBuilder = StudentContextBuilder();
+  final AiPreferenceService _preferenceService = AiPreferenceService();
+  final AiMemoryService _memoryService = AiMemoryService();
+  final StudySuggestionService _suggestionService = StudySuggestionService();
+
   /// Resolves the caller's stable user id or throws if not signed in.
-  ///
-  /// Reads the already-authenticated identity synchronously from the session
-  /// (Serverpod populates `session.authenticated` before the endpoint runs).
   String _requireUserId(Session session) {
     final userId = session.authenticated?.userIdentifier;
     if (userId == null || userId.isEmpty) {
@@ -71,7 +78,6 @@ class AiEndpoint extends Endpoint {
       where: (t) => t.id.equals(conversationId) & t.userId.equals(userId),
     );
     if (deleted.isEmpty) {
-      // Either it does not exist or it belongs to someone else — same result.
       throw ServerpodClientNotFound();
     }
   }
@@ -98,17 +104,15 @@ class AiEndpoint extends Endpoint {
 
   /// Streams an assistant reply to [userMessage] within [conversationId].
   ///
-  /// The user message is persisted first; the assistant reply is persisted
-  /// (with any citations) once the stream completes. Each emitted String is
-  /// one streaming chunk the client appends to the live bubble. The method
-  /// return type is `Stream<String>` (not `Future<Stream>`) so Serverpod keeps
-  /// the streaming session open. Implemented as an `async*` generator so the
-  /// method body can `await` persistence while still returning a
-  /// `Stream<String>`.
+  /// In Phase 09, builds personalized context via [StudentContextBuilder]
+  /// incorporating academic schedules, upcoming exams, active loans, and
+  /// user memories, while obeying least-data budgeting and privacy controls.
   Stream<String> sendMessage(
     Session session, {
     required int conversationId,
     required String userMessage,
+    int? bookId,
+    String? selectedText,
   }) async* {
     final userId = _requireUserId(session);
 
@@ -124,6 +128,13 @@ class AiEndpoint extends Endpoint {
     // Daily quota gate: runs BEFORE context building and the provider call
     // (plan C6) — an exhausted user never reaches the AI.
     await _quota.consume(session, userId);
+
+    // Build personalized student context (phase-09)
+    final studentContext = await _contextBuilder.buildContext(
+      session,
+      bookId: bookId,
+      selectedText: selectedText,
+    );
 
     // Load transcript and persist the user turn.
     final history = await AiMessage.db.find(
@@ -146,8 +157,9 @@ class AiEndpoint extends Endpoint {
       messages: assembleChatMessages(
         history: [for (final m in history) (m.role, m.content)],
         userMessage: userMessage,
+        studentContext: studentContext,
       ),
-      studentContext: null, // wired by the context builder in phase-09
+      studentContext: studentContext,
     );
 
     final collected = StringBuffer();
@@ -191,5 +203,89 @@ class AiEndpoint extends Endpoint {
       }
       yield chunk.text;
     }
+  }
+
+  /// Gets the caller's AI preferences (creates default if not set).
+  Future<StudentAiPreference> getPreferences(Session session) async {
+    final userId = CampusMateAuth.requireUserId(session);
+    return _preferenceService.getPreferences(session, userId: userId);
+  }
+
+  /// Updates the caller's AI preferences.
+  Future<StudentAiPreference> updatePreferences(
+    Session session, {
+    required String explanationStyle,
+    required bool personalizationEnabled,
+    required bool memoryEnabled,
+  }) async {
+    final userId = CampusMateAuth.requireUserId(session);
+    return _preferenceService.updatePreferences(
+      session,
+      userId: userId,
+      explanationStyle: explanationStyle,
+      personalizationEnabled: personalizationEnabled,
+      memoryEnabled: memoryEnabled,
+    );
+  }
+
+  /// Lists the caller's AI memories.
+  Future<List<AiUserMemory>> getMemories(
+    Session session, {
+    bool activeOnly = false,
+  }) async {
+    final userId = CampusMateAuth.requireUserId(session);
+    return _memoryService.listMemories(
+      session,
+      userId: userId,
+      activeOnly: activeOnly,
+    );
+  }
+
+  /// Adds a new personal memory for the caller.
+  Future<AiUserMemory> addMemory(
+    Session session, {
+    required String content,
+    String? source,
+  }) async {
+    final userId = CampusMateAuth.requireUserId(session);
+    return _memoryService.addMemory(
+      session,
+      userId: userId,
+      content: content,
+      source: source ?? 'user',
+    );
+  }
+
+  /// Enables or disables a specific memory.
+  Future<AiUserMemory> toggleMemory(
+    Session session, {
+    required int memoryId,
+    required bool disabled,
+  }) async {
+    final userId = CampusMateAuth.requireUserId(session);
+    return _memoryService.toggleMemory(
+      session,
+      userId: userId,
+      memoryId: memoryId,
+      disabled: disabled,
+    );
+  }
+
+  /// Permanently deletes a specific memory.
+  Future<void> deleteMemory(
+    Session session, {
+    required int memoryId,
+  }) async {
+    final userId = CampusMateAuth.requireUserId(session);
+    await _memoryService.deleteMemory(
+      session,
+      userId: userId,
+      memoryId: memoryId,
+    );
+  }
+
+  /// Returns a personalized study suggestion for the dashboard card.
+  Future<StudySuggestion?> getStudySuggestion(Session session) async {
+    return _suggestionService.getSuggestion(session);
   }
 }

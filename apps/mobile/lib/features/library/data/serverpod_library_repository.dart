@@ -39,6 +39,38 @@ class ServerpodLibraryRepository implements LibraryRepository {
   @override
   Future<BookFavoriteStatus> toggleFavorite({required int bookId}) =>
       _client.library.toggleFavorite(bookId: bookId);
+
+  @override
+  Future<BookLoanSummary> borrowBook({required int bookId}) =>
+      _client.lending.borrowBook(bookId: bookId);
+
+  @override
+  Future<BookLoanSummary> returnLoan({required int loanId}) =>
+      _client.lending.returnLoan(loanId: loanId);
+
+  @override
+  Future<BookLoanPage> myLoans({
+    String? cursor,
+    int limit = 20,
+    bool activeOnly = true,
+  }) => _client.lending.myLoans(
+    cursor: cursor,
+    limit: limit,
+    activeOnly: activeOnly,
+  );
+
+  @override
+  Future<List<BookLoanSummary>> activeLoansForBook({required int bookId}) =>
+      _client.lending.activeLoansForBook(bookId: bookId);
+
+  @override
+  Future<BookAccessPolicyUpdate> updateAccessPolicy({
+    required int bookId,
+    required BookAccessType accessType,
+  }) => _client.library.updateAccessPolicy(
+    bookId: bookId,
+    accessType: accessType,
+  );
 }
 
 List<String>? _sortedStrings(Set<String> values) {

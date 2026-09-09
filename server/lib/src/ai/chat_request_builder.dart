@@ -12,9 +12,18 @@ import 'system_prompt.dart';
 List<shared.AiMessage> assembleChatMessages({
   required Iterable<(String role, String content)> history,
   required String userMessage,
-}) => [
-  shared.AiMessage(role: 'system', content: campusmateSystemPrompt),
-  for (final (role, content) in history)
-    if (role != 'system') shared.AiMessage(role: role, content: content),
-  shared.AiMessage(role: 'user', content: userMessage),
-];
+  String? studentContext,
+}) {
+  final systemContent =
+      (studentContext != null && studentContext.trim().isNotEmpty)
+          ? '$campusmateSystemPrompt\n\n--- [Personalized Student Context] ---\n${studentContext.trim()}\n--- [End of Context] ---'
+          : campusmateSystemPrompt;
+
+  return [
+    shared.AiMessage(role: 'system', content: systemContent),
+    for (final (role, content) in history)
+      if (role != 'system') shared.AiMessage(role: role, content: content),
+    shared.AiMessage(role: 'user', content: userMessage),
+  ];
+}
+

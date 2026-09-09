@@ -54,8 +54,48 @@ class ServerpodAiRepository implements AiRepository {
   Stream<String> sendMessage({
     required int conversationId,
     required String content,
+    int? bookId,
+    String? selectedText,
   }) => _client.ai.sendMessage(
     conversationId: conversationId,
     userMessage: content,
+    bookId: bookId,
+    selectedText: selectedText,
   );
+
+  @override
+  Future<StudentAiPreference> getPreferences() => _client.ai.getPreferences();
+
+  @override
+  Future<StudentAiPreference> updatePreferences({
+    required String explanationStyle,
+    required bool personalizationEnabled,
+    required bool memoryEnabled,
+  }) => _client.ai.updatePreferences(
+    explanationStyle: explanationStyle,
+    personalizationEnabled: personalizationEnabled,
+    memoryEnabled: memoryEnabled,
+  );
+
+  @override
+  Future<List<AiUserMemory>> getMemories({bool activeOnly = false}) =>
+      _client.ai.getMemories(activeOnly: activeOnly);
+
+  @override
+  Future<AiUserMemory> addMemory({required String content, String? source}) =>
+      _client.ai.addMemory(content: content, source: source);
+
+  @override
+  Future<AiUserMemory> toggleMemory({
+    required int memoryId,
+    required bool disabled,
+  }) => _client.ai.toggleMemory(memoryId: memoryId, disabled: disabled);
+
+  @override
+  Future<void> deleteMemory({required int memoryId}) =>
+      _client.ai.deleteMemory(memoryId: memoryId);
+
+  @override
+  Future<StudySuggestion?> getStudySuggestion() =>
+      _client.ai.getStudySuggestion();
 }

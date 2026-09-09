@@ -1,0 +1,7 @@
+class: ReadingProgressSyncResult
+fields:
+  bookId: int
+  progressPercent: double
+  currentLocation: String
+  updatedAt: DateTime
+  appliedClientUpdate: bool

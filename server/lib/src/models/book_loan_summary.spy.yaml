@@ -1,0 +1,13 @@
+class: BookLoanSummary
+fields:
+  id: int
+  bookId: int
+  copyId: int
+  title: String
+  coverUrl: String?
+  borrowedAt: DateTime
+  dueAt: DateTime
+  returnedAt: DateTime?
+  status: BookLoanStatus
+  daysRemaining: int
+  isOverdue: bool

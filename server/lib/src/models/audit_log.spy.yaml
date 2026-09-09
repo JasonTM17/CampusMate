@@ -1,0 +1,16 @@
+class: AuditLog
+table: audit_logs
+fields:
+  actorUserId: UuidValue
+  action: String
+  resourceType: String
+  resourceId: String
+  metadataJson: String
+  createdAt: DateTime
+indexes:
+  audit_actor_created_idx:
+    fields: actorUserId, createdAt, id
+  audit_resource_created_idx:
+    fields: resourceType, resourceId, createdAt, id
+  audit_action_created_idx:
+    fields: action, createdAt, id

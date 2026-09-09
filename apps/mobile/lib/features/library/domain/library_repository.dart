@@ -119,4 +119,21 @@ abstract interface class LibraryRepository {
   Future<BookDetail> getBookDetail({required int bookId});
 
   Future<BookFavoriteStatus> toggleFavorite({required int bookId});
+
+  Future<BookLoanSummary> borrowBook({required int bookId});
+
+  Future<BookLoanSummary> returnLoan({required int loanId});
+
+  Future<BookLoanPage> myLoans({
+    String? cursor,
+    int limit = 20,
+    bool activeOnly = true,
+  });
+
+  Future<List<BookLoanSummary>> activeLoansForBook({required int bookId});
+
+  Future<BookAccessPolicyUpdate> updateAccessPolicy({
+    required int bookId,
+    required BookAccessType accessType,
+  });
 }

@@ -134,6 +134,9 @@ erDiagram
     BOOKS ||--o{ BOOK_COURSE_LINKS : supports
     COURSES ||--o{ BOOK_COURSE_LINKS : recommends
     BOOKS ||--o{ FAVORITE_BOOKS : favorited
+    BOOKS ||--o{ BOOK_COPIES : owns
+    BOOKS ||--o{ BOOK_LOANS : summarizes
+    BOOK_COPIES ||--o{ BOOK_LOANS : loaned_as
 
     AUTHORS {
         int id PK
@@ -168,6 +171,40 @@ erDiagram
         uuid userId
         int bookId FK
     }
+
+    BOOK_COPIES {
+        int id PK
+        int bookId FK
+        string barcode
+        string status
+        datetime updatedAt
+    }
+
+    BOOK_LOANS {
+        int id PK
+        uuid userId
+        int bookId FK
+        int copyId FK
+        datetime borrowedAt
+        datetime dueAt
+        datetime returnedAt
+        string status
+    }
+```
+
+## Audit Log
+
+```mermaid
+erDiagram
+    AUDIT_LOGS {
+        int id PK
+        uuid actorUserId
+        string action
+        string resourceType
+        string resourceId
+        string metadataJson
+        datetime createdAt
+    }
 ```
 
 ## Data Rules
@@ -189,6 +226,15 @@ erDiagram
   storage keys or reader file URLs.
 - Library access decisions are owned by `BookAccessPolicyService`; mobile uses
   its returned action flags instead of reimplementing role rules.
+- Lending APIs only accept book/loan identifiers; actor identity and role come
+  from the Serverpod session. `borrowedAt`, `dueAt`, and overdue transitions are
+  server-owned.
+- `book_loans_active_copy_idx` is a partial unique index on `book_loans(copyId)`
+  where status is `borrowed` or `overdue`; it backs the app-level row-lock
+  transaction so a single physical copy cannot have two active loans.
+- Privileged library mutations write through `AuditService` into `audit_logs`.
+  Audit metadata is sanitized before persistence and must not include password,
+  token, secret, or credential fields.
 
 ## Local Cache Shape
 

@@ -1,0 +1,19 @@
+class: BookLoan
+table: book_loans
+fields:
+  userId: UuidValue
+  bookId: int, relation(parent=books, onDelete=Cascade)
+  copyId: int, relation(parent=book_copies, onDelete=Restrict)
+  borrowedAt: DateTime
+  dueAt: DateTime
+  returnedAt: DateTime?
+  status: BookLoanStatus
+  createdAt: DateTime
+  updatedAt: DateTime
+indexes:
+  book_loan_user_status_due_idx:
+    fields: userId, status, dueAt, id
+  book_loan_book_status_due_idx:
+    fields: bookId, status, dueAt, id
+  book_loan_copy_status_idx:
+    fields: copyId, status, id

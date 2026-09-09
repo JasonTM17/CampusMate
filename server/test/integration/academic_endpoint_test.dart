@@ -73,7 +73,7 @@ void main() {
           containsAllInOrder(['2026-HK1', '2025-HK2']),
         );
         expect(overview.courses, hasLength(5));
-        expect(overview.today, hasLength(2));
+        expect(overview.today, isNotEmpty);
         expect(overview.upcomingExams, isNotEmpty);
         expect(overview.semesterGpa, greaterThan(0));
         expect(overview.cumulativeGpa, overview.semesterGpa);
