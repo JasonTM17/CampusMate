@@ -17,8 +17,12 @@ server/.run/
 *.iml
 .vscode/
 
-# Agent runtime session state (zcode)
+# Agent runtime session state & personal skill kits
 .zcode/
+.agentkit/
+.agents/
+.codex/
+AGENTS.md
 
 # Secrets & local environment (never commit)
 .env
